@@ -11,30 +11,36 @@ rebuild. GitHub: john-l-roseman/multiply.by (public).
   "More games" tile); `/base/` is the base game alone (spec
   `game.txt`); each gamified game is in its own folder (`/train/`, ...);
   `/build-it/` ("Build it yourself", menu BUILD IT) shows each game's prompt, model and build time;
-  `/about/`. Every page's SOURCE opens the prompt.txt beside it (the front page's is
-  `/prompt.txt`, the base game's `/base/prompt.txt`).
-- `layout.txt` is the frame shared by every page: title band (a link to https://multiply.by/),
-  share icon and desktop share menu, menu bar look, HOME/GAMES/BUILD IT/ABOUT/SOURCE items, footer.
+  `/about/`. Every page's SOURCE opens its prompt page, `prompt/` beside it (the front page's
+  is `/prompt/`, the base game's `/base/prompt/`): the folder's prompt.txt word for word in a
+  box with a copy button, under the site's title band, made by `make` with `txt-html.py`
+  (generated, git-ignored; `make prompt-pages` makes only these). Pages built before this
+  change still link to prompt.txt until they are rebuilt.
+- `layout.txt` is the frame shared by every page: title band with the "x" logo (both link to
+  https://multiply.by/), share icon and desktop share menu, THE ONE MENU of every page, footer. The
+  menu: always visible MUTE (games), the GAMES icon (four squares), BUILD IT and SOURCE (outlined
+  buttons); on phones a menu button (three lines) opens a panel with HOME, GAMES (icon and word),
+  ABOUT and, on games, RULES and RESET; on tablets and computers all in one row. Pages only name
+  their current item and SOURCE address.
 - `footer.txt`: the three-column site info block (About Multiply.by, Feedback, Functional AI
   Inc.) above the copyright line, on the front page, About and Build It, put in by an optional
   `#include footer.txt` line.
 - Each page has its own spec with one `#include layout.txt` line; `assemble-spec PAGE.txt`
-  expands it into that page's `prompt.txt` (generated, git-ignored, served: it is what every
-  page's SOURCE button opens, and it must stay one self-contained file a person can upload to
-  any chatbot).
+  expands it into that page's `prompt.txt` (generated, git-ignored, served: every page's SOURCE
+  button opens it as the prompt page, and it must stay one self-contained file a person can
+  upload to any chatbot).
   - `home.txt`: the front page (/). It is `#include game.txt` (assemble-spec puts the base game's
     spec in and makes every https://multiply.by/base/ address https://multiply.by/) plus a section
     that adds the games strip (short names, pictures `thumbnails/GAME-thumbnail.png`, 200 x 160, last game
     played first, then Monster and Dinosaurs, the rest shuffled per visit, then More games).
     Same storage keys as /base/, so progress is shared.
-  - `games/page.txt`: the chooser (/games/; menu HOME, GAMES (current), BUILD IT, ABOUT), big tiles
+  - `games/page.txt`: the chooser (/games/; GAMES is the current menu item), big tiles
     with the short names (Monster, Train, Dinosaurs, Robot, Planes, Space, Great Wall, Block Craft,
-    Base Game). Both pages save the tapped game in localStorage `multiply_last_game`. Build with
-    `make` in `games/` (Claude).
-  - `game.txt`: the base game (/base/). Menu: MUTE, BUILD IT, ABOUT, RULES (popup), RESET, SOURCE
-    (no GAMES: the title band leads to the front page and its strip).
+    Evolution, Base Game). Both pages save the tapped game in localStorage `multiply_last_game`.
+    Build with `make` in `games/` (Claude).
+  - `game.txt`: the base game (/base/). The site menu plus MUTE, RULES (popup) and RESET.
     Every gamified game keeps exactly this menu (gamify.md).
-  - `about/about.txt`: About. Menu: HOME, BUILD IT, ABOUT (current), SOURCE.
+  - `about/about.txt`: About (ABOUT is the current menu item).
   - `build-it/page.txt`: Build it yourself (/build-it/, was /gallery/). `make` there retakes the
     screenshots (`shots.py`; also used by /games/) and builds the page (Claude). The front page's
     strip uses `thumbnails/GAME-thumbnail.png` instead (screenshots are illegible that small):
@@ -68,7 +74,7 @@ rebuild. GitHub: john-l-roseman/multiply.by (public).
     attaches it (a chat user doesn't get it, and builds copied it).
 - Gamified games from a short prompt (e.g. `train/`): `../mk-gamify` from the game's folder. The
   folder's prompt.txt is a few lines of prompt (not a CUSTOMIZATION section); the game's SOURCE opens
-  it. The folder's `model` file names the model (carbon, fable, opus, gpt, kimi or a full id; no
+  it (as `prompt/`, which mk-gamify also makes). The folder's `model` file names the model (carbon, fable, opus, gpt, kimi or a full id; no
   default). Gemini runs on Vertex; an id with a `/` (gpt = openai/gpt-6.1-terra, kimi =
   moonshotai/kimi-k3.1-pro) goes through OpenRouter, key in ~/.openrouter-key. mk-gamify
   (`MK_EFFORT`, `MK_FORCE=1`) does EXACTLY what a chat does, so an API pass proves the prompt and
@@ -77,7 +83,7 @@ rebuild. GitHub: john-l-roseman/multiply.by (public).
   plain text a fetch gives), nothing else:
   no added instructions, no preset SOURCE or GAME. The page in the answer becomes index.html (the
   text before it, customization.txt), checked but never changed: scripts must parse and SOURCE
-  must open the folder's prompt.txt, or nothing is published; a GAME shared with another game is
+  must open the folder's `prompt/` (relative `prompt/` or its full address), or nothing is published; a GAME shared with another game is
   reported. It also keeps a copy of each build (index.html,
   customization.txt, build.txt with model, tokens, cost, time) in a subfolder per model
   (`train/carbon/`, `train/fable/`, served for comparison). A failed build keeps the raw answer in
@@ -100,6 +106,10 @@ rebuild. GitHub: john-l-roseman/multiply.by (public).
   server block has `charset utf-8;` and a `location ~ \.md$` block with
   `default_type "text/plain; charset=utf-8";` and `try_files $uri =404;`. Without it nginx sends
   .md files as application/octet-stream, which fetch tools (e.g. claude.ai) refuse to read.
+  It also has a `location ~ ^/gamify(/.*)?$` block (before the .md one) with
+  `add_header Cache-Control "no-cache" always;` and `try_files $uri $uri/ =404;`, so caches,
+  chatbots' fetch tools included, check back for the latest /gamify/ (it matches the /gamify
+  redirect too, not /gamify.md).
 - Android app (Google Play, `by.multiply.app`): notes in `ANDROID.md`, which `make` renders to
   /android/ (`md-html.py`; generated, git-ignored). The Kotlin project, `gather-assets.py` and
   `build-app` (builds on the `android-build` VM) are in `android/`.

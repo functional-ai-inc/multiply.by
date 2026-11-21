@@ -10,10 +10,11 @@ In the <head>, include exactly: <link rel="icon" type="image/svg+xml" href="/ico
 
 The page has the site's frame, described in SITE LAYOUT below: the title band, the menu bar, this
 page's content in a card, the site info (SITE INFO below) and the footer.
-- MENU ITEMS on this page, from left to right: HOME, BUILD IT, ABOUT (the current page: dark blue,
-  with `aria-current="page"`), then SOURCE in the far right corner. HOME is the way back to the
-  games: the page also opens inside the installed app, where iPhone shows no back button.
-- SOURCE on this page: <a href="https://multiply.by/about/prompt.txt">
+- MENU: the site's menu (MENU BAR in SITE LAYOUT), with ABOUT as the current page (dark blue,
+  `aria-current="page"`). No MUTE, RULES or RESET. HOME (in the menu panel), the logo and the
+  GAMES icon are the way back to the games: the page also opens inside the installed app, where
+  iPhone shows no back button.
+- SOURCE on this page: <a href="https://multiply.by/about/prompt/">
 - The page column is a flex column at least as tall as the screen (`min-height: 100vh`, and
   `min-height: 100dvh` after it): title band, menu bar, the card, then the site info and the
   footer pushed to the bottom of the screen (`margin-top: auto` on the site info). On a tall screen
@@ -67,7 +68,18 @@ Adaptive layout (the page fits phones, tablets and laptops):
   o <a href="https://multiply.by/build-it/">See exactly how each game was built.</a>
   o Build one yourself, using your favorite AI model.
 
-MORE ABOUT THE SITE (below the three sections, inside the same card)
+GET THE APP (below the three sections, above MORE ABOUT THE SITE, inside the same card)
+- A 1px #e5e7eb divider above it (as between the other parts of the card), then, centered on every
+  screen size, one line of text, the Google Play badge under it, and a trademark line:
+  <p class="get-app">Get the games as an Android app: free, no ads, works offline.</p>
+  <a class="play-badge" href="https://play.google.com/store/apps/details?id=by.multiply.app" target="_blank" rel="noreferrer"><img src="/google-play.png" alt="Get it on Google Play" width="188" height="56"></a>
+  <p class="play-tm">Google Play and the Google Play logo are trademarks of Google LLC.</p>
+- The text: body text, color #374151, margin 0 0 10px. The badge is Google's official badge,
+  shown unchanged (never redrawn, recolored, cropped or stretched), exactly 188px wide and 56px
+  tall; the link `display: inline-block`, no underline, a clear focus outline for the keyboard.
+  The trademark line: 0.75rem, color #6b7280, margin 8px 0 0.
+
+MORE ABOUT THE SITE (below GET THE APP, inside the same card)
 - A 1px #e5e7eb divider separates it from the three sections; on every screen size it is one
   column of prose BELOW them (never beside them), using the card's full width (no max-width on
   the text), left-aligned with the header.

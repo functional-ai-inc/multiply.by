@@ -14,8 +14,8 @@ CHANGES TO THE TEXT ABOVE
   things this page loads from the server. Nothing else changes: no fetch, no other file. The game
   works without them (offline, or if a picture fails): a picture that fails to load is hidden
   (`onerror` sets its `visibility: hidden`), the tile and its name stay.
-- MENU ITEMS: as above (MUTE, BUILD IT, ABOUT, RULES, RESET, then SOURCE). On this page the games
-  strip and its More games tile are the way to the other games.
+- MENU: as above (the game's menu), with HOME as the current page (`aria-current="page"`). The
+  games strip and its More games tile are also a way to the other games.
 - NO PAGE SCROLL, FITS ONE SCREEN: everything said above about the whole UI fitting on one screen
   with no scroll (360x640, landscape, tablets, desktop) now includes the strip: title band, menu
   bar, game area, strip and footer all fit, and the page itself still never scrolls. The game area
@@ -68,8 +68,8 @@ move under a child's finger)
 1. The LAST GAME the child opened first: the KEY saved in localStorage under
    'multiply_last_game' (read with the page's safe storage; if it is missing, or is not the key of
    a game in STRIP GAMES, skip this step).
-2. Then Monster and Dinosaurs (each only if not already placed), in that order: the games for the
-   youngest children.
+2. Then Robot and Dinosaurs (each only if not already placed), in that order: Robot is the
+   site's best game, so it is the first tile a new player sees.
 3. Then the remaining games in a RANDOM order, shuffled once per page load (Fisher-Yates with
    Math.random), so every game gets its turn near the front.
 4. MORE GAMES last.
@@ -112,16 +112,21 @@ STRIP GAMES (SHORT NAME, then the game's key, address and picture)
   - Key: blocks
   - Game address: https://multiply.by/blocks/
   - Picture: /thumbnails/blocks-thumbnail.png
+- Evolution
+  - Key: evolution
+  - Game address: https://multiply.by/evolution/
+  - Picture: /thumbnails/evolution-thumbnail.png
 
 FRONT PAGE CHECKS (in addition to the checks above)
 - At 360x640, 640x360, 768x1024 and 1280x800: the title band, menu bar, question, four answers,
   strip and footer are all on screen, nothing cut off, and the page does not scroll by a pixel.
   The indicators (down to TIME) end above the answers.
 - On a computer, the mouse wheel over the strip scrolls it sideways to More games.
-- The strip shows the eight games and then More games; on a phone it scrolls sideways inside
+- The strip shows the nine games and then More games; on a phone it scrolls sideways inside
   itself; in landscape it shows name-only chips.
+- On a first visit (nothing saved under 'multiply_last_game'), the strip starts Robot, Dinosaurs.
 - After tapping Train in the strip and coming back, Train is the first tile.
 - A tap on a strip tile opens that game; it never counts as an answer or starts the timer.
-- The menu bar shows MUTE, BUILD IT, ABOUT, RULES, RESET and SOURCE on one line at 360px, nothing
-  cut off; BUILD IT opens https://multiply.by/build-it/; SOURCE opens
-  https://multiply.by/prompt.txt. There is no GAMES item.
+- The menu bar shows MUTE, the GAMES icon, BUILD IT, SOURCE and the menu button on one line at
+  360px, nothing cut off; BUILD IT opens https://multiply.by/build-it/; SOURCE opens
+  https://multiply.by/prompt/; the menu panel holds HOME (current), GAMES, ABOUT, RULES and RESET.

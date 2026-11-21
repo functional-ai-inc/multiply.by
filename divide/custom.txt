@@ -75,12 +75,11 @@ this game says Divide.by or divide.by, as listed here:
 - Title band heading, exactly:
   <h1><a id="tagline" href="https://multiply.by/"><strong>Divide.by:</strong> learn division facts</a></h1>
   (it links to the main game, https://multiply.by/, like on every page of the site).
-- `shareText()`: https://divide.by/ (2 to 9), https://divide.by/?12 (up to 12) or
-  https://divide.by/?20 (up to 20).
-- `siteShareText()`, first line: "Divide.by: learn division facts, fast." for 2 to 9, "Divide.by:
-  learn division facts up to 12, fast." for up to 12 and "Divide.by: learn division facts up to 20,
-  fast." for up to 20. The second line is as before and the last line is the link. Email SUBJECT:
-  "divide.by: learn division facts".
+- `shareText()` (the link sent by "Share my results"): https://divide.by/ (2 to 9),
+  https://divide.by/?12 (up to 12) or https://divide.by/?20 (up to 20). (divide.by redirects to
+  this page, keeping the set.)
+- The share icon in the title band shares https://multiply.by/build-it/ with the site's message,
+  as on every page (SHARE THE SITE): no Divide.by message or subject of its own.
 - RESULTS CARD: "divide.by" (white bold 96px) in the blue band, and under it "Learn division facts"
   (white 44px); at the bottom, "Play at divide.by" (#1e40af bold 48px). The file is named
   'divide-by-results.png', and every share of the results passes the title 'divide.by results'.

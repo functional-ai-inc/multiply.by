@@ -14,7 +14,8 @@ passes here shows that the prompt and /gamify/ work as published:
     model wrote before it (its CUSTOMIZATION design, if it followed gamify.md) is saved as
     customization.txt.
   - the page is checked, never changed: its scripts must parse (check-scripts.py) and its SOURCE
-    must open this game's prompt.txt; a page that fails is not published. A GAME name shared with
+    must open this game's prompt page (prompt/, made from prompt.txt by txt-html.py, as make does);
+    a page that fails is not published. A GAME name shared with
     another game on the site (shared saved progress) is reported.
 The only thing added to the conversation is mechanical: Gemini 4 Carbon stops each answer at
 65,536 tokens and is asked to continue.
@@ -387,13 +388,13 @@ def main():
 
     # Checks only: the page is published as the model wrote it, or not at all.
     src = source_link(html)
-    ok = {INPUT, "./" + INPUT, f"/{rel}/{INPUT}", f"{SITE}{rel}/{INPUT}"}
+    ok = {"prompt/", "./prompt/", f"/{rel}/prompt/", f"{SITE}{rel}/prompt/"}
     if src not in ok:
         bad = f"{model_folder()}/index.html.tmp" if TRY else "index.html.tmp"
         os.makedirs(os.path.dirname(bad) or ".", exist_ok=True)
         with open(bad, "w", encoding="utf-8") as f:
             f.write(html + "\n")
-        die(f'SOURCE points to "{src}", not to this game\'s {INPUT}; nothing published (the '
+        die(f'SOURCE points to "{src}", not to this game\'s prompt/; nothing published (the '
             f"page is in {bad})")
     game = game_name(html)
     others = {}
@@ -406,6 +407,10 @@ def main():
         note("Warning: no CONFIG.GAME found in the page")
     elif game in others:
         note(f'Warning: GAME "{game}" is also used by {others[game]} (they share saved progress)')
+    # A link to a folder that is not on the site, usually a share address the model made up.
+    for folder in sorted(set(re.findall(r"https://multiply\.by/([A-Za-z0-9_-]+)/", html))):
+        if not os.path.isdir(os.path.join(ROOT, folder)):
+            note(f'Warning: the page links to https://multiply.by/{folder}/, which is not on the site')
 
     design = (section or "(The model wrote no design before the page.)") + "\n"
     if TRY:
@@ -429,6 +434,11 @@ def main():
     write_atomic("customization.txt", design)
     os.replace("index.html.tmp", "index.html")
     print(f"Built {cwd}/index.html ({os.path.getsize('index.html')} bytes)")
+    # SOURCE's page (make also remakes it whenever prompt.txt changes).
+    os.makedirs("prompt", exist_ok=True)
+    with open("prompt/index.html.tmp", "w", encoding="utf-8") as f:
+        subprocess.run(["python3", f"{ROOT}/txt-html.py", INPUT], stdout=f, check=True)
+    os.replace("prompt/index.html.tmp", "prompt/index.html")
     keep_copy(start)
 
 

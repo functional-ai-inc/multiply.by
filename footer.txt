@@ -19,6 +19,10 @@ SITE INFO (a three-column block at the bottom of the page, directly above the co
 LEFT: title "About Multiply.by". Text, one paragraph, exactly:
 "Free times-table games: no sign-up, no ads in the games, and they work offline. Every page on
 this site is built by an AI model from a plain-text prompt that you can read and build yourself."
+Then a second line directly under the paragraph (no margin between them), exactly:
+<a href="https://play.google.com/store/apps/details?id=by.multiply.app" target="_blank" rel="noreferrer">Get the Android app</a>
+styled like the Feedback column's email link: dark blue #1e40af, bold, no underline (underlined
+on hover).
 
 CENTER: title "Feedback". Text (two short lines, tight vertical spacing: no margin between them):
 "Found a bug? Have an idea for a new game or feature?"

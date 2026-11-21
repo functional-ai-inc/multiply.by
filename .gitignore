@@ -15,6 +15,8 @@
 /android/local.properties
 /android/*.apk
 /android/*.aab
+/android/assets/*
+!/android/assets/listing.txt
 !/game.txt
 !/home.txt
 !/layout.txt
@@ -43,6 +45,7 @@
 !/robots.txt
 !/gamify-html.py
 !/md-html.py
+!/txt-html.py
 !/reformat-spec.py
 !/MATCH-TO-FOUR.txt
 !/mk-custom
@@ -67,6 +70,10 @@
 /blocks/*
 !/blocks/prompt.txt
 !/blocks/model
+!/evolution/
+/evolution/*
+!/evolution/prompt.txt
+!/evolution/build.txt
 !/match/
 /match/*
 !/match/build-instructions.txt

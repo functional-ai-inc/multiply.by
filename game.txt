@@ -588,9 +588,14 @@ IMPORTANT: Do not add any notes at the top or bottom of the HTML file.
 Sound effects (short tones made in the browser with the Web Audio API; no audio files):
 - Define exactly these, with no other sound code:
   `let audioCtx = null;`
-  `function getAudioCtx() { try { const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; if (!audioCtx) audioCtx = new AC(); if (audioCtx.state !== 'running') { const p = audioCtx.resume(); if (p && p.catch) p.catch(() => {}); } return audioCtx; } catch (e) { return null; } }`
+  `function getAudioCtx() { try { if (navigator.audioSession && navigator.audioSession.type !== 'playback') navigator.audioSession.type = 'playback'; const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; if (!audioCtx) audioCtx = new AC(); if (audioCtx.state !== 'running') { const p = audioCtx.resume(); if (p && p.catch) p.catch(() => {}); } return audioCtx; } catch (e) { return null; } }`
   `const SOUNDS = { correct: ['triangle', [[1047, 0, 0.05], [1319, 0.05, 0.05], [1568, 0.10, 0.18]], 0.35], correct2: ['triangle', [[784, 0, 0.05], [988, 0.05, 0.05], [1175, 0.10, 0.05], [1568, 0.15, 0.18]], 0.35], wrong: ['triangle', [[659, 0, 0.14], [523, 0.14, 0.22]], 0.3], win: ['sine', [[523, 0, 0.12], [659, 0.12, 0.12], [784, 0.24, 0.12], [1047, 0.36, 0.35]], 0.2] };`
   (each sound: wave, notes as [frequency, start, duration], peak volume)
+  IPHONE SILENT MODE (CRITICAL): `navigator.audioSession.type = 'playback'` (Safari on iOS 17 and
+  later) makes the sounds play like a video's sound. Without it, iOS treats Web Audio like a
+  ringtone: with the phone on silent the game plays nothing, while music and video apps still do.
+  The game's own MUTE button still silences everything. Set it in `getAudioCtx()`, before the
+  AudioContext is made, exactly as written; browsers without `navigator.audioSession` skip it.
   The wrong-answer sound is a gentle falling "uh-oh", E5 then C5: the opposite of the rising
   right-answer chime, kind rather than harsh, and high enough to be heard on a phone's small
   speaker (a low note such as 196 Hz is nearly silent there).
@@ -663,15 +668,17 @@ they are described in SITE LAYOUT, directly after this section 8. On this page:
 - The app container is the PAGE COLUMN: the title band and the menu bar are its first parts, the
   footer its last.
 
-- MENU ITEMS on this page, from left to right: MUTE (the speaker icon), BUILD IT, ABOUT, RULES
-  (INFO) and RESET, then SOURCE in the far right corner. There is no GAMES item (it would not fit
-  on a phone next to BUILD IT): the title band's link leads back to the front page, where the
-  other games are. There is no DEMO item. BUILD IT shows children and grown-ups how each game was
-  built. MUTE, RULES and RESET are only on this page; they use the same menu-item class as
-  BUILD IT and ABOUT. The score is NOT in this bar; it is in the INDICATORS next to the
-  question.
+- MENU on this page: the site's menu (MENU BAR in SITE LAYOUT) with this game's own items: MUTE
+  (the speaker icon) at the left end of the bar, always visible; RULES (INFO) and RESET in the
+  MENU PANEL after HOME, GAMES and ABOUT; then the GAMES icon and the outlined BUILD IT and
+  SOURCE buttons. On a phone the bar shows MUTE, GAMES, BUILD IT, SOURCE and the menu button; on
+  wider screens one row: MUTE, HOME, ABOUT, RULES, RESET, GAMES, BUILD IT, SOURCE. No item is the
+  current page. MUTE, RULES and RESET have the `menu-item` class. There is no DEMO item. The score is NOT in this bar; it is in
+  the INDICATORS next to the question.
+- The menu bar is outside #game-area: opening, closing or using the menu never starts the timer.
+  RULES and RESET, chosen in the panel, close the panel and then do their job.
 
-- SOURCE on this page: <a href="https://multiply.by/base/prompt.txt">
+- SOURCE on this page: <a href="https://multiply.by/base/prompt/">
 
 - The title band's link (to https://multiply.by/) is outside #game-area: tapping it never starts
   the timer, and the progress is already saved.
@@ -679,10 +686,9 @@ they are described in SITE LAYOUT, directly after this section 8. On this page:
 - The share icon on this page:
   - Shown in every mode, during play and behind the "You Won!" overlay. It is outside #game-area,
     so tapping it never starts the timer.
-  - `shareText()` is the link for the current set (see SHARE MY RESULTS), so the shared message
-    names the set: https://multiply.by/base/, ?both, ?12 or ?20. For ?both, the first line of
-    `siteShareText()` is "Multiply.by: learn the multiplication table both ways, fast." (the
-    other sets as in SHARE THE SITE).
+  - It shares `SITE_LINK` (https://multiply.by/build-it/) with the site's three-line message,
+    exactly as on every page (SHARE THE SITE): never the current set or this page's address. The
+    current set's link is shared only by "Share my results" (SHARE MY RESULTS).
   - Answers count on `pointerdown` and the answer buttons are briefly `disabled` after each answer,
     so the share menu's CLOSING ON A PRESS OUTSIDE matters here: a press on an answer while the
     menu is open ONLY closes the menu: it does not answer and does not start the timer.
@@ -722,7 +728,7 @@ stroke-width="2", stroke-linecap="round", stroke-linejoin="round", fill="none":
       phones.
       The icon always shows `isMutedNow()`.
 
-INFO: A <button> with the exact text "RULES". Tapping it sets `state.showInfo = true` and calls
+INFO: A <button class="menu-item"> with the exact text "RULES", in the MENU PANEL. Tapping it sets `state.showInfo = true` and calls
 `update()`.
     - How to Play panel:
     - A heading "How to Play", then a bulleted list (<ul>/<li>). Keep it SHORT: the whole panel must
@@ -778,7 +784,7 @@ INFO: A <button> with the exact text "RULES". Tapping it sets `state.showInfo = 
 - MUTE in the bar: the plain speaker icon, color #4b5563; on wider screens (see the
   menu bar's WIDER SCREENS) 26px x 26px (set its width and height in CSS).
 
-RESET: A <button> with the exact text "RESET", to start the current set again from scratch. ONE
+RESET: A <button class="menu-item"> with the exact text "RESET", in the MENU PANEL, to start the current set again from scratch. ONE
 tap resets at once, with no confirmation (no "Sure?", no second tap, no `confirm()`), with exactly
 the same steps as Play Again (`resetting = true`, `safeStorage.removeItem(STORAGE_KEY)`,
 `window.location.reload()`). It clears only the current set's progress (score, learned facts,
@@ -788,7 +794,7 @@ mistakes, time) and keeps the best score (BEST_KEY) and the sound setting (MUTE_
 - Covers the app container (`position: absolute; inset: 0;`, z-index 40, background
   rgba(255,255,255,0.95)) EXCEPT the title band and the menu bar: those two stay on top of it,
   sharp and working (`position: relative; z-index: 41`), so a player who has won can still go to
-  BUILD IT, ABOUT and SOURCE, mute, or tap the title band for the other games. The overlay's
+  GAMES, BUILD IT, SOURCE or the menu, mute, or tap the logo or title band for the other games. The overlay's
   content is never hidden under them: it has a top padding as tall as the title band and menu bar
   together (set from their heights when the overlay is shown and on resize), and it scrolls inside
   itself if it does not fit. Content centered in a column: "You Won!" (2.25rem, bold, #16a34a), "Final
@@ -860,10 +866,15 @@ SHARE MY RESULTS (the "Share my results" button on the "You Won!" screen):
     - Nothing may overlap or run off the card; leave at least 60px of space at the bottom.
 - Every share also passes the title 'multiply.by results' (some apps use it, for example as an email
   subject; others ignore it).
-- The text sent with the picture is ONLY the link, returned by `shareText()`:
-  https://multiply.by/base/ (2 to 9), https://multiply.by/base/?both (both ways),
-  https://multiply.by/base/?12 (up to 12) or https://multiply.by/base/?20 (up to 20). No sentence,
-  no results: the picture shows them.
+- The text sent with the picture is ONLY the link, returned by `shareText()`: THIS PAGE'S OWN
+  ADDRESS for the current set, so a friend who opens it plays the same game and set:
+  `location.origin + location.pathname`, followed by nothing (2 to 9), '?both' (both ways), '?12'
+  (up to 12) or '?20' (up to 20). Here that is https://multiply.by/base/,
+  https://multiply.by/base/?both, https://multiply.by/base/?12 or https://multiply.by/base/?20.
+  When the page is not served over the web (`location.protocol` is neither 'http:' nor 'https:',
+  for example a downloaded file opened from the disk), use 'https://multiply.by/' in place of
+  `location.origin + location.pathname`. NEVER write a game's address into the page (a game does
+  not know where it will be published). No sentence, no results: the picture shows them.
 - WHERE IT SHOWS: only on touch devices that can share files. At start-up set
   `const CAN_SHARE = matchMedia('(pointer: coarse)').matches && !!navigator.canShare;`
   and hide the button (`display: none`) when CAN_SHARE is false, for example on a desktop computer.
@@ -1020,9 +1031,10 @@ browser: deliver the file as soon as it is written. The site tests every page it
   up to 20 with a factor above 9), all four answers end in the same digit (for 8 x 17: 136 with,
   say, 126, 146 and 156).
 
-- Title band and share icon: as in CHECKS FOR THE SITE LAYOUT. On this page the share link is
-  the current set's (https://multiply.by/base/, ?both, ?12 or ?20), and neither the share icon nor the
-  title link starts the timer.
+- Title band and share icon: as in CHECKS FOR THE SITE LAYOUT: the share icon shares
+  https://multiply.by/build-it/ in every set. "Share my results" shares this page's own address
+  for the current set (here https://multiply.by/base/, ?both, ?12 or ?20). Neither the share
+  icon nor the title link starts the timer.
 
 - Animations after a right answer: the tapped answer pops (grows a little and settles) while it is
   green, a green "+points" floats up from the Score for about 1.5 seconds, and the next question
@@ -1066,12 +1078,14 @@ browser: deliver the file as soon as it is written. The site tests every page it
 - Reset: one tap on RESET starts the current set from scratch at once, with no confirmation (score
   0, Learned 0%, Mistakes 0, Time 0:00), keeping the best score.
 
-- Header buttons and links work on phones: the speaker button, BUILD IT, ABOUT, RULES, SOURCE, the How to
-  Play panel, RESET, "Play Again", the Tables choice and the next-level links on the "You Won!"
-  screen respond to a normal tap.
-- On the "You Won!" screen the title band and the menu bar stay visible and sharp above the
-  overlay, and BUILD IT, ABOUT and the title band's link work there; nothing of the overlay's
-  content is hidden under them, at 360x640 and in landscape.
+- Header buttons and links work on phones: the logo, the speaker button, BUILD IT, SOURCE, the
+  GAMES icon, the menu button and, in its panel, HOME, GAMES, ABOUT, RULES and RESET, the How to
+  Play panel, "Play Again", the Tables choice and the next-level links on the "You Won!" screen
+  respond to a normal tap.
+- On the "You Won!" screen the title band and the menu bar stay visible and sharp above the overlay,
+  and the logo, GAMES, BUILD IT, SOURCE, the menu button (its panel opens above the overlay) and the
+  title band's link work there; nothing of the overlay's content is hidden under them, at 360x640
+  and in landscape.
 
 - Blocked storage: with site data blocked (or `window.localStorage` throwing on access), the game
   loads and plays normally with no console errors; progress is just not kept after reload.

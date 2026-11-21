@@ -26,13 +26,14 @@ SITE = os.path.dirname(HERE)
 URL = "https://multiply.by"
 START = ["/", "/games/"]
 # Never bundled: About and Build It (ads planned), the build guide, the service worker, these notes.
-EXCLUDE = ("/about", "/build-it/index.html", "/build-it/prompt.txt", "/gamify", "/sw.js",
+EXCLUDE = ("/about", "/build-it/index.html", "/build-it/prompt", "/gamify", "/sw.js",
            "/FAQ", "/faq", "/android", "/ANDROID")
 
 ABS = re.compile(r"https://multiply\.by(/[A-Za-z0-9._/-]*)")
 ROOT = re.compile(r"""["'](/[A-Za-z0-9_-][A-Za-z0-9._/-]*\.(?:png|svg|jpg|webp|js|txt|webmanifest|json|mp3|ogg|wav))["']""")
 LINK = re.compile(r"""(?:href|src)=["'](/[A-Za-z0-9._/-]*)["']""")
-RELATIVE = re.compile(r"""(?:href|src)=["']([A-Za-z0-9_-][A-Za-z0-9._-]*\.(?:txt|png|svg|js))["']""")
+# Relative links: a file next to the page, or SOURCE's prompt page ("prompt/").
+RELATIVE = re.compile(r"""(?:href|src)=["']([A-Za-z0-9_-][A-Za-z0-9._-]*\.(?:txt|png|svg|js)|prompt/)["']""")
 
 
 class Local:

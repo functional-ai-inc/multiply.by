@@ -14,18 +14,27 @@ has and the address of its SOURCE.
 
 TITLE BAND (branding, the very top of the page, above the menu bar)
 - A <header id="title-band">, white background, blue text (#2563eb, both parts), a 1px #e5e7eb
-  bottom border separating it from the menu bar, `padding: 0.35rem 0.5rem`, holding ONE line, the
-  site's heading, followed by the SHARE ICON button at the right end of the same line (see SHARE THE
-  SITE below):
+  bottom border separating it from the menu bar, `padding: 0.35rem 0.5rem`, holding ONE line: the
+  LOGO, the site's heading, and the SHARE ICON button at the right end of the same line (see SHARE
+  THE SITE below):
+    <a id="logo" href="https://multiply.by/" aria-label="multiply.by home" title="multiply.by home"><svg viewBox="0 0 24 24" width="38" height="38" aria-hidden="true"><path d="M3.5 3.5 L20.5 20.5 M20.5 3.5 L3.5 20.5" fill="none" stroke="#991b1b" stroke-width="3.4" stroke-linecap="round"/></svg></a>
     <h1><a id="tagline" href="https://multiply.by/"><strong>Multiply.by:</strong> learn the multiplication table</a></h1>
+  - THE LOGO (CRITICAL: on EVERY page, at every screen size, always visible and always a link to
+    https://multiply.by/, in the same tab): the "x" of the site's app icon (the dark red #991b1b
+    rounded cross of its "2x2"), exactly the HTML above, first in the band. Look: `flex: none;
+    display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; margin:
+    0; padding: 0; text-decoration: none;` (the svg 38px x 38px, the cross filling most of it; on
+    WIDER SCREENS, see MENU BAR, the link 48px x 48px and the svg 46px x 46px). It is the biggest
+    thing in the band after the heading text: clearly a logo, not a small icon. A game never changes
+    or drops it.
   - THE HEADING IS A LINK TO THE HOME PAGE: tapping or clicking it opens https://multiply.by/ (the
     main game), in the same tab. CRITICAL: this holds on EVERY page and in every custom or gamified
     game (e.g. /divide/, /monster/, /train/): a game changes the heading's text, never its href. It looks exactly like plain text: the same blue #2563eb, no underline
     (`text-decoration: none`), `color: inherit`, `cursor: pointer`; on hover (desktop) it turns dark
     blue #1e40af.
   - The band is `display: flex; align-items: center; gap: 6px; position: relative;`. The h1 is
-    `flex: 1; min-width: 0;` so it takes all the width the share icon leaves; the icon never
-    shrinks (`flex: none`).
+    `flex: 1; min-width: 0;` so it takes all the width the logo and the share icon leave; the logo
+    and the icon never shrink (`flex: none`).
   - h1: `margin: 0; font-weight: normal; line-height: 1.2; white-space: nowrap; overflow: hidden;
     text-align: center;` ("Multiply.by:" bold, the rest normal). The link (#tagline) is `display:
     inline-block`.
@@ -34,7 +43,8 @@ TITLE BAND (branding, the very top of the page, above the menu bar)
     landscape alike. `fitTagline()`: set #tagline's font size to 100px, measure its width with
     `getBoundingClientRect().width`, then set the font size to
     `Math.max(10, Math.min(cap, Math.floor(100 * avail / width * 10) / 10)) + 'px'`, where avail
-    is the h1's own width (`h1.clientWidth`, which already leaves room for the share icon) and cap
+    is the h1's own width (`h1.clientWidth`, which already leaves room for the logo and the share
+    icon) and cap
     is 28, or 18 on short screens (`matchMedia('(max-height: 500px)').matches`, a phone in
     landscape, to save height). Set this same size on the h1 too (`h1.style.fontSize`), so the band
     is only as tall as the line: about 1.2 times the font size plus its padding, never taller. Call
@@ -53,8 +63,11 @@ SHARE THE SITE (the share icon at the right end of the title band)
     `display: flex; align-items: center; justify-content: center; flex: none; padding: 4px;
     margin: 0; cursor: pointer;`, at least 30px x 30px so it is easy to tap. Hover: #1e40af.
   - Shown on EVERY device (phones, tablets and computers).
-  - THE LINK: `shareText()` returns the address to share. A page that does not define its own
-    returns 'https://multiply.by/'.
+  - THE LINK (the same on every page of the site, every game included):
+    `const SITE_LINK = 'https://multiply.by/build-it/';`, the Build It page, which shows every
+    game, its prompt and how it was built. No page changes it or shares another address with this
+    icon: a game does not know where it will be published, so it never writes its own address
+    here. (A game's own address is shared only by SHARE MY RESULTS, where a game has one.)
   - PHONE OR COMPUTER: at start-up set `const IS_TOUCH = matchMedia('(pointer: coarse)').matches;`
     (true on phones and tablets, false on computers with a mouse).
   - On a PHONE or TABLET (IS_TOUCH true), on tap (`click`), in the click handler itself, stop at the
@@ -63,7 +76,7 @@ SHARE THE SITE (the share icon at the right end of the title band)
        `await navigator.share({ title: 'multiply.by', text: siteShareText() })` inside try/catch, as
        the FIRST `await` of the handler (text only: no `url`, no files).
        AbortError (the visitor closed the share menu): stop and do nothing. Any other error: step 2.
-    2. COPY THE LINK: try `navigator.clipboard.writeText(shareText())`, then show the share message
+    2. COPY THE LINK: try `navigator.clipboard.writeText(SITE_LINK)`, then show the share message
        (below) for 2 seconds: "Link copied" when copying worked, "Could not share" when it failed.
   - On a COMPUTER (IS_TOUCH false), a click on the icon opens (or, if open, closes) the SHARE MENU,
     a small panel just under the icon. It never calls `navigator.share` on a computer: desktop share
@@ -79,23 +92,23 @@ SHARE THE SITE (the share icon at the right end of the title band)
     no images, and no script, button or widget from any of these sites (the page stays free of
     trackers).
   - The first seven items are <a> links; set their `href` every time the menu opens (the link may
-    have changed), with every value passed through `encodeURIComponent`. LINK is `shareText()`,
-    MESSAGE is `siteShareText()`, FIRST is the first line of MESSAGE (for example "Multiply.by:
-    learn the multiplication table, fast."):
+    have changed), with every value passed through `encodeURIComponent`. LINK is `SITE_LINK`,
+    MESSAGE is `siteShareText()`, FIRST is the first line of MESSAGE ("Multiply.by: times-table
+    games, each built by AI from a few lines of text."):
       WhatsApp: https://wa.me/?text=MESSAGE
       Facebook: https://www.facebook.com/sharer/sharer.php?u=LINK
       X:        https://twitter.com/intent/tweet?text=FIRST&url=LINK
       Bluesky:  https://bsky.app/intent/compose?text=POST, where POST is FIRST, a space and LINK
-                (before encoding), for example "Multiply.by: learn the multiplication table,
-                fast. https://multiply.by/"
+                (before encoding): "Multiply.by: times-table games, each built by AI from a few
+                lines of text. https://multiply.by/build-it/"
       LinkedIn: https://www.linkedin.com/sharing/share-offsite/?url=LINK
       Reddit:   https://www.reddit.com/submit?url=LINK&title=FIRST
-      Email:    mailto:?subject=SUBJECT&body=MESSAGE, where SUBJECT is "multiply.by: learn the
-                multiplication table"
+      Email:    mailto:?subject=SUBJECT&body=MESSAGE, where SUBJECT is "multiply.by: times-table
+                games built by AI"
     WhatsApp, Facebook, X, Bluesky, LinkedIn and Reddit open in a new tab (`target="_blank"
     rel="noopener noreferrer"`); Email has no target (it opens the mail program).
   - Copy link is a <button> (same look, `width: 100%; border: none; background: none;
-    font-family: inherit; cursor: pointer;` plus the item look above): it copies `shareText()` with
+    font-family: inherit; cursor: pointer;` plus the item look above): it copies `SITE_LINK` with
     `navigator.clipboard.writeText` and shows the share message for 2 seconds ("Link copied", or
     "Could not share" if copying failed).
   - The menu closes after any item is chosen, when the icon is clicked again, on a press anywhere
@@ -119,64 +132,152 @@ SHARE THE SITE (the share icon at the right end of the title band)
     white background, 1px #e5e7eb border, rounded (0.25rem), `padding: 2px 8px`, text 12px bold
     #1e40af, `white-space: nowrap; pointer-events: none;`, hidden (`display: none`) the rest of the
     time.
-  - THE SHARED MESSAGE, returned by `siteShareText()`: three lines joined with '\n', the last one
-    being `shareText()`. When the link is https://multiply.by/ (and on every page that does not
-    define its own sets):
-        Multiply.by: learn the multiplication table, fast.
-        Free, open source, no sign-up, no ads. Works on phone or computer.
-        https://multiply.by/
-    When the link is https://multiply.by/base/?12 the first line is "Multiply.by: learn the
-    multiplication table up to 12, fast."; when it is https://multiply.by/base/?20, "Multiply.by:
-    learn the multiplication table up to 20, fast.". The second line is the same everywhere.
-  - Copying (step 2 on a phone, Copy link on a computer) copies ONLY the link, `shareText()`, never
+  - THE SHARED MESSAGE, returned by `siteShareText()`: these three lines joined with '\n', the
+    same on every page (whatever the game, set or mode):
+        Multiply.by: times-table games, each built by AI from a few lines of text.
+        Free and open source, no sign-up. See every game and its prompt, and build your own.
+        https://multiply.by/build-it/
+  - Copying (step 2 on a phone, Copy link on a computer) copies ONLY the link, `SITE_LINK`, never
     the three lines.
   - Sharing changes nothing on the page, saves nothing, plays no sound and never throws (wrap each
     step in try/catch).
 
-MENU BAR (directly under the title band)
-- A <nav id="menu-bar">, like a standard website menu: a flex row,
-  'display: flex; align-items: stretch; gap: 2px; padding: 0 6px; width: 100%; height: 2.5rem;
-  box-sizing: border-box;', white background, a 1px #e5e7eb bottom border. From left to right: the
-  page's menu items, in the order the page lists them, left-aligned, each only as wide as its text
-  plus its padding (NOT equal widths, NOT stretched to fill the bar). SOURCE is a button in the far
-  right corner ('margin-left: auto'). There is no logo.
-- Menu items shared by the pages (each page says which of them it shows, and may add its own):
-  - HOME: a link with the exact text "HOME": <a href="https://multiply.by/">. It opens the front
-    page: the game, with a strip of all the other games under it.
-  - GAMES: a link with the exact text "GAMES": <a href="https://multiply.by/games/">. It opens the
-    games page, where a child picks a game from big pictures.
-  - BUILD IT: a link with the exact text "BUILD IT" (two words, never broken across two lines:
-    `white-space: nowrap`): <a href="https://multiply.by/build-it/">. It opens "Build it yourself":
-    each game with the prompt and model that built it.
-  - ABOUT: a link with the exact text "ABOUT": <a href="https://multiply.by/about">.
-  - SOURCE: a link with the exact text "SOURCE" to the page's own build instructions (the address
-    is given by the page) (NO `download` attribute: the file opens in the browser).
-- THE CURRENT PAGE: the menu item for the page being shown (BUILD IT on the Build it page, ABOUT
-  on the About page) has `aria-current="page"` and dark blue text #1e40af; it still works as a link.
-- Menu items (everything except SOURCE): no button look, no border, background, box or shadow;
-  plain text (or a plain icon) on the white bar. They share one CSS class (for example
-  `menu-item`): 'display: flex; align-items: center; height: 100%; padding: 0 5px; margin: 0;
-  border: none; background: none; text-decoration: none; cursor: pointer; font: inherit;'. The full
-  bar height is the tap area. On hover (desktop) the text turns dark blue #1e40af.
-- Text items: 13px, bold, #374151, 'white-space: nowrap'.
-- SOURCE: the only button in the bar. 'align-self: center; display: flex; align-items: center;
-  height: 1.75rem; padding: 0 8px; margin-left: auto;', a 1px #e5e7eb border, light gray
-  background #f9fafb, rounded corners (0.25rem), text 12px bold #374151, no underline,
-  'white-space: nowrap', `cursor: pointer`.
-- The whole bar fits on one line on a 360px-wide phone, with nothing cut off: SOURCE ends inside
-  the screen's right edge. On screens narrower than 400px (`@media (max-width: 399px)`) the bar
-  has `gap: 0; padding: 0 4px;` and the menu items `padding: 0 3px;`, so the game's six items
-  (MUTE, BUILD IT, ABOUT, RULES, RESET, SOURCE) fit even with a wide font.
-- WIDER SCREENS (tablets and computers, where the column is up to 720px wide): inside
-  `@media (min-width: 768px) and (min-height: 600px)` the menu bar scales up to match: bar height
-  3.25rem; menu items `padding: 0 10px`; text items 17px; SOURCE height 2.25rem, `padding: 0 12px`,
-  text 16px; the share icon in the title band 28px x 28px. Everything else stays the same. Phones
-  (narrower than 768px) and phones on their side (shorter than 600px) keep the sizes above.
+MENU BAR (directly under the title band; THE SAME ON EVERY PAGE)
+Every page has the same menu, in the same order. Each page names its SOURCE address, its current
+page (if any) and, on the game pages, its own items (MUTE, RULES, RESET); nothing else changes.
+On phones the less-used items fold into a MENU PANEL opened by a menu button (three lines, "☰");
+on tablets and computers everything is in one row and there is no menu button.
+
+- THE ITEMS, in this order:
+  1. MUTE (game pages only): the speaker icon button, described by the game.
+  2. THE MENU PANEL items: HOME, GAMES (the four squares and the word, phones only), ABOUT, then
+     the game's RULES and RESET (game pages only).
+  3. GAMES: the games icon (the four squares of the front page's "More games" tile), ALWAYS
+     VISIBLE on every page and every screen: from anywhere, one tap reaches the games page.
+  4. BUILD IT, then SOURCE: two OUTLINED BUTTONS, ALWAYS VISIBLE on every page and every screen.
+     BUILD IT is the point of the site (every game, its prompt and the model that built it), and
+     the site promises that SOURCE is always one tap away.
+  5. The MENU BUTTON (phones only).
+- THE HTML, in this order inside the bar (a page without MUTE, RULES or RESET leaves them out; a
+  game's MUTE button is its own):
+    <nav id="menu-bar" aria-label="Site menu">
+      (MUTE button, game pages only)
+      <div id="menu-panel">
+        <a class="menu-item" href="https://multiply.by/">HOME</a>
+        <a class="menu-item panel-only" href="https://multiply.by/games/">(games icon, 18px)<span>GAMES</span></a>
+        <a class="menu-item" href="https://multiply.by/about/">ABOUT</a>
+        (RULES and RESET buttons, class menu-item, game pages only)
+      </div>
+      <a class="menu-item" id="games-link" href="https://multiply.by/games/" aria-label="Games" title="Games">(games icon)</a>
+      <a class="menu-button" id="build-it-link" href="https://multiply.by/build-it/">BUILD IT</a>
+      <a class="menu-button" id="source-link" href="SOURCE ADDRESS">SOURCE</a>
+      <button type="button" id="menu-toggle" aria-label="Menu" title="Menu" aria-expanded="false" aria-controls="menu-panel">(icon)</button>
+    </nav>
+  - HOME opens the front page: the game, with a strip of all the other games under it.
+  - GAMES opens the games page, where a child picks a game from big pictures. Its icon: an inline
+    SVG, 22px x 22px, viewBox "0 0 24 24", aria-hidden="true", four rounded squares in a 2 x 2 grid,
+    fill #3b82f6 (the "More games" tile's blue): <rect x="3" y="3" width="8" height="8" rx="2"/>,
+    <rect x="13" y="3" width="8" height="8" rx="2"/>, <rect x="3" y="13" width="8" height="8"
+    rx="2"/>, <rect x="13" y="13" width="8" height="8" rx="2"/>. The icon only, no word, at every
+    screen size (its name is in `aria-label` and `title`).
+  - ABOUT opens the About page.
+  - BUILD IT opens "Build it yourself": each game with the prompt and model that built it. Two
+    words, never broken across two lines.
+  - SOURCE opens the page's own build instructions as a web page: the folder `prompt/` next to the
+    page (for example https://multiply.by/train/prompt/), which shows the page's prompt.txt, word
+    for word. The page gives the address; NO `download` attribute.
+  - The menu button's icon: an inline SVG, 22px x 22px, viewBox "0 0 24 24", fill="none",
+    stroke="currentColor", stroke-width="2.4", stroke-linecap="round", path
+    "M4 7 H20 M4 12 H20 M4 17 H20".
+- THE BAR: 'display: flex; align-items: stretch; gap: 4px; padding: 0 6px; width: 100%; height:
+  2.5rem; box-sizing: border-box; position: relative;', white background, a 1px #e5e7eb bottom
+  border. NOTHING IN THE BAR SHRINKS: every child of the bar, #menu-panel included, has
+  `flex-shrink: 0`, so items can never squeeze into each other or overlap. GAMES has
+  `margin-left: auto`, so GAMES, BUILD IT, SOURCE and the menu button sit
+  together at the right end, and MUTE (where there is one) at the left end.
+- MENU ITEMS (HOME, ABOUT, RULES, RESET, GAMES and MUTE): plain text (or a plain icon), no
+  button look: no border, background, box or shadow. One class, `menu-item`: 'display: flex;
+  align-items: center; padding: 0 6px; margin: 0; border: none; background: none;
+  text-decoration: none; cursor: pointer; font: inherit; font-size: 13px; font-weight: bold;
+  color: #374151; white-space: nowrap;'. In the bar they fill its height (the full height is the
+  tap area). On hover (desktop) the text turns dark blue #1e40af.
+- THE OUTLINED BUTTONS (BUILD IT and SOURCE, class `menu-button`, both exactly alike):
+  'align-self: center; display: flex; align-items: center; height: 1.75rem; padding: 0 10px;
+  border: 1.5px solid #2563eb; border-radius: 0.375rem; background: white; color: #1e40af;
+  font-size: 12px; font-weight: bold; letter-spacing: 0.02em; text-decoration: none;
+  white-space: nowrap; cursor: pointer;'. Outlined, NEVER filled (no background color, on any
+  page): calm, so a child playing is not drawn away from the game. Hover and keyboard focus:
+  background #eff6ff.
+- THE CURRENT PAGE (HOME on the front page, GAMES on the games page, BUILD IT on the Build it
+  page, ABOUT on the About page): that item has `aria-current="page"`; a text item and the GAMES
+  icon are dark blue #1e40af, the BUILD IT button gets background #eff6ff. It still works as a
+  link.
+
+PHONES (the default: everything narrower than the WIDER SCREENS rule below, phones held sideways
+included)
+- In the bar: MUTE (game pages), GAMES (the icon), BUILD IT, SOURCE and the menu button. #menu-panel
+  is hidden (`display: none`) until opened.
+- The menu button: like a menu item ('display: flex; align-items: center; justify-content:
+  center; width: 40px; padding: 0; border: none; background: none; color: #374151; cursor:
+  pointer;'), filling the bar's height, at the far right.
+- THE MENU PANEL (CRITICAL): on phones it is a DROPDOWN, a white box that opens UNDER the bar at
+  its right end, over the page, one item per line. It is NEVER shown inside the bar's row on a
+  phone (that would push BUILD IT, SOURCE and the menu button off the screen). Opening and closing
+  ONLY add and remove the class `open` on #menu-panel; the script never sets its `style.display`
+  or any other style. Use exactly this CSS (outside any media query, so it is the phone look):
+    #menu-panel { display: none; position: absolute; top: 100%; right: 6px; margin-top: 4px;
+      z-index: 45; flex-direction: column; min-width: 11rem; padding: 4px 0; background: white;
+      border: 1px solid #e5e7eb; border-radius: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    #menu-panel.open { display: flex; }
+    #menu-panel .menu-item { height: 44px; padding: 0 16px; font-size: 15px;
+      justify-content: flex-start; width: 100%; text-align: left; }
+    #menu-panel .menu-item:hover, #menu-panel .menu-item:focus-visible { background: #eff6ff; }
+  (The bar is `position: relative`, so `top: 100%` is just under it.)
+- GAMES IN THE PANEL (class `panel-only`): the same four-squares icon as the bar's GAMES icon
+  (the same SVG, here 18px x 18px), then the word GAMES 8px after it, on one line. Seeing the
+  icon next to its name teaches what the plain icon in the bar means. It opens
+  https://multiply.by/games/ like the bar's icon (on the games page both are the current page).
+- "Is the panel open?" is ONE boolean, `menuOpen`, false when the page loads, set true by opening
+  and false by closing; never read from `style.display` (as for the share menu). Opening adds the
+  class `open` and sets `aria-expanded="true"` on the menu button; closing removes the class and
+  sets "false". Nothing else: the WIDER SCREENS rule below shows the items in the row by CSS
+  alone, whatever `menuOpen` is.
+- A tap on the menu button opens the panel, or closes it if open. Opening it closes the share
+  menu, and opening the share menu closes it: at most one is open.
+- It closes when an item in it is chosen (the item still does its job: a link opens its page,
+  RULES opens the How to Play panel, RESET resets), on Escape (the page's one `keydown` listener
+  on window: Escape closes the panel first if it is open), and on a press anywhere outside the
+  panel and the menu button.
+- CLOSING ON A PRESS OUTSIDE (CRITICAL), exactly as for the share menu: the SAME ONE `pointerdown`
+  listener on `window` with `{ capture: true }` handles both: if the panel is open and
+  `e.target` is not inside #menu-panel or #menu-toggle, close it and call `e.stopPropagation()`,
+  so that press ONLY closes the panel: on a game page it does not answer and does not start the
+  timer. When the panel is closed it does nothing. A check: with the panel never opened, the very
+  first tap on an answer counts.
+
+WIDER SCREENS (tablets and computers: `@media (min-width: 768px) and (min-height: 600px)`, where
+the column is up to 720px wide)
+- Everything in one row, no menu button. Exactly this CSS inside the media query:
+    #menu-toggle { display: none; }
+    #menu-panel, #menu-panel.open { display: flex; position: static; flex-direction: row;
+      background: none; border: none; border-radius: 0; box-shadow: none; padding: 0; margin: 0;
+      min-width: auto; flex-shrink: 0; }
+    #menu-panel .menu-item { height: auto; padding: 0 8px; font-size: 15px; width: auto; }
+    #menu-panel .panel-only { display: none; }
+  The panel's items sit in the bar (the bar's height), and the panel's GAMES item is hidden: the
+  GAMES icon is already in the row. The row reads: MUTE, HOME, ABOUT, RULES, RESET, then the GAMES
+  icon, BUILD IT and SOURCE at the right end.
+- Sizes: bar height 3.25rem; menu items `padding: 0 8px`, text 15px; the GAMES icon and the speaker
+  icon 24px x 24px; the outlined buttons height 2.25rem, `padding: 0 12px`, text 14px; the share
+  icon 28px x 28px (the logo as given under THE LOGO). The column can be as narrow as 400px on these
+  screens (600px at 1280x800): this row fits in it with room to spare.
 
 FOOTER (the very last line of the page)
-- The element <div id="footer"> (exactly this id), at the bottom of the page column: one line
-  (padding 0.5rem 0), white background, a 1px #e5e7eb top border, text 10px, color #6b7280,
-  centered. It contains only the copyright line, which MUST be the very last line of the page.
+- The element <div id="footer"> (exactly this id), at the bottom of the page column: one line where
+  it fits (padding 0.5rem 8px), white background, a 1px #e5e7eb top border, text 10px, color
+  #6b7280, centered, `line-height: 1.35; white-space: normal;`: on a narrow phone it wraps onto a
+  second line, centered, and is NEVER cut off at the screen's edge. It contains only the copyright
+  line, which MUST be the very last line of the page.
 - Use exactly this HTML, character for character (both links open in a new tab and are not
   underlined; no margin or padding on the links, so no gap appears before the full stops). Keep the
   single space after "by" and after "the": the visible text MUST read "Copyright (c) 2026 by
@@ -195,12 +296,23 @@ CHECKS FOR THE SITE LAYOUT (THE FINISHED PAGE MUST PASS ALL OF THESE)
   of the band's width without being cut off, on a 360px phone, a large phone, in landscape and on
   desktop; the menu bar is directly below it. Tapping the text opens https://multiply.by/.
 - Share icon: tapping it on a phone opens the phone's share menu with the three-line message from
-  `siteShareText()`, ending with the link from `shareText()`. On a computer it opens a small menu
+  `siteShareText()`, ending with https://multiply.by/build-it/ (`SITE_LINK`), the same on every
+  page and in every game. On a computer it opens a small menu
   under the icon: WhatsApp, Facebook, X, Bluesky, LinkedIn, Reddit, Email and Copy link, in that
   order; each site opens in a new tab with the link (and, for WhatsApp and Email, the three-line
   message) filled in, and Copy link shows "Link copied" for 2 seconds. The menu closes on a choice,
   a press outside it, or Escape.
-- Menu bar: the page's menu items and SOURCE fit on one line on a 360px phone and respond to a
-  normal tap; the current page's item is dark blue.
-- Footer text: the one footer line reads exactly "Copyright (c) <current year> by Functional AI Inc.
-  Published under the MIT License.", with normal spaces between all words.
+- Logo: the dark red "x" at the left of the title band is shown on every page at every size and
+  opens https://multiply.by/.
+- Menu bar, on a 360px phone and in landscape (640x360): one line with MUTE (game pages), the
+  GAMES icon, BUILD IT and SOURCE as outlined buttons, and the menu button; nothing cut off. The
+  GAMES icon opens https://multiply.by/games/. The menu button opens the panel with HOME, GAMES (icon and word), ABOUT
+  (and RULES, RESET on game pages), one per line; choosing an item,
+  Escape, or a tap outside closes it, and that closing tap does nothing else (on a game it does not
+  answer). With the panel never opened, the first tap on an answer counts.
+- Menu bar at 768x1024 and 1280x800: one row, MUTE, HOME, ABOUT, RULES, RESET, then the GAMES
+  icon, BUILD IT and SOURCE at the right; no menu button; no two items overlap or touch, and SOURCE
+  ends inside the column's right edge. The current page's item is marked.
+- Footer text: the footer reads exactly "Copyright (c) <current year> by Functional AI Inc.
+  Published under the MIT License.", with normal spaces between all words, and none of it is cut
+  off at 360px (it may wrap onto two lines there).

@@ -24,7 +24,7 @@ import org.json.JSONObject
 /**
  * One full-screen WebView showing the multiply.by games from the app's own files, at their real
  * addresses (https://multiply.by/...), so the pages run unchanged: their links, localStorage and
- * SOURCE's prompt.txt work as on the website. Anything not bundled (About, Build It, other sites,
+ * SOURCE's prompt page work as on the website. Anything not bundled (About, Build It, other sites,
  * sharing) leaves the app only after the parental gate.
  */
 class MainActivity : ComponentActivity() {
@@ -114,7 +114,7 @@ class MainActivity : ComponentActivity() {
             view: WebView, request: WebResourceRequest
         ): WebResourceResponse? {
             val url = request.url
-            // Pages, prompt.txt, pictures, pwa.js: all from the app. /sw.js is not bundled and
+            // Pages, prompts, pictures, pwa.js: all from the app. /sw.js is not bundled and
             // gets a 404, so no service worker is installed (none is needed offline-first).
             if (isSite(url)) return site.response(url.path)
             // Nothing else is ever fetched: the pages are self-contained.

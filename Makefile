@@ -3,7 +3,16 @@ PWA   = PWA-build.txt
 FILES = manifest.webmanifest sw.js pwa.js icon.svg og-image.svg
 ICONS = icon-192.png icon-512.png
 
-all: gamify/index.html android/index.html base/index.html index.html $(FILES) $(ICONS) og-image.png sitemap.xml
+# Every page's prompt as a web page too: FOLDER/prompt.txt -> FOLDER/prompt/index.html
+# (https://multiply.by/FOLDER/prompt/), and the front page's prompt.txt -> prompt/index.html.
+PROMPT_PAGES = $(sort prompt/index.html base/prompt/index.html \
+  $(patsubst %/prompt.txt,%/prompt/index.html,$(wildcard */prompt.txt)))
+
+all: gamify/index.html android/index.html base/index.html index.html $(FILES) $(ICONS) og-image.png sitemap.xml \
+  $(PROMPT_PAGES)
+
+prompt-pages: $(PROMPT_PAGES)
+.PHONY: all prompt-pages
 
 # THE BASE GAME (https://multiply.by/base/)
 # Its complete prompt (base/prompt.txt, the file its SOURCE links to): game.txt with the
@@ -20,6 +29,17 @@ gamify/index.html: gamify.md $(SPEC) gamify-html.py
 	mkdir -p gamify
 	python3 gamify-html.py gamify.md $(SPEC) > gamify/index.html.tmp
 	mv gamify/index.html.tmp gamify/index.html
+
+# The prompt pages: the prompt.txt text, exactly, in a box with a copy button (txt-html.py). No AI model.
+prompt/index.html: prompt.txt txt-html.py
+	mkdir -p prompt
+	python3 txt-html.py prompt.txt > prompt/index.html.tmp
+	mv prompt/index.html.tmp prompt/index.html
+
+$(filter-out prompt/index.html,$(PROMPT_PAGES)): %/prompt/index.html: %/prompt.txt txt-html.py
+	mkdir -p $(@D)
+	python3 txt-html.py $< > $@.tmp
+	mv $@.tmp $@
 
 # https://multiply.by/android/: the Android app notes, ANDROID.md rendered as a page. No AI model.
 android/index.html: ANDROID.md md-html.py

@@ -78,7 +78,7 @@ nothing, so the app needs no income:
   request from the app's assets (`assets/site/`). We own the domain, so using it here is fine.
   Pages load unchanged: absolute links work (the front page strip links to
   `https://multiply.by/train/` etc.), localStorage per origin works as on the website (saved
-  progress, `multiply_last_game`), and SOURCE's relative `prompt.txt` link opens the bundled copy.
+  progress, `multiply_last_game`), and SOURCE's relative `prompt/` link (or `prompt.txt`, on pages built earlier) opens the bundled copy.
   No generated page is edited (the site's rule: never edit a generated page by hand).
 - **Folder addresses:** `SiteFiles` (not `WebViewAssetLoader`, whose `AssetsPathHandler` serves
   exact file paths only) adds `index.html` to a path ending in `/` and sets the MIME type from the
@@ -132,7 +132,7 @@ The pages and sizes on 2026-11-20 (each game is one self-contained HTML file):
 | /evolution/ | 341,414 |
 | /divide/ | 59,688 |
 
-Plus each game's `prompt.txt` (SOURCE), `/prompt.txt` and `/base/prompt.txt`, the strip
+Plus each page's prompt (SOURCE: its `prompt/` page, or `prompt.txt` on pages built earlier), the strip
 thumbnails (`/thumbnails/*.png`), the /games/ screenshots (`/build-it/*.png`; together about
 1.8 MB with the thumbnails), the icons and the manifest. About 4 MB in all: small for an app.
 
@@ -279,9 +279,51 @@ poweroff
 - **App name:** "Multiply.by – Times Tables" in the store (the listing title, set in the Play
   Console). On the phone's home screen, under the icon, "Multiply.by" (`app_name` in
   `app/src/main/res/values/strings.xml`): a home screen shows only about 12 characters.
-- **Store listing:** 512 x 512 icon (have `icon-512.png`), 1024 x 500 feature graphic, at least 2
-  phone screenshots (can be made from the live pages with Playwright), short and full
-  descriptions.
+- **Store listing:** 512 x 512 icon, 1024 x 500 feature graphic, 2 to 8 phone screenshots, short
+  and full descriptions, optionally a YouTube video: all in `android/assets/` (next section).
+
+## Store listing files (`android/assets/`)
+
+Everything the Play Console's store listing asks for, served at
+https://multiply.by/android/assets/ so it can be looked at or downloaded from anywhere:
+
+| File | What it is | Play's rule |
+|---|---|---|
+| `listing.txt` | App name, short and full description, category | 30, 80 and 4000 characters |
+| `icon-512.png` | The store icon, the site's `icon-512.png` (the "2x2" of `icon.svg`) | 512 x 512 PNG, square: Play rounds the corners |
+| `feature-graphic.png` | Logo, name, one line and six game pictures (the front page's thumbnails) | 1024 x 500, no transparency |
+| `phone/NN-PAGE.png` | Phone screenshots in store order: Monster, Robot, Train, Dinosaurs, Block Craft (each a few questions in), the /games/ chooser, Build It, About | 2 to 8, 9:16, 1080 x 1920 |
+| `robot-3x.mp4` | The Robot game played from the start to "You Won!" on a phone (one answer in ten wrong), at 3x speed, with the game's sounds: about 30 s, 1080 x 1920, under 3 MB | Play takes a YouTube link only |
+
+**How to make them.** `listing.txt` is written by hand and kept in git; the rest is generated
+(git-ignored) by `android/store-assets.py` from the live site, so anyone can remake it:
+
+1. Install Python 3 with Playwright and Pillow (`pip install playwright pillow`, then
+   `playwright install chromium`) and ffmpeg (for the video).
+2. From the `android` folder: `python3 store-assets.py`. About three minutes, most of it the
+   video. `--only icon,feature,phone,video` makes some of them; `--site URL` reads another copy
+   of the site.
+
+The script plays the games the way `play-test.py` does: it reads the question, taps the right
+answer (or, in the video, sometimes a wrong one) and waits for the next question. Screenshots
+are taken at 360 x 640 with 3x pixels (a phone), in a fresh browser (no saved progress), and
+saved without transparency. To change what is shown, edit the `PHONE` list (file name, page,
+questions answered first), `VIDEO_PAGE`, `SPEED` or `FEATURE_GAMES` at the top of the script.
+The video is recorded with Chrome's own screencast (full phone resolution) and put together by
+ffmpeg. Headless Chrome plays no sound, so the script records the game's Web Audio inside the
+page and cuts it at each tap; each tap's sound is placed at that tap's moment in the 3x video, at
+its normal pitch and length (sped-up chimes would squeak). The last piece (up to 6 s) keeps
+whatever the game plays on "You Won!".
+
+**Before launch:**
+- Remake the files after the rebuild of every page (the new menu), so the screenshots show it:
+  today /games/ and About still have the old menu.
+- Build It and About are on the website only: in the app their links open the browser after the
+  parental gate. Play wants screenshots of what the app shows, so drop those two (or keep them
+  last) if the review objects.
+- Upload `robot-3x.mp4` to YouTube (public or unlisted; ads off) and paste the link into the
+  listing.
+- Tablet screenshots (7- and 10-inch) are optional; the script does not make them yet.
 
 ## Links to the app on the website (written 2026-11-20, not built yet)
 

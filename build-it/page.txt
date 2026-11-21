@@ -10,10 +10,11 @@ In the <head>, include exactly: <link rel="icon" type="image/svg+xml" href="/ico
 
 The page has the site's frame, described in SITE LAYOUT below: the title band, the menu bar, this
 page's content (the games and how each was built), the site info (SITE INFO below) and the footer.
-- MENU ITEMS on this page, from left to right: HOME, BUILD IT (the current page: dark blue, with
-  `aria-current="page"`), ABOUT, then SOURCE in the far right corner. HOME is the way back to the
-  games: the page also opens inside the installed app, where iPhone shows no back button.
-- SOURCE on this page: <a href="https://multiply.by/build-it/prompt.txt">
+- MENU: the site's menu (MENU BAR in SITE LAYOUT), with BUILD IT as the current page
+  (`aria-current="page"`). No MUTE, RULES or RESET. HOME (in the menu panel), the logo and the
+  GAMES icon are the way back to the games: the page also opens inside the installed app, where
+  iPhone shows no back button.
+- SOURCE on this page: <a href="https://multiply.by/build-it/prompt/">
 - Page background light gray (#f3f4f6).
 - The page column is a flex column at least as tall as the screen (`min-height: 100vh`, and
   `min-height: 100dvh` after it): title band, menu bar, the grid, then the site info and the
@@ -23,7 +24,7 @@ page's content (the games and how each was built), the site info (SITE INFO belo
   column, for the title band, menu bar, site info and footer too).
 
 <header>Build it yourself</header>
-<tagline>The base game and gamified versions of it. Build your own, starting from a simple prompt.</tagline>
+<tagline>Use these prompts to start, or design your own from scratch.</tagline>
 The header and tagline sit above the grid, left-aligned with it, 16px below the menu bar. Header:
 bold, about 1.75rem, near-black (#111827). The tagline is directly under it (it may wrap on phones):
 normal weight, slightly smaller than body text, muted gray (#6b7280).
@@ -74,7 +75,9 @@ THE GRID
      - While build.txt loads, both values show "…"; if it fails (no answer, or a status other
        than 200), both show "not recorded".
   4. PROMPT: a small label "Prompt" (0.75rem, uppercase, letter-spaced, #6b7280),
-     linked to the game's prompt.txt (same color, no underline; dark blue on hover). Under it, a
+     linked to the game's PROMPT PAGE, its prompt.txt address with "prompt.txt" replaced by
+     "prompt/" (for example https://multiply.by/train/prompt/; same color, no underline; dark blue
+     on hover). Under it, a
      <div class="prompt"> with the game's prompt.txt, READ FROM THE SITE EACH TIME THE PAGE OPENS (CRITICAL: the
      text is never written into the page; the person edits prompt.txt and this page shows the
      new text at once, with no rebuild):
@@ -86,9 +89,14 @@ THE GRID
        `text.trim().split(/\s+/).join(' ')`. The words themselves are shown exactly as they are,
        nothing else changed. Build it from
        text nodes (`textContent`, `createTextNode`), never `innerHTML`: prompt.txt is plain text.
-       Web addresses in it are plain text like the rest: NOT links, not colored or underlined.
+       WEB ADDRESSES ARE LINKS: each https:// address in the text (up to the next space; a
+       final . , ; : ) or ] is not part of it) is an <a> made with createElement, its href and
+       its text the address exactly as written (e.g. https://multiply.by/gamify), opening in a new
+       tab (target="_blank" rel="noopener"), dark blue #1e40af, BOLD (font-weight: 700), NOT
+       underlined (text-decoration: none; underlined on hover). The rest stays text
+       nodes.
      - If it fails (no answer, or a status other than 200), the box shows "The prompt could not be
-       loaded:" and a link "open prompt.txt" to the address, in #6b7280.
+       loaded:" and a link "open the prompt" to the game's prompt page, in #6b7280.
      - The box: `white-space: normal; overflow-wrap: anywhere;` (it wraps inside the card,
        never widens it), monospace at 0.8125rem, line-height 1.45, #111827 on #f9fafb, a 1px
        #e5e7eb border, 8px rounded corners, padding 10px 40px 10px 12px (room on the right for
@@ -116,12 +124,6 @@ GAMES (the data for the cards, in this order; the name after each "- " is the SH
 NAME; the screenshots are files in this folder; the
 prompts are read from the prompt.txt addresses, see PROMPT; the model and build time from the
 build.txt addresses, see FACTS)
-- Base Game (THE BASE GAME: the first card)
-  - Game address: https://multiply.by/base/
-  - Screenshot: /build-it/base.png
-  - build.txt address: https://multiply.by/build/build.txt
-  - prompt.txt address: https://multiply.by/base/prompt.txt
-  - Its prompt.txt is not shown in the box (see THE BASE GAME above).
 - Dinosaurs
   - Game address: https://multiply.by/dino/
   - Screenshot: /build-it/dino.png
@@ -132,16 +134,21 @@ build.txt addresses, see FACTS)
   - Screenshot: /build-it/train.png
   - build.txt address: https://multiply.by/train/build.txt
   - prompt.txt address: https://multiply.by/train/prompt.txt
-- Monster
-  - Game address: https://multiply.by/monster/
-  - Screenshot: /build-it/monster.png
-  - build.txt address: https://multiply.by/monster/build.txt
-  - prompt.txt address: https://multiply.by/monster/prompt.txt
+- Robot Workshop
+  - Game address: https://multiply.by/robot/
+  - Screenshot: /build-it/robot.png
+  - build.txt address: https://multiply.by/robot/build.txt
+  - prompt.txt address: https://multiply.by/robot/prompt.txt
 - Space
   - Game address: https://multiply.by/space/
   - Screenshot: /build-it/space.png
   - build.txt address: https://multiply.by/space/build.txt
   - prompt.txt address: https://multiply.by/space/prompt.txt
+- Evolution
+  - Game address: https://multiply.by/evolution/
+  - Screenshot: /build-it/evolution.png
+  - build.txt address: https://multiply.by/evolution/build.txt
+  - prompt.txt address: https://multiply.by/evolution/prompt.txt
 - Planes
   - Game address: https://multiply.by/plane/
   - Screenshot: /build-it/plane.png
@@ -152,27 +159,34 @@ build.txt addresses, see FACTS)
   - Screenshot: /build-it/chinese.png
   - build.txt address: https://multiply.by/chinese/build.txt
   - prompt.txt address: https://multiply.by/chinese/prompt.txt
-- Robot
-  - Game address: https://multiply.by/robot/
-  - Screenshot: /build-it/robot.png
-  - build.txt address: https://multiply.by/robot/build.txt
-  - prompt.txt address: https://multiply.by/robot/prompt.txt
+- Monster
+  - Game address: https://multiply.by/monster/
+  - Screenshot: /build-it/monster.png
+  - build.txt address: https://multiply.by/monster/build.txt
+  - prompt.txt address: https://multiply.by/monster/prompt.txt
 - Block Craft
   - Game address: https://multiply.by/blocks/
   - Screenshot: /build-it/blocks.png
   - build.txt address: https://multiply.by/blocks/build.txt
   - prompt.txt address: https://multiply.by/blocks/prompt.txt
+- Base Game (THE BASE GAME: the last card)
+  - Game address: https://multiply.by/base/
+  - Screenshot: /build-it/base.png
+  - build.txt address: https://multiply.by/build/build.txt
+  - prompt.txt address: https://multiply.by/base/prompt.txt
+  - Its prompt.txt is not shown in the box (see THE BASE GAME above).
 
 CHECKS
-- Nine cards in the order above: one column at 360px, two at 768px, three at 1280px (three full
-  rows), with no sideways scroll at any width and nothing cut off.
+- Ten cards in the order above: one column at 360px, two at 768px, three at 1280px (four rows,
+  the last with one card), with no sideways scroll at any width and nothing cut off.
 - Each card shows its name, screenshot, the model and build time line, and its prompt.txt text as
   read from the site, as one flowing paragraph: no line breaks from the file, the words joined
   by single spaces (the base game: "Base game, no custom gamification. To see the actual prompt,
   select the SOURCE button on the game."); the name, the screenshot and "Play …" all open the game.
-- Card names, exactly: Base Game, Dinosaurs, Train, Monster, Space, Planes, Great Wall, Robot,
-  Block Craft. No name changes after the page opens.
-- No links inside the prompt boxes. Each game's copy button puts its prompt.txt text, with the
+- Card names, exactly: Dinosaurs, Train, Robot Workshop, Space, Evolution, Planes, Great Wall,
+  Monster, Block Craft, Base Game. No name changes after the page opens.
+- Each web address in a prompt box (e.g. https://multiply.by/gamify) is a link to itself, shown
+  exactly as written, bold and not underlined; nothing else in the box is a link. Each game's copy button puts its prompt.txt text, with the
   file's line breaks, on the clipboard and shows the check mark; the base game has no copy button.
 - The page passes with the screenshots missing too: each image keeps its 412:330 space (its width
   and height attributes) and shows its alt text.
