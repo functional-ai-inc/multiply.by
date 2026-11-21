@@ -1,9 +1,9 @@
-# Gamifying the multiply.by game
+# Gamifying the base game
 
-This file helps an AI model turn the multiply.by times-tables game into a GAMIFIED version from a
-short prompt, e.g. "a space-travel version" or "a monster-based version for 2nd graders".
+This page helps an AI model turn the multiply.by times-tables base game into a GAMIFIED version
+from a short prompt.
 
-The game is fully described by its base build instructions, which follow this guide.
+The base game itself is fully described by its Base Build Instructions, which follow this guide.
 
 ## G1. The steps
 
@@ -17,20 +17,26 @@ The game is fully described by its base build instructions, which follow this gu
    - Set `CONFIG.GAME` to the new game's short name (letters, digits, `-` and `_`), e.g.
      `monster`. The game saves the player's progress under this name. Without a name of its own,
      it would share, and overwrite, the original game's progress.
-   - SOURCE opens THIS game's own prompt: the `prompt.txt` file published next to the game's
-     `index.html`. Use exactly the relative link `<a href="prompt.txt">`, which works wherever
-     the game is published. CRITICAL: SOURCE never points to /gamify/, gamify.md or the base
-     game's `https://multiply.by/base/prompt.txt`, even though those are the files you were given.
-     (If the base file already points SOURCE to an address ending in `/prompt.txt` inside a
-     game's folder, such as `https://multiply.by/train/prompt.txt`, keep that address.)
+   - SOURCE opens THIS game's own prompt: the page `prompt/` published next to the game's
+     `index.html` (it shows the game's prompt.txt). Use exactly the relative link
+     `<a href="prompt/">`, which works wherever the game is published. CRITICAL: SOURCE never
+     points to /gamify/, gamify.md or the base game's `https://multiply.by/base/prompt/`, even
+     though those are the files you were given. (If the base file already points SOURCE to an
+     address ending in `/prompt/` inside a game's folder, such as
+     `https://multiply.by/train/prompt/`, keep that address.)
+   - SHARING: never write the game's own address into the page; you don't know where it will be
+     published. The share icon in the title band shares https://multiply.by/build-it/ with the
+     site's message, the same on every page (SHARE THE SITE): keep it exactly. "Share my results"
+     shares the page's own address, `location.origin + location.pathname` plus the set
+     (SHARE MY RESULTS): keep that too, only renaming the results card's words.
 3. BUILD INSTRUCTIONS INSTEAD (only when the person asks for the build instructions, or the
    spec, rather than the game): one complete new `prompt.txt`, as a file named so.
    Copy the base file EXACTLY, word for word, with only these changes:
    - At the very top of the file, insert the line "Where this section conflicts with the rest
      of this file, this section wins.", then the CUSTOMIZATION section and one blank line.
    - Change the one line that starts with `- GAME: ` to the new game's short name.
-   - Change the one SOURCE link, `https://multiply.by/base/prompt.txt`, to the relative link
-     `prompt.txt` (the game's own prompt, published next to its `index.html`).
+   - Change the one SOURCE link, `https://multiply.by/base/prompt/`, to the relative link
+     `prompt/` (the game's own prompt page, published next to its `index.html`).
    Don't rewrite, shorten, reorder or "fix" anything else, even the parts the section replaces: a
    dropped paragraph is a broken game. If you can run code, make the file with code instead of
    retyping the base text.
@@ -53,8 +59,9 @@ Then:
   REPLACES it, naming the rule as the base file names it. For example, "WRONG ANSWERS (CRITICAL:
   replaces the whole WRONG ANSWERS rule ...)" or "SETS (replaces the three modes)".
 - Always cover the NAMES: `<title>`, meta description, the title band's tagline (its text only:
-  the tagline always links to the main game, https://multiply.by/), the share texts
-  (`shareText()`, `siteShareText()`), and the menu items.
+  the tagline always links to the main game, https://multiply.by/), the results card's words,
+  and the menu items. Not the share links or the share icon's message: they stay as the base
+  file has them (SHARING, above).
 - End with a `CHECKS` section of extra acceptance checks. These are added to section 11
   (ACCEPTANCE CHECKS) of the base file.
 
@@ -120,7 +127,7 @@ SVG allows:
 - No raster images and no placeholders that need a later step. Only a builder that can itself
   make photo-realistic images AND write them into the file (for example a coding agent with an
   image model) may instead embed a few small ones as data URIs (at most 480px across, WebP or
-  JPEG, 15 to 40 KB each), each with `alt` text and an SVG stand-in. Otherwise, SVG.
+  JPEG, 25 to 60 KB each), each with `alt` text and an SVG stand-in. Otherwise, SVG.
 
 Style (the house style of every multiply.by spec):
 - Plain text, prose wrapped at about 100 columns. Only code fragments and exact HTML run longer.
@@ -164,15 +171,26 @@ heights, gaps), because the building model otherwise keeps the base layout. What
   landmark; stones are `flex: 1` and at most 22px across, so they fit a 360px phone.
 - From top to bottom, then: the top row (question and mascot), the progress picture, the answers
   grid, which takes the rest.
-- MAKE THE ANSWERS INVITING: rounded buttons with a "pressable" look (a 4px bottom border in a
-  darker shade), and a color of their own for each of the four places, the same for every
-  question. The right-answer green and the wrong-answer red still replace those colors while they
-  show.
+- WHITE ANSWER BUTTONS (CRITICAL): the four answer buttons have a WHITE background (#ffffff) and
+  dark text, in every gamified game, whatever the theme (on a dark game screen too). No color of
+  their own, no gradient, no picture behind the number: the green flash of a right answer and the
+  red of a wrong one are the strongest feedback the game gives, and they only stand out against
+  white. They may look "pressable": rounded corners, a soft shadow, and a 4px bottom border in a
+  light gray (#d1d5db); while a button shows green or red, its border takes a darker shade of
+  that color.
 - GIVE FLOATING THINGS A PLACE: the floating points ("+13") rise from just right of the Points
   number (`position: absolute; left: 100%`), not over it; words and toasts pop above the mascot
   or the path, never over the question or the answers.
 - A background of the game's own (Monster: a sky gradient, `linear-gradient(#e0f2fe, #fef9c3)`) and
   a rounded font for the game area; the site frame (title band, menu, footer) keeps its own look.
+- NO TINY TEXT (CRITICAL): every piece of text is at least 9.6px at every screen size, including
+  labels under pictures, captions, path or stage names, footer lines and taglines, and numbers or
+  letters inside small dots or badges (stage numbers on a route line); the question and the
+  answers stay the largest text on the screen. This holds inside every media query too, the short
+  screen one (`max-height: 500px`) included: no `font-size` below 9.6px anywhere in the file. Text
+  that doesn't fit at 9.6px is shortened or left out on small screens, never shrunk; a dot too
+  small for a 9.6px number is made bigger or shows no number. Text over a photo sits on a dark
+  band or shadow so it stays readable.
 - Check the layout at every size in G6: the mascot must shrink, not push the answers off a
   360x640 phone or a phone held sideways (640x360).
 - SHOW THE JOURNEY ON THE "YOU WON!" SCREEN: under "You Won!" and above the score, a row of
@@ -180,11 +198,11 @@ heights, gaps), because the building model otherwise keeps the base layout. What
   through (Train: a thumbnail of each train, steam to maglev; Monster: each form of the monster;
   Space: each planet). Use the game's own stage pictures, made smaller, not new ones (no extra
   size). Each picture about 56px tall (44px on short screens, `max-height: 500px`), the stage's
-  short name under it in small text, joined left to right by a thin line or small arrows; the
-  last stage marked as reached (a check mark or a gold ring). The row never wraps and never
-  makes the overlay wider than the screen: the pictures shrink to fit (`flex: 1 1 0;
-  min-width: 0`) on a 360px phone. After "Practice hard ones" ("Practice done!") the row is the
-  same.
+  short name under it in small text (at least 9.6px, see NO TINY TEXT), joined left to right by a
+  thin line or small arrows; the last stage marked as reached (a check mark or a gold ring). The row
+  never wraps and never makes the overlay wider than the screen: the pictures shrink to fit
+  (`flex: 1 1 0; min-width: 0`) on a 360px phone. After "Practice hard ones" ("Practice done!")
+  the row is the same.
 
 ## G4. What the base game provides (names to refer to)
 
@@ -242,8 +260,10 @@ Use the base file's own names, so the building model ties your changes to its co
   - PRACTICE HARD ONES runs a short practice of the weakest facts (`weakFacts()`, ANSWER TIMES)
     and ends with "Practice done!".
 - Menu:
-  - The base game shows MUTE, BUILD IT, ABOUT, RULES (a popup), RESET and SOURCE. CRITICAL: a
-    gamified game keeps EXACTLY this menu, the same items in the same order: it adds no item and
+  - The base game has the site's menu: the logo in the title band; in the bar MUTE, the GAMES icon,
+    BUILD IT and SOURCE (always visible) and, on phones, the menu button whose panel holds HOME,
+    GAMES (icon and word), ABOUT, RULES (a popup) and RESET. CRITICAL: a gamified game keeps EXACTLY
+    this menu, the same items in the same order, with the same ids and classes: it adds no item and
     drops none. A new panel (a sticker book, a garage, a map) opens from a button inside the game
     area, not from the menu bar.
 - Site frame (the SITE LAYOUT part of the file):
@@ -271,6 +291,16 @@ Use the base file's own names, so the building model ties your changes to its co
 - Name every element id that other rules or checks refer to. Otherwise ids may differ between
   builds (e.g. `win-overlay` / `won-overlay`).
 - The 100 KB limit is for the base game only: a gamified game has no size limit.
+- KEEP THE BASE AUDIO CODE EXACTLY (CRITICAL), including the start-up listener that wakes the
+  sound on every `touchend`, `mousedown` and `keydown` (7. AUDIO SYSTEM). On an iPhone, sound can
+  start only inside a `touchend` or `click`, not a `pointerdown`; the answers react on
+  `pointerdown`, so without that listener an iPhone plays no sound at all (a build dropped it).
+  New sounds go through `playSound` and `getAudioCtx`, never a second AudioContext.
+- The code must RUN, not just parse. An error inside `update()` fires after every answer and
+  freezes the game on its first question. One that got through: setting an attribute by
+  assigning to a call, `el.title = el.getAttribute('aria-label') = text` ("Invalid left-hand side
+  in assignment" at run time). Set each attribute in a statement of its own, with
+  `el.setAttribute('aria-label', text)`.
 - Bigger, more visual reworkings come out better from the strongest models.
 
 ## G6. Checks to write into the CHECKS section
@@ -286,9 +316,16 @@ can stall there.
 - A whole game can be played: right and wrong answers, the wrong-answer choices (their positions
   and parity), every new animation, the "You Won!" screen, and each mode or set.
 - The game's main picture is the element with `id="main-picture"`, visible during play.
+- No text smaller than 9.6px at any of the four sizes, during play or on the "You Won!" screen.
+- No uncaught error at any point of a whole game. Nothing is assigned to a function call
+  (`getAttribute(...) = ...`): attributes are set with `setAttribute`.
 - The "You Won!" screen shows one small picture per stage, in order, all on one line at 360px,
   nothing cut off, with the title band and menu still usable above it.
 - Each new feature has a check of its own, stated as something a tester can see, e.g. "after 12
   facts are learned, the first stage of the path is full and confetti falls".
+- The page keeps the base game's `touchend` / `mousedown` / `keydown` audio listener, unchanged,
+  so sound works on an iPhone.
+- The four answer buttons are white (#ffffff) during play, at every size; only a right (green)
+  or wrong (red) answer colors them, and only while that shows.
 - The only sounds are the rising chimes, the wrong-answer "uh-oh" and the win tune: no background
   music, no other sound. At each new stage the chime changes with the picture. MUTE silences all.

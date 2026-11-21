@@ -12,8 +12,7 @@ then the base build instructions, copied unchanged. The base file is plain text,
 indents kept, in the page's font. Any HTML written in either file is shown as text, never used as
 markup. A person uploads it (or a chat fetches it) with a line or two
 saying what game they want, and needs nothing else from the web. It is a web page, not .txt, because Gemini's web app refuses
-a .txt upload but takes an .html one. The title is "gamify", so a copy saved from the browser is
-named gamify.html.
+a .txt upload but takes an .html one. The browser-tab title is "Gamifying Multiply.by Base Game".
 
 --text prints the same content with gamify.md as Markdown source: what mk-gamify sends a model
 as the fetched page (a fetch tool turns a page into text).
@@ -65,6 +64,6 @@ for title, text in zip(parts[1::2], parts[2::2]):
 sys.stdout.write(
     '<!doctype html>\n<html lang="en">\n<meta charset="utf-8">\n'
     '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
-    f"<title>gamify</title>\n<style>{STYLE}</style>\n"
+    f"<title>Gamifying Multiply.by Base Game</title>\n<style>{STYLE}</style>\n"
     f"{body}\n<h1>{BASE_HEADING}</h1>\n<p>{html.escape(BASE_INTRO)}</p>\n"
     f"{spec}\n</html>\n")
