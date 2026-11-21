@@ -128,6 +128,11 @@ SVG allows:
   make photo-realistic images AND write them into the file (for example a coding agent with an
   image model) may instead embed a few small ones as data URIs (at most 480px across, WebP or
   JPEG, 25 to 60 KB each), each with `alt` text and an SVG stand-in. Otherwise, SVG.
+- A photo's frame fits the photo (CRITICAL): the box that holds it (e.g. `#main-picture`) has
+  no background, border or shadow of its own and centers the photo (`display: flex;
+  align-items: center; justify-content: center`); the `<img>` has `width: auto; height: auto;
+  max-width: 100%; max-height: 100%`, and the rounded corners, border and shadow go on the
+  `<img>`. So the frame is always exactly the photo's size, with no empty bands around it.
 
 Style (the house style of every multiply.by spec):
 - Plain text, prose wrapped at about 100 columns. Only code fragments and exact HTML run longer.
