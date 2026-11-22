@@ -307,6 +307,12 @@ Use the base file's own names, so the building model ties your changes to its co
   start only inside a `touchend` or `click`, not a `pointerdown`; the answers react on
   `pointerdown`, so without that listener an iPhone plays no sound at all (a build dropped it).
   New sounds go through `playSound` and `getAudioCtx`, never a second AudioContext.
+- MENUS CLOSE ON `pointerdown`, NEVER ON `click` (CRITICAL): the share menu and the menu panel
+  close on a press outside them through ONE `pointerdown` listener on `window` with
+  `{ capture: true }` that calls `e.stopPropagation()` (SITE LAYOUT in the base build
+  instructions). Never a `click` listener on `document`: the answers act on `pointerdown` and
+  are `disabled` while the feedback shows, and a disabled button fires no `click`, so the menu
+  would stay open and the press would answer the question (a build did exactly this).
 - The code must RUN, not just parse. An error inside `update()` fires after every answer and
   freezes the game on its first question. One that got through: setting an attribute by
   assigning to a call, `el.title = el.getAttribute('aria-label') = text` ("Invalid left-hand side
@@ -337,6 +343,8 @@ can stall there.
   facts are learned, the first stage of the path is full and confetti falls".
 - The page keeps the base game's `touchend` / `mousedown` / `keydown` audio listener, unchanged,
   so sound works on an iPhone.
+- With the menu panel open, a press on an answer closes the panel and does nothing else: it
+  does not answer and does not start the timer.
 - The four answer buttons are white (#ffffff) during play, at every size; only a right (green)
   or wrong (red) answer colors them, and only while that shows.
 - The only sounds are the rising chimes, the wrong-answer "uh-oh" and the win tune: no background
