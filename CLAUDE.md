@@ -36,7 +36,7 @@ rebuild. GitHub: john-l-roseman/multiply.by (public).
     Same storage keys as /base/, so progress is shared.
   - `games/page.txt`: the chooser (/games/; GAMES is the current menu item), big tiles
     with the short names (Monster, Train, Dinosaurs, Robot, Planes, Space, Great Wall, Block Craft,
-    Evolution, Base Game). Both pages save the tapped game in localStorage `multiply_last_game`.
+    Evolution, Buildings, Base Game). Both pages save the tapped game in localStorage `multiply_last_game`.
     Build with `make` in `games/` (Claude).
   - `game.txt`: the base game (/base/). The site menu plus MUTE, RULES (popup) and RESET.
     Every gamified game keeps exactly this menu (gamify.md).
@@ -110,14 +110,21 @@ rebuild. GitHub: john-l-roseman/multiply.by (public).
   `add_header Cache-Control "no-cache" always;` and `try_files $uri $uri/ =404;`, so caches,
   chatbots' fetch tools included, check back for the latest /gamify/ (it matches the /gamify
   redirect too, not /gamify.md).
+  A `location ~ ^/(build-it/[^/]+\.png|thumbnails/.+)$` block does the same (no-cache) for the
+  game screenshots and strip pictures, which are retaken under the same names after a rebuild.
 - Android app (Google Play, `by.multiply.app`): notes in `ANDROID.md`, which `make` renders to
-  /android/ (`md-html.py`; generated, git-ignored). The Kotlin project, `gather-assets.py` and
-  `build-app` (builds on the `android-build` VM) are in `android/`.
+  /android/ (`md-html.py`; generated, git-ignored). The Kotlin project, `gather-assets.py`,
+  `build-app` (builds on the `android-build` VM; `release` signs with the upload key in
+  ~/.multiply-play/, never in git) and `store-assets.py` (the Play listing's pictures and video,
+  into `android/assets/`) are in `android/`. The app's privacy policy, `PRIVACY.md`, is rendered the
+  same way to /privacy/; the website's, `PRIVACY-WEBSITE.md` (ads on non-game pages, server log),
+  to /privacy/website/, linked from footer.txt.
 - `match/` is an older matching game with its own spec (not using layout.txt).
 - Builds take a few minutes and go live as soon as they pass; run them in the background.
 
 ## Rules
 - The game page must stay under 100 KB (the About page says "less than 100 KB"; make warns).
+  Exception: games with embedded photos (e.g. `evolution/`, `building/`) may be larger.
 - Never print, echo or commit API keys. Don't change or commit anything in /var/www/openlang.ai
   (e.g. run-vertex.py model changes): it is not part of this repo.
 - `chinese/prompt.txt` is the user's own work: commit it only when asked.

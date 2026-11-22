@@ -1,0 +1,52 @@
+Google Play store listing for by.multiply.app (paste each part into the Play Console:
+Grow > Store presence > Main store listing). Written by hand; limits in brackets.
+
+== App name [30 characters] ==
+Multiply.by – Times Tables
+
+== Short description [80 characters] ==
+Learn the times tables with free games: no ads, no sign-up, works offline.
+
+== Full description [4000 characters] ==
+Multiply.by is a quick, focused way for children to learn the multiplication table.
+
+Each question shows one fact, such as 7 x 8, and four answers to tap. A fact counts as learned
+only when it is answered right: a missed one comes back near the end, until every fact is
+learned. After the game, a short practice round can bring back the facts that were hardest.
+
+Pick a game:
+- Monster: feed a hungry monster and help it grow.
+- Robot: build a robot, part by part.
+- Train: travel from steam engines to maglev trains.
+- Dinosaurs: meet a new dinosaur as you learn.
+- Planes: the history of flight.
+- Space: a journey through the solar system.
+- Great Wall: build the Great Wall of China.
+- Block Craft: mine and build with blocks.
+- Evolution: life on Earth, from the first cells on.
+- Buildings: from the Pyramids to the Shanghai Tower.
+- The base game: the plain multiplication table, no extras.
+There is a division game too.
+
+Tables 2 to 9, both ways (3 x 4 and 4 x 3), up to 12 or up to 20: choose under RULES.
+
+For parents and teachers:
+- Free. No ads, no in-app purchases, no subscriptions.
+- No sign-up and no account. The app collects no data; progress stays on the phone.
+- Works offline: every game is inside the app.
+- Links that leave the app (the website, sharing) ask a grown-up to solve a multiplication
+  question first.
+
+Built by AI, open to everyone:
+Every game was built by an AI model from a prompt of a few lines. The prompt is one tap away,
+under SOURCE in every game. On the website, multiply.by, you can see every game's prompt and
+build your own game about whatever your child loves, with ChatGPT, Claude or Gemini. No
+programming needed.
+
+Multiply.by is open source (MIT License) by Functional AI Inc.
+
+== Promo video (YouTube link) ==
+assets/robot.mp4, uploaded to YouTube; paste its link.
+
+== Category and tags ==
+Category: Education. Tags: math, educational games.

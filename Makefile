@@ -8,7 +8,7 @@ ICONS = icon-192.png icon-512.png
 PROMPT_PAGES = $(sort prompt/index.html base/prompt/index.html \
   $(patsubst %/prompt.txt,%/prompt/index.html,$(wildcard */prompt.txt)))
 
-all: gamify/index.html android/index.html base/index.html index.html $(FILES) $(ICONS) og-image.png sitemap.xml \
+all: gamify/index.html android/index.html privacy/index.html privacy/website/index.html base/index.html index.html $(FILES) $(ICONS) og-image.png sitemap.xml \
   $(PROMPT_PAGES)
 
 prompt-pages: $(PROMPT_PAGES)
@@ -46,6 +46,19 @@ android/index.html: ANDROID.md md-html.py
 	mkdir -p android
 	python3 md-html.py ANDROID.md > android/index.html.tmp
 	mv android/index.html.tmp android/index.html
+
+# https://multiply.by/privacy/: the privacy policy (the app's Play listing links to it), PRIVACY.md
+# rendered as a page. No AI model.
+privacy/index.html: PRIVACY.md md-html.py
+	mkdir -p privacy
+	python3 md-html.py PRIVACY.md > privacy/index.html.tmp
+	mv privacy/index.html.tmp privacy/index.html
+
+# https://multiply.by/privacy/website/: the website's own privacy policy (footer link), PRIVACY-WEBSITE.md
+privacy/website/index.html: PRIVACY-WEBSITE.md md-html.py
+	mkdir -p privacy/website
+	python3 md-html.py PRIVACY-WEBSITE.md > privacy/website/index.html.tmp
+	mv privacy/website/index.html.tmp privacy/website/index.html
 
 # The plain game page, built from base/prompt.txt (no PWA) by the model named in the
 # file "model" (carbon, fable, ...; see run-model).

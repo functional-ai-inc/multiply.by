@@ -24,7 +24,7 @@ page's content (the games and how each was built), the site info (SITE INFO belo
   column, for the title band, menu bar, site info and footer too).
 
 <header>Build it yourself</header>
-<tagline>Use these prompts to start, or design your own from scratch.</tagline>
+<tagline>Copy-paste a prompt into your chatbot, or start from scratch.</tagline>
 The header and tagline sit above the grid, left-aligned with it, 16px below the menu bar. Header:
 bold, about 1.75rem, near-black (#111827). The tagline is directly under it (it may wrap on phones):
 normal weight, slightly smaller than body text, muted gray (#6b7280).
@@ -149,6 +149,11 @@ build.txt addresses, see FACTS)
   - Screenshot: /build-it/evolution.png
   - build.txt address: https://multiply.by/evolution/build.txt
   - prompt.txt address: https://multiply.by/evolution/prompt.txt
+- Buildings
+  - Game address: https://multiply.by/building/
+  - Screenshot: /build-it/building.png
+  - build.txt address: https://multiply.by/building/build.txt
+  - prompt.txt address: https://multiply.by/building/prompt.txt
 - Planes
   - Game address: https://multiply.by/plane/
   - Screenshot: /build-it/plane.png
@@ -177,13 +182,13 @@ build.txt addresses, see FACTS)
   - Its prompt.txt is not shown in the box (see THE BASE GAME above).
 
 CHECKS
-- Ten cards in the order above: one column at 360px, two at 768px, three at 1280px (four rows,
-  the last with one card), with no sideways scroll at any width and nothing cut off.
+- Eleven cards in the order above: one column at 360px, two at 768px, three at 1280px (four rows,
+  the last with two cards), with no sideways scroll at any width and nothing cut off.
 - Each card shows its name, screenshot, the model and build time line, and its prompt.txt text as
   read from the site, as one flowing paragraph: no line breaks from the file, the words joined
   by single spaces (the base game: "Base game, no custom gamification. To see the actual prompt,
   select the SOURCE button on the game."); the name, the screenshot and "Play …" all open the game.
-- Card names, exactly: Dinosaurs, Train, Robot Workshop, Space, Evolution, Planes, Great Wall,
+- Card names, exactly: Dinosaurs, Train, Robot Workshop, Space, Evolution, Buildings, Planes, Great Wall,
   Monster, Block Craft, Base Game. No name changes after the page opens.
 - Each web address in a prompt box (e.g. https://multiply.by/gamify) is a link to itself, shown
   exactly as written, bold and not underlined; nothing else in the box is a link. Each game's copy button puts its prompt.txt text, with the

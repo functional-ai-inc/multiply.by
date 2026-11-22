@@ -1,3 +1,4 @@
+import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -13,14 +14,30 @@ android {
         applicationId = "by.multiply.app"   // never change after publishing
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1"
+        versionCode = 1        // +1 for every upload to Play
+        versionName = "1.0"
+    }
+
+    // Release signing: the upload key, from android/upload-key.properties (never in git; see
+    // ANDROID.md, "Release build"). Without that file a release build is left unsigned.
+    val keyFile = rootProject.file("upload-key.properties")
+    if (keyFile.exists()) {
+        val key = Properties().apply { keyFile.inputStream().use { load(it) } }
+        signingConfigs {
+            create("upload") {
+                storeFile = rootProject.file(key.getProperty("storeFile"))
+                storePassword = key.getProperty("storePassword")
+                keyAlias = key.getProperty("keyAlias")
+                keyPassword = key.getProperty("keyPassword")
+            }
+        }
     }
 
     buildFeatures { buildConfig = true }
 
     buildTypes {
         release {
+            if (keyFile.exists()) signingConfig = signingConfigs.getByName("upload")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

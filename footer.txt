@@ -23,6 +23,9 @@ Then a second line directly under the paragraph (no margin between them), exactl
 <a href="https://play.google.com/store/apps/details?id=by.multiply.app" target="_blank" rel="noreferrer">Get the Android app</a>
 styled like the Feedback column's email link: dark blue #1e40af, bold, no underline (underlined
 on hover).
+Then a third line directly under it (no margin between them), exactly:
+<a href="https://multiply.by/privacy/website/">Privacy policy</a>
+in the same link style.
 
 CENTER: title "Feedback". Text (two short lines, tight vertical spacing: no margin between them):
 "Found a bug? Have an idea for a new game or feature?"

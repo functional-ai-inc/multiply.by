@@ -1,0 +1,82 @@
+Play Console answers for by.multiply.app: what to fill in, page by page, when creating the app.
+Every answer here is checked against the app's code (MainActivity.kt) and PRIVACY.md. The store
+texts are in listing.txt; the pictures and video next to this file.
+
+== Create app ==
+App name: Multiply.by – Times Tables
+Default language: English (United States) – en-US
+App or game: App
+Free or paid: Free (can never be changed to paid later)
+Declarations: Developer Program Policies, US export laws: accept.
+
+== Main store listing ==
+App name, short description, full description: listing.txt
+App icon: icon-512.png
+Feature graphic: feature-graphic.png
+Phone screenshots: phone/01-monster.png ... phone/08-about.png, in that order
+7-inch tablet screenshots: tablet-7/*.png
+10-inch tablet screenshots: tablet-10/*.png
+Video: the YouTube link of robot.mp4
+
+== Store settings ==
+App category: Education
+Tags: Math, Educational games (pick the closest offered)
+Contact email: contact@functional.by
+Website: https://multiply.by/
+Phone: none
+
+== App content (Policy > App content) ==
+Privacy policy: https://multiply.by/privacy/
+
+App access: All functionality is available without any access restrictions (no login).
+
+Ads: No, my app does not contain ads.
+
+Content rating (IARC questionnaire):
+  Email: contact@functional.by
+  Category: Game (all other) – a quiz game; or "Education" if offered
+  Violence, fear, sexuality, gambling, language, controlled substances: No to all
+  Users can interact or exchange content with each other: No
+  Shares the user's current location: No
+  Allows purchases of digital goods: No
+  Unrestricted internet access (e.g. a web browser): No (links open the phone's browser, only
+    after the parental gate)
+  Expected result: Everyone / PEGI 3 / USK 0
+
+Target audience and content:
+  Target age groups: 5 and under: no; 6-8: yes; 9-12: yes; 13-15: no; 16-17: no; 18+: no
+    (the times tables are learned from about age 7)
+  Could the app unintentionally appeal to children: (asked only when no children's age group is
+    chosen; not asked here)
+  The Families policy applies (children are in the target audience): the app has no ads, no
+    analytics or other SDKs, collects no data, and every link out of the app goes through the
+    parental gate (ParentalGate.kt).
+
+Data safety:
+  Does your app collect or share any of the required user data types? No
+    (progress is stored only on the phone and never sent: Google's form counts only data that
+    leaves the device)
+  Is all of the user data collected by your app encrypted in transit? (not asked after "No")
+  Do you provide a way for users to request that their data be deleted? (not asked after "No")
+  Result shown in the store: "No data collected", "No data shared with third parties"
+
+Advertising ID: No, the app does not use an advertising ID.
+Government app: No.
+Financial features: None.
+Health: No health features.
+News app: No.
+
+== Teacher Approved (optional, Families) ==
+Opt in if offered: the app fits (no ads, no purchases, no data, curriculum math).
+
+== Release ==
+Track: Production (an organization account needs no closed test first), or Internal testing
+  first, to try the Play-installed version on a phone.
+Play App Signing: accept (Google holds the app signing key; ours is only the upload key).
+App bundle: multiply-by-release-YYYYMMDD-HHMM.aab from android/build-app release
+Release name: 1.0 (1)
+Release notes (en-US, 500 characters):
+  First release: times-table games for children, free, with no ads and no sign-up. Monster,
+  Robot, Train, Dinosaurs, Planes, Space, Great Wall, Block Craft, Evolution, Buildings and the
+  base game, all working offline.
+Countries: all countries and regions.

@@ -1,0 +1,9 @@
+Buildings through time: Pyramids, Roman Coliseum, Notre Dame, 
+Empire State Building, Shanghai tower.
+Make the images photo-realistic.
+Show the era, location and size or capacity for each building.
+
+Your deliverable is a complete, playable, standalone 
+index.html file that I can download and open in my browser.
+
+Details at https://multiply.by/gamify

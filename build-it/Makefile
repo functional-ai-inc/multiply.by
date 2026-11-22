@@ -3,7 +3,7 @@
 # The page is written under a temporary name and renamed into place,
 # so a visitor never gets a half-written page.
 
-GAMES = train monster dino space chinese robot plane blocks
+GAMES = train monster dino space chinese robot plane blocks evolution building
 SHOTS = base.png $(GAMES:%=%.png)
 # The front page's strip pictures (thumbs.py: the game's main picture, 200 x 160). Made only when
 # missing (no prerequisites), so a hand-made one in ../thumbnails/ is never overwritten; delete a

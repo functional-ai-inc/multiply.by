@@ -116,13 +116,17 @@ STRIP GAMES (SHORT NAME, then the game's key, address and picture)
   - Key: evolution
   - Game address: https://multiply.by/evolution/
   - Picture: /thumbnails/evolution-thumbnail.png
+- Buildings
+  - Key: building
+  - Game address: https://multiply.by/building/
+  - Picture: /thumbnails/building-thumbnail.png
 
 FRONT PAGE CHECKS (in addition to the checks above)
 - At 360x640, 640x360, 768x1024 and 1280x800: the title band, menu bar, question, four answers,
   strip and footer are all on screen, nothing cut off, and the page does not scroll by a pixel.
   The indicators (down to TIME) end above the answers.
 - On a computer, the mouse wheel over the strip scrolls it sideways to More games.
-- The strip shows the nine games and then More games; on a phone it scrolls sideways inside
+- The strip shows the ten games and then More games; on a phone it scrolls sideways inside
   itself; in landscape it shows name-only chips.
 - On a first visit (nothing saved under 'multiply_last_game'), the strip starts Robot, Dinosaurs.
 - After tapping Train in the strip and coming back, Train is the first tile.

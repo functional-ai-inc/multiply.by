@@ -31,7 +31,8 @@ with sync_playwright() as p:
     pg = ctx.new_page()
     pg.goto(f"https://multiply.by/{game}/", wait_until="networkidle")
     pg.wait_for_timeout(500)
-    selector, fit, answers = MAIN[game]
+    # A game not in MAIN names its picture as gamify.md asks: id="main-picture".
+    selector, fit, answers = MAIN.get(game, ("#main-picture", "cover", 16))
     for move in range(answers):
         q = pg.locator("#question, #question-text").first.inner_text().strip()
         m = re.search(r"(\d+)\s*[x×]\s*(\d+)", q)

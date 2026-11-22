@@ -1,17 +1,28 @@
 #!/bin/bash
 # Builds the Android app on the android-build VM (see ANDROID.md) and copies the result back.
 #
-# Usage: android/build-app [debug|release]     (default: debug, an APK to install on a phone)
+# Usage: android/build-app [debug|release]
+#   debug    an APK signed with a throwaway debug key, to install on a phone (the default)
+#   release  what Play wants: the App Bundle (.aab) to upload, and an APK of the same build,
+#            both signed with the upload key, to install and test first
 #
 # Stages the project with the live pages (gather-assets.py) in a temporary folder outside the
-# web folder, starts the VM if needed, builds there with the Gradle wrapper, copies the APK to
-# $OUT, and stops the VM again if it started it (it is billed while running).
+# web folder, starts the VM if needed, builds there with the Gradle wrapper, copies the result
+# to $OUT, and stops the VM again if it started it (it is billed while running).
+#
+# The upload key lives in $KEYS (default ~/.multiply-play): upload-key.jks and
+# upload-key.properties (its passwords). The first release build makes it, on the VM (keytool
+# comes with the JDK there), with a random password that is never printed. Back that folder up
+# somewhere safe: without the key (or a reset by Google, see ANDROID.md) no update can be
+# uploaded. The key is copied into the build only for its duration and deleted from the VM after.
 set -euo pipefail
 
 KIND=${1:-debug}
 case $KIND in
-  debug)   TASK=assembleDebug; FILE=app/build/outputs/apk/debug/app-debug.apk ;;
-  release) echo "release builds need the upload key: not set up yet" >&2; exit 1 ;;
+  debug)   TASK=assembleDebug; FILES=(app/build/outputs/apk/debug/app-debug.apk) ;;
+  release) TASK="bundleRelease assembleRelease"
+           FILES=(app/build/outputs/bundle/release/app-release.aab
+                  app/build/outputs/apk/release/app-release.apk) ;;
   *)       echo "usage: $0 [debug|release]" >&2; exit 1 ;;
 esac
 
@@ -20,6 +31,7 @@ SITE=$(dirname "$HERE")
 VM=android-build
 ZONE=us-east1-b
 OUT=${OUT:-$HOME/multiply-android}
+KEYS=${KEYS:-$HOME/.multiply-play}
 SSH=(gcloud compute ssh "$VM" --zone="$ZONE" --tunnel-through-iap --quiet)
 
 STAGE=$(mktemp -d)
@@ -49,11 +61,35 @@ if [ "$STATUS" != RUNNING ]; then
   done
 fi
 
+if [ "$KIND" = release ]; then
+  if [ ! -f "$KEYS/upload-key.jks" ]; then
+    echo "== making the upload key in $KEYS (once; back it up)"
+    mkdir -p "$KEYS" && chmod 700 "$KEYS"
+    PASS=$(python3 -c 'import secrets; print(secrets.token_urlsafe(24))')
+    printf '%s' "$PASS" | "${SSH[@]}" --command='read -r P; rm -f ~/upload-key.jks
+      P="$P" keytool -genkeypair -keystore ~/upload-key.jks -storetype PKCS12 -alias upload \
+        -keyalg RSA -keysize 4096 -validity 10000 -storepass:env P -keypass:env P \
+        -dname "CN=Functional AI Inc., O=Functional AI Inc." >/dev/null 2>&1 && echo made'
+    gcloud compute scp --zone="$ZONE" --tunnel-through-iap --quiet "$VM:upload-key.jks" \
+      "$KEYS/upload-key.jks"
+    "${SSH[@]}" --command='rm -f ~/upload-key.jks'
+    ( umask 077; printf 'storeFile=upload-key.jks\nstorePassword=%s\nkeyAlias=upload\nkeyPassword=%s\n' \
+        "$PASS" "$PASS" > "$KEYS/upload-key.properties" )
+    chmod 600 "$KEYS/upload-key.jks"
+    unset PASS
+  fi
+  cp "$KEYS/upload-key.jks" "$KEYS/upload-key.properties" "$STAGE/"
+fi
+
 echo "== building ($TASK)"
 tar -C "$STAGE" -czf - . | "${SSH[@]}" --command="rm -rf ~/app && mkdir ~/app && tar -C ~/app -xzf - \
-  && cd ~/app && bash -lc './gradlew --no-daemon --console=plain $TASK'"
+  && cd ~/app && bash -lc './gradlew --no-daemon --console=plain $TASK'; S=\$?; \
+  rm -f ~/app/upload-key.jks ~/app/upload-key.properties; exit \$S"
 
 mkdir -p "$OUT"
-NAME=multiply-by-$KIND-$(date +%Y%m%d-%H%M).${FILE##*.}
-gcloud compute scp --zone="$ZONE" --tunnel-through-iap --quiet "$VM:app/$FILE" "$OUT/$NAME"
-echo "== $OUT/$NAME ($(stat -c %s "$OUT/$NAME") bytes)"
+STAMP=$(date +%Y%m%d-%H%M)
+for FILE in "${FILES[@]}"; do
+  NAME=multiply-by-$KIND-$STAMP.${FILE##*.}
+  gcloud compute scp --zone="$ZONE" --tunnel-through-iap --quiet "$VM:app/$FILE" "$OUT/$NAME"
+  echo "== $OUT/$NAME ($(stat -c %s "$OUT/$NAME") bytes)"
+done

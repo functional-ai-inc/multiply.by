@@ -1,0 +1,7 @@
+Evolution in five stages: 
+Protocells in deep-sea hydrothermal vents, Haikouichthys,
+land tetrapod, tree-dwelling primate, homo sapiens. 
+Use photorealistic images, show epoch and location for each.
+Follow https://multiply.by/gamify
+Your deliverable is a playable, standalone index.html file 
+that I can download and open in my browser.

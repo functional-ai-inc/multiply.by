@@ -53,8 +53,13 @@ nothing, so the app needs no income:
   8.13, Kotlin 2.2, compileSdk and targetSdk 36, minSdk 24, AndroidX `activity` and `webkit` only.
   The Gradle wrapper (`gradlew`, `gradlew.bat`, `gradle/wrapper/`) pins Gradle 8.14.3 and
   downloads it on first use. `preBuild` stops with a clear message if the games haven't been
-  gathered. Launcher icons: `app/src/main/res/mipmap-*/ic_launcher.png`, rendered from `icon.svg`
-  (48 to 192 px; an adaptive icon is still to do).
+  gathered. Release signing reads `upload-key.properties` when it is there (see "Release build"
+  below; without it a release build is unsigned). Launcher icon: an adaptive icon for Android 8+
+  (`res/mipmap-anydpi-v26/ic_launcher.xml`: the page color behind
+  `res/drawable/ic_launcher_foreground.xml`, the "2x2" of `icon.svg` as a vector, scaled to fit
+  the 66 dp circle every launcher shape keeps; also the monochrome layer for Android 13's themed
+  icons), and `res/mipmap-*/ic_launcher.png` (48 to 192 px, rendered from `icon.svg`) for older
+  phones.
 - `app/src/main/java/by/multiply/app/`: `MainActivity.kt` (the WebView, address rules, share
   bridge, back button, edge-to-edge insets), `SiteFiles.kt` (serves the bundled files and the
   in-app 404 page), `ParentalGate.kt`.
@@ -68,7 +73,7 @@ nothing, so the app needs no income:
 - `build-app [debug]` (the site owner's route): stages the project in a temp folder (the
   gathered pages are never written into the web folder), starts `android-build` if stopped,
   builds over IAP SSH with `./gradlew`, copies the APK to `~/multiply-android/` (outside the web folder), and stops
-  the VM again if it started it. `release` waits for the upload key.
+  the VM again if it started it. `build-app release` builds what Play takes (next section).
 
 ## How the app works
 
@@ -261,21 +266,48 @@ sync
 poweroff
 ```
 
+## Release build (what is uploaded to Play)
+
+`android/build-app release` builds, on the VM, the **App Bundle** (`.aab`, the file Play takes)
+and an **APK of the same build** (to install on a phone and check before uploading), both signed
+with the **upload key**, into `~/multiply-android/` as `multiply-by-release-DATE.aab` and `.apk`.
+
+- **The upload key** is in `~/.multiply-play/` on the server (`upload-key.jks` and
+  `upload-key.properties` with its password), outside the web folder and the repo; the folder and
+  files are readable by their owner only. The first release build made it, on the VM (RSA 4096,
+  valid 10,000 days, alias `upload`), with a random password that was never printed. For a
+  build, `build-app` copies the two files into the temporary build folder and deletes them from
+  the VM afterwards. **Back up `~/.multiply-play/`** somewhere safe and private (e.g. a password
+  manager): with Play App Signing, a lost upload key can be replaced through Play Console
+  support, but that takes days.
+- **Play App Signing:** accept it when creating the release. Google then signs what phones
+  download with its own app signing key; ours only proves an upload comes from us.
+- **Version:** `versionCode` (1, then +1 for every upload; Play refuses a number it has seen) and
+  `versionName` ("1.0", what users see) in `app/build.gradle.kts`.
+- **Building your own release** (from the public repo): make your own key with `keytool
+  -genkeypair -keystore upload-key.jks -storetype PKCS12 -alias upload -keyalg RSA -keysize 4096
+  -validity 10000`, put it and an `upload-key.properties` (`storeFile=upload-key.jks`,
+  `storePassword=...`, `keyAlias=upload`, `keyPassword=...`, the same password twice) in the
+  `android` folder (both git-ignored), then `./gradlew bundleRelease assembleRelease`; the files
+  are in `app/build/outputs/bundle/release/` and `app/build/outputs/apk/release/`.
+- **Check before uploading:** install the release APK on a phone (`adb install`; uninstall a
+  debug build first, it has another key) and play a game through.
+
 ## Google Play requirements
 
 - **Upload an Android App Bundle (`.aab`)**, not an APK; build an APK too, to install on a phone
   for testing.
 - **Target SDK:** Play requires a recent target API level for new apps (35 at least; check the
   current rule when submitting). SDK 36 is installed.
-- **Signing:** an upload key (keystore) that must be kept safe, outside the web server and the
-  repo, with its password. Turn on **Play App Signing** (Google holds the app signing key; a lost
-  upload key can then be reset).
+- **Signing:** the upload key and Play App Signing (previous section).
 - **Developer account:** $25 once. A new **personal** account must run a **closed test with at
   least 12 testers for 14 days** before publishing to everyone. An **organization** account
   (Functional AI Inc.) skips that but needs a D-U-N-S number.
 - **Families policy** (an app for children): target-age declaration, content-rating
   questionnaire, data-safety form (the games collect nothing; progress stays on the phone), and a
-  **privacy policy URL**. The site has no privacy policy page yet: one is needed.
+  **privacy policy URL**: https://multiply.by/privacy/ (`PRIVACY.md`, which `make` renders with
+  `md-html.py`, like this page). The answers to every Play Console form are in
+  `android/assets/play-console.txt`.
 - **App name:** "Multiply.by – Times Tables" in the store (the listing title, set in the Play
   Console). On the phone's home screen, under the icon, "Multiply.by" (`app_name` in
   `app/src/main/res/values/strings.xml`): a home screen shows only about 12 characters.
@@ -290,42 +322,44 @@ https://multiply.by/android/assets/ so it can be looked at or downloaded from an
 | File | What it is | Play's rule |
 |---|---|---|
 | `listing.txt` | App name, short and full description, category | 30, 80 and 4000 characters |
+| `play-console.txt` | The answers to the Play Console's forms, page by page: app details, store settings, privacy policy, app access, ads, content rating, target audience (6-8 and 9-12: the Families policy), data safety ("no data collected"), release notes | |
 | `icon-512.png` | The store icon, the site's `icon-512.png` (the "2x2" of `icon.svg`) | 512 x 512 PNG, square: Play rounds the corners |
 | `feature-graphic.png` | Logo, name, one line and six game pictures (the front page's thumbnails) | 1024 x 500, no transparency |
 | `phone/NN-PAGE.png` | Phone screenshots in store order: Monster, Robot, Train, Dinosaurs, Block Craft (each a few questions in), the /games/ chooser, Build It, About | 2 to 8, 9:16, 1080 x 1920 |
-| `robot-3x.mp4` | The Robot game played from the start to "You Won!" on a phone (one answer in ten wrong), at 3x speed, with the game's sounds: about 30 s, 1080 x 1920, under 3 MB | Play takes a YouTube link only |
+| `tablet-7/`, `tablet-10/` | Tablet screenshots, upright like the app: Monster, Train, Robot, /games/ | optional; 1200 x 1920 and 1600 x 2560 |
+| `robot.mp4` | The Robot game played from the start to "You Won!" on a phone: the first 10 moves (7 right, 3 wrong) at 1.4x speed with the game's sounds and a mouse pointer, the rest at 12x, silent, then 3 s on "You Won!". About 28 s, 1080 x 1920, about 2 MB | Play takes a YouTube link only |
 
-**How to make them.** `listing.txt` is written by hand and kept in git; the rest is generated
+**How to make them.** `listing.txt` and `play-console.txt` are written by hand and kept in git;
+the rest is generated
 (git-ignored) by `android/store-assets.py` from the live site, so anyone can remake it:
 
 1. Install Python 3 with Playwright and Pillow (`pip install playwright pillow`, then
    `playwright install chromium`) and ffmpeg (for the video).
 2. From the `android` folder: `python3 store-assets.py`. About three minutes, most of it the
-   video. `--only icon,feature,phone,video` makes some of them; `--site URL` reads another copy
+   video. `--only icon,feature,phone,tablet,video` makes some of them; `--site URL` reads another copy
    of the site.
 
 The script plays the games the way `play-test.py` does: it reads the question, taps the right
 answer (or, in the video, sometimes a wrong one) and waits for the next question. Screenshots
 are taken at 360 x 640 with 3x pixels (a phone), in a fresh browser (no saved progress), and
 saved without transparency. To change what is shown, edit the `PHONE` list (file name, page,
-questions answered first), `VIDEO_PAGE`, `SPEED` or `FEATURE_GAMES` at the top of the script.
+questions answered first), `TABLETS` and `TABLET_PAGES`, `VIDEO_PAGE`, `VIDEO_SLOW` (the first moves, True for a wrong
+one), `VIDEO_FIRST` (their speed), `VIDEO_FAST`, `VIDEO_END` or `FEATURE_GAMES` at the top of the script.
 The video is recorded with Chrome's own screencast (full phone resolution) and put together by
-ffmpeg. Headless Chrome plays no sound, so the script records the game's Web Audio inside the
-page and cuts it at each tap; each tap's sound is placed at that tap's moment in the 3x video, at
-its normal pitch and length (sped-up chimes would squeak). The last piece (up to 6 s) keeps
-whatever the game plays on "You Won!".
+ffmpeg. Headless Chrome draws no mouse pointer and plays no sound, so the script adds both inside
+the page: an arrow that follows the mouse (glided to each answer, with a ripple on the click), and
+a recorder on the game's Web Audio, whose sound is sped up with the picture (at the same pitch)
+and goes under the first part.
 
 **Before launch:**
-- Remake the files after the rebuild of every page (the new menu), so the screenshots show it:
-  today /games/ and About still have the old menu.
+- Remake the files after a game shown in them is rebuilt.
 - Build It and About are on the website only: in the app their links open the browser after the
   parental gate. Play wants screenshots of what the app shows, so drop those two (or keep them
   last) if the review objects.
-- Upload `robot-3x.mp4` to YouTube (public or unlisted; ads off) and paste the link into the
+- Upload `robot.mp4` to YouTube (public or unlisted; ads off) and paste the link into the
   listing.
-- Tablet screenshots (7- and 10-inch) are optional; the script does not make them yet.
 
-## Links to the app on the website (written 2026-11-20, not built yet)
+## Links to the app on the website (written 2026-11-20, live since 2026-11-21)
 
 The specs already link to the Play listing, https://play.google.com/store/apps/details?id=by.multiply.app,
 which is a 404 until the app is published:
@@ -337,17 +371,16 @@ which is a 404 until the app is published:
   /games/; /games/ is bundled in the app, where the link goes through the parental gate like the
   footer's other links.
 
-**Rebuilding About, Build It or /games/ publishes the link**: their Makefiles depend on
-`footer.txt` (and About on `about.txt`), so a `make` in any of them before launch shows a link to
-a 404. Until launch, either don't rebuild them, or set those two spec changes aside first.
-On launch day: rebuild `about/`, `build-it/` and `games/`, play-test, then build the app (so the
-bundled /games/ has the link too).
+**Live before launch, on purpose**: About, Build It and /games/ were rebuilt on 2026-11-21 and
+show the link, a 404 until the app is published. That is fine while the site has no visitors
+from outside. On launch day: check the link opens the listing, then build the app (its bundled
+/games/ already has the link).
 
 ## Fixes to the site before packaging
 
 - The web manifest's "maskable" icon is the same image as the normal one; Android crops maskable
-  icons to a circle or squircle, so its edges may be cut off. The app's launcher icon needs an
-  adaptive icon (foreground with padding plus background): make one from `icon.svg`.
+  icons to a circle or squircle, so its edges may be cut off (the website's installed app only;
+  the Android app has its own adaptive icon, above).
 
 ## Not chosen, and why
 

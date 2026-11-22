@@ -19,6 +19,8 @@ PAGES = [
     ("space/", "space/index.html", "0.8"),
     ("chinese/", "chinese/index.html", "0.8"),
     ("blocks/", "blocks/index.html", "0.8"),
+    ("evolution/", "evolution/index.html", "0.8"),
+    ("building/", "building/index.html", "0.8"),
     ("base/", "base/index.html", "0.7"),
     ("divide/", "divide/index.html", "0.7"),
     ("build-it/", "build-it/index.html", "0.6"),

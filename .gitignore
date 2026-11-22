@@ -6,6 +6,8 @@
 !/CLAUDE.md
 !/gamify.md
 !/ANDROID.md
+!/PRIVACY.md
+!/PRIVACY-WEBSITE.md
 !/android/
 /android/index.html
 /android/app/src/main/assets/
@@ -15,8 +17,11 @@
 /android/local.properties
 /android/*.apk
 /android/*.aab
+/android/upload-key.properties
+/android/*.jks
 /android/assets/*
 !/android/assets/listing.txt
+!/android/assets/play-console.txt
 !/game.txt
 !/home.txt
 !/layout.txt
@@ -74,6 +79,11 @@
 /evolution/*
 !/evolution/prompt.txt
 !/evolution/build.txt
+!/building/
+/building/*
+!/building/prompt.txt
+!/building/build.txt
+!/building/model
 !/match/
 /match/*
 !/match/build-instructions.txt

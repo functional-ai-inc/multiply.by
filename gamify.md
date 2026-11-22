@@ -97,8 +97,10 @@ win tune, unchanged. Keep `playSound()`, `isMutedNow()` and the iOS sound fixes 
 file gives them.
 
 What may change is how those rising sequences fit the game's STAGES:
-- Divide the game into 4 or 5 STAGES that the player can see change, tied to progress (for
-  example, one stage per 12 facts learned, or per stretch of the path).
+- Divide the game into STAGES that the player can see change, tied to progress (at most 8).
+  For example, Train has 4 stages, one train each (steam, diesel, high-speed rail, maglev): each
+  time another quarter of the facts is learned, the picture changes to the next train, and its
+  stage name and chime change with it.
 - Adjust the NUMBER and LENGTH of the rising sequences to the stages. The base game climbs 12
   semitones, then switches between the three-note ('correct') and four-note ('correct2') chime.
   A gamified game may, for example, give each stage a chime of its own (more notes, or a higher
@@ -204,10 +206,14 @@ heights, gaps), because the building model otherwise keeps the base layout. What
   Space: each planet). Use the game's own stage pictures, made smaller, not new ones (no extra
   size). Each picture about 56px tall (44px on short screens, `max-height: 500px`), the stage's
   short name under it in small text (at least 9.6px, see NO TINY TEXT), joined left to right by a
-  thin line or small arrows; the last stage marked as reached (a check mark or a gold ring). The row
-  never wraps and never makes the overlay wider than the screen: the pictures shrink to fit
-  (`flex: 1 1 0; min-width: 0`) on a 360px phone. After "Practice hard ones" ("Practice done!")
-  the row is the same.
+  thin line or small arrows; the last stage marked as reached (a check mark or a gold ring). Up to
+  5 stages are one row. With 6 or more, on screens narrower than 600px, they are TWO ROWS, the
+  first half of the stages on the top row and the rest under it, in order, left to right (an odd
+  number puts the extra one on the top row); on wider screens one row. A row never wraps by itself
+  and never makes the overlay wider than the screen: the pictures shrink to fit (`flex: 1 1 0;
+  min-width: 0`) on a 360px phone; with two rows on a short screen (`max-height: 500px`) the
+  pictures shrink further so the score and buttons stay on screen. After "Practice hard ones"
+  ("Practice done!") the rows are the same.
 
 ## G4. What the base game provides (names to refer to)
 
@@ -324,8 +330,9 @@ can stall there.
 - No text smaller than 9.6px at any of the four sizes, during play or on the "You Won!" screen.
 - No uncaught error at any point of a whole game. Nothing is assigned to a function call
   (`getAttribute(...) = ...`): attributes are set with `setAttribute`.
-- The "You Won!" screen shows one small picture per stage, in order, all on one line at 360px,
-  nothing cut off, with the title band and menu still usable above it.
+- The "You Won!" screen shows one small picture per stage, in order: one line at 360px for up to 5
+  stages, two lines (top row first) for 6 or more; nothing cut off at 360x640 or 640x360, with the
+  title band and menu still usable above it.
 - Each new feature has a check of its own, stated as something a tester can see, e.g. "after 12
   facts are learned, the first stage of the path is full and confetti falls".
 - The page keeps the base game's `touchend` / `mousedown` / `keydown` audio listener, unchanged,

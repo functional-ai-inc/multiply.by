@@ -99,13 +99,17 @@ GAMES (the tiles, in this order: SHORT NAME, then the game's key, address and sc
   - Key: evolution
   - Game address: https://multiply.by/evolution/
   - Screenshot: /build-it/evolution.png
+- Buildings
+  - Key: building
+  - Game address: https://multiply.by/building/
+  - Screenshot: /build-it/building.png
 - Base Game (the plain game all the others are built from; the front page plays it too)
   - Key: base
   - Game address: https://multiply.by/base/
   - Screenshot: /build-it/base.png
 
 CHECKS
-- Ten tiles in the order above: two columns at 360px, three at 768px, four at 1280px, with no
+- Eleven tiles in the order above: two columns at 360px, three at 768px, four at 1280px, with no
   sideways scroll at any width and nothing cut off.
 - Each tile shows its short name above its screenshot, and a tap anywhere on the tile opens the
   game.

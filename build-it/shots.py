@@ -45,7 +45,7 @@ with sync_playwright() as p:
             pass
         pg.wait_for_timeout(700)
     pg.wait_for_timeout(1500)
-    top, bottom = pg.evaluate("""() => [document.getElementById('menu-bar').getBoundingClientRect().bottom,
+    top, bottom = pg.evaluate("""() => [(document.getElementById('menu-bar') || document.querySelector('nav')).getBoundingClientRect().bottom,
                                         document.getElementById('answers').getBoundingClientRect().top]""")
     shot = Image.open(io.BytesIO(pg.screenshot())).convert("RGB")
     browser.close()
