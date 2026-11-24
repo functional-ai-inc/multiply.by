@@ -313,8 +313,7 @@ IMPORTANT: Do not add any notes at the top or bottom of the HTML file.
     set `state.question = null` and `state.isWon = true`, call `update()`, then `playSound('win')`.
     The "You Won!" overlay then shows the practice: the heading "Practice done!" instead of "You
     Won!", the lines "Your time: T" and "Mistakes: M" of the practice, and only the buttons Play
-    Again and "Practice hard ones" (no score, no best score, no Share, no next-level line,
-    no division line).
+    Again and "Practice hard ones" (no score, no best score, no Share, no next-level line).
     Play Again works as always (a new full game); "Practice hard ones" practises the same set
     again, in a new order.
 
@@ -615,12 +614,30 @@ CRITICAL: iOS Safari speech is highly unstable. You MUST implement the audio sys
 described below.
 
 Unlock (at start-up):
-- Attach `window.addEventListener('touchstart', unlockAudio, { once: true });` and the same for
-  `mousedown`.
-
-- Inside `unlockAudio`: call `window.speechSynthesis.resume()`. Create
-  `const unlockUtterance = new SpeechSynthesisUtterance(' ');`, set its volume to 1, and call
-  `window.speechSynthesis.speak(unlockUtterance);`.
+- PHONES ALLOW SPEECH ONLY FROM A REAL TAP (CRITICAL): a mouse's `pointerdown`, `pointerup`,
+  `touchend`, `click`, `mousedown` and `keydown` count; `touchstart` and a finger's `pointerdown`
+  do NOT. Speech started from them is silently blocked, and iOS stays silent for the whole visit
+  until speech has once been started from a real tap. The answers are handled on `pointerdown`,
+  so on a phone the very first answer's speech comes too early. Also, the answer buttons are
+  disabled right after an answer, and a browser sends NO `mousedown`, `mouseup` or `click` to a
+  disabled button: on a computer those events never arrive after a click on an answer, so they
+  cannot be the only unlock. Therefore attach, at start-up, before any other listener and WITHOUT
+  `once`, both of these:
+  `window.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') unlockAudio(); }, { capture: true, passive: true });`
+  `['pointerup', 'touchend', 'click', 'mousedown', 'keydown'].forEach(type => window.addEventListener(type, unlockAudio, { capture: true, passive: true }));`
+  (Window capture listeners run before the answer handler, so with a mouse the speech is unlocked
+  before the first answer is spoken.) Never attach the unlock to `touchstart`, or to a finger's
+  `pointerdown`.
+- `unlockAudio()` runs its body only the first time: at its top,
+  `if (window._speechUnlocked || !window.speechSynthesis) return; window._speechUnlocked = true;`.
+  Then it calls `window.speechSynthesis.resume()` and speaks: if `window._pendingSpeech` is set
+  (an utterance `speakCard` made before the unlock), it speaks THAT utterance and clears
+  `window._pendingSpeech`, so the first answer is still heard, a moment later; otherwise it speaks
+  `const unlockUtterance = new SpeechSynthesisUtterance(' ');` with volume 1. Either way with
+  `window.speechSynthesis.speak(...)`, synchronously, inside the event.
+- In `speakCard`, after the utterance is ready (step 8 below): if `window._speechUnlocked` is not
+  yet true, set `window._pendingSpeech = utterance;` and return without speaking; otherwise speak
+  it as step 9 says.
 - If `window.speechSynthesis` does not exist, skip all speech quietly (the game still works).
 
 - VOICE PRELOAD (CRITICAL, otherwise the device's default voice is used): browsers load
@@ -655,6 +672,10 @@ Unlock (at start-up):
   8. CRITICAL iOS LANG FIX: if `voiceMatch` exists, set `utterance.voice = voiceMatch;` AND
      `utterance.lang = voiceMatch.lang;`. If NO voice matched, set `utterance.lang = 'en-US';` (a
      full region tag; a bare 'en' lets some browsers fall back to the device's default voice).
+     EMPTY VOICE LIST: phones often report NO voices at all (Android before its voices load, some
+     WebViews always), yet still speak a full region tag with the system voice. So never skip
+     speech, or play a sound instead of it, because the voice list is empty: decide "this device
+     has no voice for the language" only from a NON-empty list that lacks it.
 
   9. Call `window.speechSynthesis.speak(utterance);` SYNCHRONOUSLY (in the same event that triggered
      it).
@@ -814,23 +835,14 @@ mistakes, time) and keeps the best score (BEST_KEY) and the sound setting (MUTE_
   spaces them. pwa.js may insert an "Install for offline play" button into this same container,
   right after Play Again; the gap then separates all the buttons evenly. Below that, with a 1.5rem
   gap, one NEXT-LEVEL line (1rem, #374151), depending on MODE:
-    - 9: <div>Ready for more? Try <a href="?both">both ways</a>, <a href="?12">up to 12</a> or <a href="?20">up to 20</a></div>
-    - both: <div>Ready for more? Try <a href="?12">up to 12</a> or <a href="?20">up to 20</a></div>
-    - 12: <div>Ready for more? Try <a href="?20">up to 20</a></div>
-    - 20: no line.
-  Clicking a link calls `preventDefault()` and then `switchMode('both')`, `switchMode(12)` or
-  `switchMode(20)`, with no page load. The links have NO target attribute and are styled like the footer links (no
-  underline, bold, dark blue #1e40af).
-  Below it, in every mode, one DIVISION line recommending the division game for the same set:
-    <div class="division-line">Next: learn division at <a href="https://multiply.by/divide/">divide.by</a></div>
-  It looks exactly like the next-level line: 1rem text, color #374151, centered, and its link
-  styled like the next-level links (`text-decoration: none; font-weight: bold; color: #1e40af;`),
-  never the browser's default blue underlined link. Spacing: 0.5rem below the next-level line;
-  when there is no next-level line (up to 20), 1.5rem below the buttons, the same gap the
-  next-level line has.
-  with href https://multiply.by/divide/ for 2 to 9 and both ways, https://multiply.by/divide/?12 for up to 12
-  and https://multiply.by/divide/?20 for up to 20 (set by `update()`, so it follows switchMode).
-  It is a plain link: no preventDefault, no target, it opens the division game in the same tab.
+    - 9: <div>Ready for more? Try <a href="?both">both ways</a>: also 4 x 3, not just 3 x 4.</div>
+      (the explanation is part of the line, always shown, the same words as the Both ways note in
+      How to Play; only "both ways" is the link)
+    - both, 12 and 20: no line. Up to 12 and up to 20 are NOT offered here: few players need them,
+      and they are in the Tables choice of How to Play and on the About page.
+  Clicking the link calls `preventDefault()` and then `switchMode('both')`, with no page load.
+  The link has NO target attribute and is styled like the footer links (no underline, bold, dark
+  blue #1e40af).
 
 SHARE MY RESULTS (the "Share my results" button on the "You Won!" screen):
 - RESULTS CARD (a picture): `drawResultsCard()` draws the results on a 1080 x 1080 <canvas> (made
@@ -1080,7 +1092,7 @@ browser: deliver the file as soon as it is written. The site tests every page it
 
 - Header buttons and links work on phones: the logo, the speaker button, BUILD IT, SOURCE, the
   GAMES icon, the menu button and, in its panel, HOME, GAMES, ABOUT, RULES and RESET, the How to
-  Play panel, "Play Again", the Tables choice and the next-level links on the "You Won!" screen
+  Play panel, "Play Again", the Tables choice and the next-level link on the "You Won!" screen
   respond to a normal tap.
 - On the "You Won!" screen the title band and the menu bar stay visible and sharp above the overlay,
   and the logo, GAMES, BUILD IT, SOURCE, the menu button (its panel opens above the overlay) and the
@@ -1110,11 +1122,10 @@ browser: deliver the file as soon as it is written. The site tests every page it
   with no page load, also in a chatbot's sandboxed preview. Each mode keeps its own saved progress
   and best score across reloads, and Play Again stays in its mode; the sound setting is shared. On
   page load the address alone decides the mode. The next-level line on the "You Won!" screen
-  offers both ways, up to 12 and up to 20 after 2 to 9, up to 12 and up to 20 after both ways, up
-  to 20 after up to 12, and nothing after up to 20. How to Play shows the four Tables buttons on
-  one line and the Both ways note, and fits a 360 x 640 phone without scrolling.
-  Under it, in every mode, "Next: learn division at divide.by" opens the division game in the
-  same set (/divide/ for 2 to 9 and both ways, /divide/?12 or /divide/?20).
+  offers only both ways, after 2 to 9, explained on the line itself ("Ready for more? Try both
+  ways: also 4 x 3, not just 3 x 4."); after both ways, up to 12 and up to 20 there is no line, and
+  up to 12 and up to 20 are never offered on "You Won!". How to Play shows the four Tables
+  buttons on one line and the Both ways note, and fits a 360 x 640 phone without scrolling.
 - Sound effects: sound is ON by default: on a first visit the speaker shows the sound waves, and
   from the first tap on (phones allow sound only after a touch) a right answer, a wrong answer and
   winning each play their own short sound, on phones as well as on desktop. The right-answer chime

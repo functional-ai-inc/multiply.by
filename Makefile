@@ -8,7 +8,7 @@ ICONS = icon-192.png icon-512.png
 PROMPT_PAGES = $(sort prompt/index.html base/prompt/index.html \
   $(patsubst %/prompt.txt,%/prompt/index.html,$(wildcard */prompt.txt)))
 
-all: gamify/index.html android/index.html privacy/index.html privacy/website/index.html base/index.html index.html $(FILES) $(ICONS) og-image.png sitemap.xml \
+all: gamify/index.html android/index.html privacy/index.html privacy/website/index.html selector/prompt/index.html grid/prompt/index.html base/index.html index.html $(FILES) $(ICONS) og-image.png sitemap.xml \
   $(PROMPT_PAGES)
 
 prompt-pages: $(PROMPT_PAGES)
@@ -22,12 +22,13 @@ $(SPEC): game.txt layout.txt assemble-spec
 	./assemble-spec game.txt > $(SPEC).tmp
 	mv $(SPEC).tmp $(SPEC)
 
-# https://multiply.by/gamify/: ONE file for building a GAMIFIED game in any chatbot: gamify.md (as
-# plain text) followed by the base game's complete prompt, HTML-escaped in a <pre> (Gemini's web app
-# refuses a .txt upload but takes an .html one). No AI model involved.
-gamify/index.html: gamify.md $(SPEC) gamify-html.py
+# https://multiply.by/gamify/: ONE file for building a GAMIFIED game in any chatbot: gamify.md,
+# grid.md (the games grid on "You Won!") and orders.txt (its order), then the base game's complete
+# prompt, HTML-escaped in a <pre> (Gemini's web app refuses a .txt upload but takes an .html one).
+# No AI model involved.
+gamify/index.html: gamify.md grid.md orders.txt $(SPEC) gamify-html.py
 	mkdir -p gamify
-	python3 gamify-html.py gamify.md $(SPEC) > gamify/index.html.tmp
+	python3 gamify-html.py gamify.md grid.md orders.txt $(SPEC) > gamify/index.html.tmp
 	mv gamify/index.html.tmp gamify/index.html
 
 # The prompt pages: the prompt.txt text, exactly, in a box with a copy button (txt-html.py). No AI model.
@@ -66,19 +67,31 @@ build/index.html: $(SPEC) model run-model
 	mkdir -p build
 	./run-model $(SPEC) build/index.html
 
-# THE FRONT PAGE (https://multiply.by/): the base game with a strip of the other games under it.
-# home.txt includes game.txt (its /base/ addresses made the root's) and adds the strip. Its
-# complete prompt is prompt.txt, at the site's root, built by the model named in home-model
-# (carbon: kimi's front pages froze after some moves; the base game stays on kimi, in model).
+# THE FRONT PAGE (https://multiply.by/): one of the games (now Dots) with a strip of the other games.
+# prompt.txt, at the site's root (tracked; SOURCE opens it as /prompt/), is its whole prompt:
+# "Use" lines for the game's prompt page (https://multiply.by/dots/prompt/), /gamify (gamify.md,
+# grid.md and the base prompt) and selector.md (https://multiply.by/selector/prompt/: the strip
+# and the few changes it makes). run-model --fetch sends it with the full text of each, as a
+# chat's fetch would (mk-gamify's linked_files/message), to the model named in home-model.
 # (The games chooser is /games/, built in games/.)
-prompt.txt: home.txt game.txt layout.txt assemble-spec
-	./assemble-spec home.txt > prompt.txt.tmp
-	mv prompt.txt.tmp prompt.txt
+# https://multiply.by/selector/prompt/: selector.md rendered as a page (md-html.py). No AI model.
+selector/prompt/index.html: selector.md md-html.py
+	mkdir -p selector/prompt
+	python3 md-html.py selector.md > selector/prompt/index.html.tmp
+	mv selector/prompt/index.html.tmp selector/prompt/index.html
+
+# https://multiply.by/grid/prompt/: grid.md (the games grid: "You Won!" screens and the games page)
+# rendered as a page (md-html.py). No AI model.
+grid/prompt/index.html: grid.md md-html.py
+	mkdir -p grid/prompt
+	python3 md-html.py grid.md > grid/prompt/index.html.tmp
+	mv grid/prompt/index.html.tmp grid/prompt/index.html
 
 # build/home/ so that its build.txt does not overwrite the base game's build/build.txt.
-build/home/index.html: prompt.txt home-model run-model
+build/home/index.html: prompt.txt dots/prompt.txt dots/prompt/index.html gamify/index.html \
+  selector.md selector/prompt/index.html orders.txt home-model run-model
 	mkdir -p build/home
-	./run-model prompt.txt build/home/index.html home-model
+	./run-model --fetch prompt.txt build/home/index.html home-model
 
 # PWA files, copied verbatim from PWA-build.txt.
 $(FILES) &: $(PWA) extract-files.py
@@ -94,16 +107,12 @@ build/pwa-head.html: $(PWA) extract-files.py
 base/index.html: build/index.html build/pwa-head.html check-scripts.py
 	test "$$(grep -c "</head>" build/index.html)" = 1
 	sed "/<\/head>/e cat build/pwa-head.html" build/index.html > base/index.html.tmp
-	@size=$$(wc -c < base/index.html.tmp); if [ $$size -ge 100000 ]; then \
-	  echo "WARNING: base/index.html is $$size bytes; the About page says less than 100 KB"; fi
 	python3 check-scripts.py base/index.html.tmp
 	mv base/index.html.tmp base/index.html
 
 index.html: build/home/index.html build/pwa-head.html check-scripts.py
 	test "$$(grep -c "</head>" build/home/index.html)" = 1
 	sed "/<\/head>/e cat build/pwa-head.html" build/home/index.html > index.html.tmp
-	@size=$$(wc -c < index.html.tmp); if [ $$size -ge 100000 ]; then \
-	  echo "WARNING: index.html is $$size bytes; the About page says less than 100 KB"; fi
 	python3 check-scripts.py index.html.tmp
 	mv index.html.tmp index.html
 

@@ -21,6 +21,7 @@ MAIN = {
     "space": ("#planet-image", "cover", 16),
     "chinese": ("#wall-svg", "cover", 16),
     "blocks": ("#world-svg", "cover", 16),
+    "base": ("#top-row", "contain", 16),  # the question box and the indicator column
 }
 W, H = 200, 160
 game, out = sys.argv[1], sys.argv[2]

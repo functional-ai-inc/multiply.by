@@ -29,7 +29,7 @@ TITLE BAND (branding, the very top of the page, above the menu bar)
     or drops it.
   - THE HEADING IS A LINK TO THE HOME PAGE: tapping or clicking it opens https://multiply.by/ (the
     main game), in the same tab. CRITICAL: this holds on EVERY page and in every custom or gamified
-    game (e.g. /divide/, /monster/, /train/): a game changes the heading's text, never its href. It looks exactly like plain text: the same blue #2563eb, no underline
+    game (e.g. /monster/, /train/): a game changes the heading's text, never its href. It looks exactly like plain text: the same blue #2563eb, no underline
     (`text-decoration: none`), `color: inherit`, `cursor: pointer`; on hover (desktop) it turns dark
     blue #1e40af.
   - The band is `display: flex; align-items: center; gap: 6px; position: relative;`. The h1 is

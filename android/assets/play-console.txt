@@ -39,8 +39,8 @@ Content rating (IARC questionnaire):
   Users can interact or exchange content with each other: No
   Shares the user's current location: No
   Allows purchases of digital goods: No
-  Unrestricted internet access (e.g. a web browser): No (links open the phone's browser, only
-    after the parental gate)
+  Unrestricted internet access (e.g. a web browser): No (links that leave the app open the
+    phone's browser, only after the parental gate; About and Build It are inside the app)
   Expected result: Everyone / PEGI 3 / USK 0
 
 Target audience and content:
@@ -77,6 +77,6 @@ App bundle: multiply-by-release-YYYYMMDD-HHMM.aab from android/build-app release
 Release name: 1.0 (1)
 Release notes (en-US, 500 characters):
   First release: times-table games for children, free, with no ads and no sign-up. Monster,
-  Robot, Train, Dinosaurs, Planes, Space, Great Wall, Block Craft, Evolution, Buildings and the
+  Robot, Train, Dinosaurs, Planes, Space, Chinese, Block Craft, Evolution, Buildings and the
   base game, all working offline.
 Countries: all countries and regions.

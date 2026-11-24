@@ -30,9 +30,15 @@ with sync_playwright() as p:
     for move in range(MOVES):
         q = question(pg)
         m = re.search(r"(\d+)\s*[x×]\s*(\d+)", q)
-        if not m:
+        # A missing factor ("3 x __ = 18" or "__ x 3 = 18", Evolution): the answer is the factor.
+        f = re.search(r"(\d+)\s*[x×]\s*_+\s*=\s*(\d+)|_+\s*[x×]\s*(\d+)\s*=\s*(\d+)", q)
+        if f:
+            a, c = (f[1], f[2]) if f[1] else (f[3], f[4])
+            answer = str(int(c) // int(a))
+        elif m:
+            answer = str(int(m[1]) * int(m[2]))
+        else:
             sys.exit(f"{game}: move {move + 1}: no question found in {q!r}")
-        answer = str(int(m[1]) * int(m[2]))
         buttons = pg.locator("#answers button")
         texts = [t.strip().split("\n")[-1].strip() for t in buttons.all_inner_texts()]
         if answer not in texts:

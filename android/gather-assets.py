@@ -25,9 +25,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.dirname(HERE)
 URL = "https://multiply.by"
 START = ["/", "/games/"]
-# Never bundled: About and Build It (ads planned), the build guide, the service worker, these notes.
-EXCLUDE = ("/about", "/build-it/index.html", "/build-it/prompt", "/gamify", "/sw.js",
-           "/FAQ", "/faq", "/android", "/ANDROID")
+# Never bundled: the build guide, the service worker, these notes. About and Build It ARE bundled
+# (with Build It's prompts and build notes), so the app's own pages open inside it, not behind the
+# parental gate.
+EXCLUDE = ("/gamify", "/sw.js", "/FAQ", "/faq", "/android", "/ANDROID")
 
 ABS = re.compile(r"https://multiply\.by(/[A-Za-z0-9._/-]*)")
 ROOT = re.compile(r"""["'](/[A-Za-z0-9_-][A-Za-z0-9._/-]*\.(?:png|svg|jpg|webp|js|txt|webmanifest|json|mp3|ogg|wav))["']""")

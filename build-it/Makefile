@@ -3,7 +3,7 @@
 # The page is written under a temporary name and renamed into place,
 # so a visitor never gets a half-written page.
 
-GAMES = train monster dino space chinese robot plane blocks evolution building
+GAMES = train monster dino space chinese robot plane blocks evolution building dots
 SHOTS = base.png $(GAMES:%=%.png)
 # The front page's strip pictures (thumbs.py: the game's main picture, 200 x 160). Made only when
 # missing (no prerequisites), so a hand-made one in ../thumbnails/ is never overwritten; delete a
@@ -33,7 +33,7 @@ index.html: prompt.txt ../check-scripts.py
 
 # The page's complete build instructions (the file SOURCE links to): page.txt with the
 # site's shared layout.txt put in at its "#include layout.txt" line.
-prompt.txt: page.txt ../layout.txt ../footer.txt ../assemble-spec
+prompt.txt: page.txt ../layout.txt ../footer.txt ../orders.txt ../assemble-spec
 	../assemble-spec page.txt > prompt.txt.tmp
 	mv prompt.txt.tmp prompt.txt
 

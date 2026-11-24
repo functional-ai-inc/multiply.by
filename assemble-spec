@@ -2,8 +2,9 @@
 # Write a page's complete build instructions to stdout: the page's own spec (for example
 # game.txt or about/about.txt) with its one "#include layout.txt" line replaced by the site's
 # shared layout.txt (title band, share icon, menu bar, footer), and its "#include footer.txt"
-# line, if it has one, by footer.txt (the three-column site info block).
-# A page may also have one "#include game.txt" line (the front page, home.txt): it is replaced by
+# line, if it has one, by footer.txt (the three-column site info block), and its
+# "#include orders.txt" line, if it has one, by orders.txt (the order of the games' tiles).
+# A page may also have one "#include game.txt" line (no page does now; the front page once did): it is replaced by
 # the base game's spec, game.txt, and every https://multiply.by/base/ address in the result
 # becomes https://multiply.by/ (the front page plays the base game at the site's root); game.txt's
 # own "#include layout.txt" line then counts as the page's one.
@@ -28,4 +29,5 @@ fi
 # With game.txt in, the base game's addresses become the root's everywhere (layout.txt has some).
 if [ "$GAMES" = 1 ]; then BASE='s#https://multiply\.by/base/#https://multiply.by/#g'; else BASE=''; fi
 sed -e '/^#include layout\.txt$/{r '"$ROOT/layout.txt" -e 'd}' \
-	-e '/^#include footer\.txt$/{r '"$ROOT/footer.txt" -e 'd}' "$TMP" | sed -e "$BASE"
+	-e '/^#include footer\.txt$/{r '"$ROOT/footer.txt" -e 'd}' \
+	-e '/^#include orders\.txt$/{r '"$ROOT/orders.txt" -e 'd}' "$TMP" | sed -e "$BASE"

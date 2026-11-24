@@ -14,7 +14,7 @@ Anyone can build the app from the public repo, on Linux, Mac or Windows. You nee
 Then:
 
 1. Get the code:
-   `git clone https://github.com/john-l-roseman/multiply.by.git` and `cd multiply.by/android`.
+   `git clone https://github.com/functional-ai-inc/multiply.by.git` and `cd multiply.by/android`.
 2. Get the games: `python3 gather-assets.py`. It downloads the current pages from
    https://multiply.by (about 4 MB) into `app/src/main/assets/site/`. The built pages are not in
    the repo, so this step is needed; run it again to pick up new games.
@@ -66,10 +66,14 @@ nothing, so the app needs no income:
 - `gather-assets.py [--web] [OUT]`: copies the live pages into the app (default OUT
   `app/src/main/assets/site/`, git-ignored). On the multiply.by server it reads the web folder;
   anywhere else, or with `--web`, it downloads from https://multiply.by (both give the same files).
-  It starts at / and /games/ and follows every link to a file that exists on the site, so a new game linked from the front
-  page or /games/ is bundled with no list to edit. Never bundled: /about, /build-it/ (its page and
-  prompt.txt; its screenshots are, for /games/), /gamify, /sw.js. It writes `files.txt`, the list
-  the app serves from, and prints links to addresses that are not on the site.
+  It starts at / and /games/ and follows every link to a file that exists on the site, so a new
+  game linked from the front page or /games/ is bundled with no list to edit. That includes About
+  and Build It (with every game's prompt.txt and build.txt, which Build It reads), each page's
+  SOURCE prompt page, the selector, grid and orders files, and both privacy policies. Never
+  bundled (`EXCLUDE`): /gamify, /sw.js, /faq, /android. Pages no bundled page links to are left
+  out too: /match/, the model-comparison copies (/train/carbon/, ...), robots.txt and the sitemap.
+  It writes `files.txt`, the list the app serves from, and prints links to addresses that are not
+  on the site.
 - `build-app [debug]` (the site owner's route): stages the project in a temp folder (the
   gathered pages are never written into the web folder), starts `android-build` if stopped,
   builds over IAP SSH with `./gradlew`, copies the APK to `~/multiply-android/` (outside the web folder), and stops
@@ -90,8 +94,9 @@ nothing, so the app needs no income:
   extension. A link to `/train` (no slash) is reloaded as `/train/`, so relative links resolve.
 - Each address, decided in `shouldOverrideUrlLoading` / `shouldInterceptRequest`:
   - a bundled page or file: served from the app;
-  - a page that isn't bundled (About, Build It, /gamify/, another site, mailto:, ...): the parental
-    gate, then the phone's browser (`Intent.ACTION_VIEW`);
+  - a page that isn't bundled (/gamify/, another site such as the AI chat sites linked from
+    Build It and the prompts, GitHub, mailto:, ...): the parental gate, then the
+    phone's browser (`Intent.ACTION_VIEW`);
   - a file that isn't bundled, or any request to another host: the in-app 404 response (the pages
     are self-contained, so nothing is fetched from the network).
 - **Service worker:** `/sw.js` is not bundled, so it gets the 404. `pwa.js` catches a failed
@@ -109,6 +114,16 @@ nothing, so the app needs no income:
   - Found on 2026-11-20 (a site bug, not the app's): four games share links that 404 on the
     website and in the app: Monster `https://multiply.by/munchy/`, Planes `/flight/`, Great Wall
     `/greatwall/`, Block Craft `/blockcraft/` (each game's `shareText()`).
+- **No ads anywhere in the app**, on every page, the bundled About and Build It included. The
+  website may show ads on its non-game pages (`PRIVACY-WEBSITE.md`), but in the app every request
+  to another host gets the in-app 404, so no ad code can load. When ads are added to the website,
+  the ad slots must collapse when their ad does not load, so the app shows no empty boxes; check
+  this before the release that follows.
+- **SOURCE in the app:** a game's SOURCE is the relative link `prompt/`, so it opens the bundled
+  prompt page (the game's prompt.txt in a box with a copy button), inside the app with no gate. The
+  copy button uses `navigator.clipboard.writeText` with a `select()` fallback: check it on a phone.
+  Links inside a prompt (https://multiply.by/gamify, the AI chat sites) leave the app after the
+  gate; links to bundled pages (/dots/prompt/, /selector/prompt/) stay inside.
 - WebView settings: JavaScript on, DOM storage on, file and content access off, no extra windows
   (`target="_blank"` opens in the same view). `mediaPlaybackRequiresUserGesture` is left on (the
   games start audio after a tap); check the Web Audio sounds on a real phone.
@@ -135,7 +150,6 @@ The pages and sizes on 2026-11-20 (each game is one self-contained HTML file):
 | /chinese/ | 105,870 |
 | /blocks/ | 120,701 |
 | /evolution/ | 341,414 |
-| /divide/ | 59,688 |
 
 Plus each page's prompt (SOURCE: its `prompt/` page, or `prompt.txt` on pages built earlier), the strip
 thumbnails (`/thumbnails/*.png`), the /games/ screenshots (`/build-it/*.png`; together about
@@ -353,9 +367,8 @@ and goes under the first part.
 
 **Before launch:**
 - Remake the files after a game shown in them is rebuilt.
-- Build It and About are on the website only: in the app their links open the browser after the
-  parental gate. Play wants screenshots of what the app shows, so drop those two (or keep them
-  last) if the review objects.
+- Build It and About are in the app (bundled since 2026-11-23), so their store screenshots show
+  what the app shows.
 - Upload `robot.mp4` to YouTube (public or unlisted; ads off) and paste the link into the
   listing.
 

@@ -3,11 +3,11 @@
 A times-tables game site, served live by nginx straight from this folder (https://multiply.by).
 Every page is ONE self-contained HTML file built by an AI model from a plain-text spec. Never edit a
 generated file (index.html, prompt.txt, pwa.js, sw.js, ...) by hand: change the spec and
-rebuild. GitHub: john-l-roseman/multiply.by (public).
+rebuild. GitHub: functional-ai-inc/multiply.by (public).
 
 ## How a page is built
-- Site map: `/` is the front page: the base game with a strip of the other games under the
-  answers (spec `home.txt`); `/games/` is the picture chooser (spec `games/page.txt`, the strip's
+- Site map: `/` is the front page: a game (now Dots) with a strip of the other games under the
+  answers (prompt `prompt.txt`); `/games/` is the picture chooser (spec `games/page.txt`, the strip's
   "More games" tile); `/base/` is the base game alone (spec
   `game.txt`); each gamified game is in its own folder (`/train/`, ...);
   `/build-it/` ("Build it yourself", menu BUILD IT) shows each game's prompt, model and build time;
@@ -29,15 +29,30 @@ rebuild. GitHub: john-l-roseman/multiply.by (public).
   expands it into that page's `prompt.txt` (generated, git-ignored, served: every page's SOURCE
   button opens it as the prompt page, and it must stay one self-contained file a person can
   upload to any chatbot).
-  - `home.txt`: the front page (/). It is `#include game.txt` (assemble-spec puts the base game's
-    spec in and makes every https://multiply.by/base/ address https://multiply.by/) plus a section
-    that adds the games strip (short names, pictures `thumbnails/GAME-thumbnail.png`, 200 x 160, last game
-    played first, then Monster and Dinosaurs, the rest shuffled per visit, then More games).
-    Same storage keys as /base/, so progress is shared.
-  - `games/page.txt`: the chooser (/games/; GAMES is the current menu item), big tiles
-    with the short names (Monster, Train, Dinosaurs, Robot, Planes, Space, Great Wall, Block Craft,
-    Evolution, Buildings, Base Game). Both pages save the tapped game in localStorage `multiply_last_game`.
-    Build with `make` in `games/` (Claude).
+  - `prompt.txt` (tracked, at the root like every page's prompt.txt): the front page's whole
+    prompt (/), three "Use" lines: the played game's prompt page (now
+    https://multiply.by/dots/prompt/), https://multiply.by/gamify and
+    https://multiply.by/selector/prompt/. To put another game on the front page, change the first
+    line (for the base game, use https://multiply.by/base/prompt/ and
+    https://multiply.by/grid/prompt/ instead of the first two) and the dependencies of
+    build/home/index.html in the Makefile. `selector.md` (tracked; rendered by md-html.py to
+    /selector/prompt/) describes the games strip (the grid's list minus the played game, pictures
+    `thumbnails/GAME-thumbnail.png`, 200 x 160, last game played first, then the rest in the
+    order of orders.txt, then More games) and the page's changes to the game (address
+    https://multiply.by/, SOURCE /prompt/, HOME current). Same storage keys as the game's own page,
+    so progress is shared.
+  - `grid.md` (tracked; rendered by md-html.py to /grid/prompt/): the games grid and THE SITE'S
+    ONE LIST OF GAMES (short name, key, address, thumbnail, screenshot): add a new game there.
+    Used by the games page (all twelve, screenshots), the front page's strip (the list only) and,
+    through gamify.md, the end of every gamified game's "You Won!" panel (all twelve,
+    this game marked "Play again", thumbnails, 3 x 4; /gamify/ includes grid.md after gamify.md). Games get it when rebuilt.
+  - `orders.txt` (tracked, served at /orders.txt, edited by the user): the one order of the game
+    tiles on the games page, the front page strip and the "You Won!" grid; never shuffled. grid.md and selector.md point to it; /gamify/ includes it after grid.md; the
+    games page and front page builds fetch it.
+  - `games/page.txt`: the chooser (/games/; GAMES is the current menu item); its grid is a
+    "Use https://multiply.by/grid/prompt/" line. Both pages save the tapped game in localStorage
+    `multiply_last_game`. Build with `make` in `games/` (`../run-model --fetch`, model in
+    `games/model`: opus).
   - `game.txt`: the base game (/base/). The site menu plus MUTE, RULES (popup) and RESET.
     Every gamified game keeps exactly this menu (gamify.md).
   - `about/about.txt`: About (ABOUT is the current menu item).
@@ -52,20 +67,20 @@ rebuild. GitHub: john-l-roseman/multiply.by (public).
   `base/prompt.txt` -> the model named in `model` (e.g. kimi; `run-model`, which reuses mk-gamify's
   model calls; build/build.txt notes tokens, cost, time) -> `build/index.html` -> PWA tags from
   `PWA-build.txt` inserted -> `check-scripts.py` (node --check) -> `base/index.html`. Front page:
-  home.txt (+ game.txt) -> `prompt.txt` -> the model in `home-model` (carbon; kimi's front pages froze
-  after some moves; run-model) ->
+  `prompt.txt` -> the model in `home-model` (`run-model --fetch`: the prompt
+  plus the full text of each page on a "Use https://multiply.by/..." line, as a chat's fetch gives
+  it: dots/prompt.txt, the /gamify text, selector.md) ->
   `build/home/index.html` (its own folder, so its build.txt does not overwrite the base game's
   `build/build.txt`, which Build It reads) -> PWA tags -> `index.html`. Also extracts the PWA files and renders icons and og-image.png. The installed app
   opens the front page; sw.js keeps every page opened online, so played games work offline.
 - About: `make` in `about/` (Claude via `about/run-claude.py`, key read from
   `$HOME/.anthropic_key`).
-- Custom games (e.g. `divide/`): `../mk-custom` from the game's folder; it combines game.txt +
-  layout.txt + the folder's `custom.txt` (put at the top), sets GAME to the folder name and SOURCE
-  to the folder.
+- Custom games: `../mk-custom` from the game's folder; it combines game.txt + layout.txt + the
+  folder's `custom.txt` (put at the top), sets GAME to the folder name and SOURCE to the folder.
   Served at /<folder>/ (no redirects).
-  - `divide/`: the division game (Divide.by), same game with "56 ÷ 8" questions. https://divide.by
-    and www redirect (302, keeping ?12/?20) to https://multiply.by/divide/
-    (/etc/nginx/sites-enabled/divide.by).
+  - The division game (`divide/`, Divide.by) was removed on 2026-11-23 (Evolution covers missing
+    factors). /divide/ and https://divide.by redirect to https://multiply.by/games/ (nginx:
+    sites-enabled/multiply.by and sites-enabled/divide.by). Its custom.txt is in git history.
   - `monster/`: Multiply Monster, a gamified version for 2nd and 3rd graders (Munch, path,
     stickers, stars; `?easy` = 2, 5 and 10). Now built with `../mk-gamify` (see below) from
     `monster/prompt.txt` (a short prompt), model `fable`. Its `custom.txt` is the hand-made design
@@ -95,7 +110,7 @@ rebuild. GitHub: john-l-roseman/multiply.by (public).
   hand edit of the base build instructions, not its subject. Its old name, multiply.md, is gone.
 - `gamify/index.html` (https://multiply.by/gamify, generated by `make gamify/index.html`,
   served, git-ignored): ONE file for building a gamified game in any chatbot, the address every
-  game's prompt ends with: gamify.md, then the base prompt.txt (unchanged), both rendered as HTML
+  game's prompt ends with: gamify.md, grid.md, orders.txt, then the base prompt.txt (unchanged), all rendered as HTML
   by python3-markdown-it (`gamify-html.py`; the base file's HTML shows as text), title "gamify".
   A web page, not .txt: Gemini's web app refuses a .txt upload. Plain `make` rebuilds it whenever
   gamify.md or the base spec changes (no hand copying). It replaced gamify.txt (gone).
@@ -119,12 +134,10 @@ rebuild. GitHub: john-l-roseman/multiply.by (public).
   into `android/assets/`) are in `android/`. The app's privacy policy, `PRIVACY.md`, is rendered the
   same way to /privacy/; the website's, `PRIVACY-WEBSITE.md` (ads on non-game pages, server log),
   to /privacy/website/, linked from footer.txt.
-- `match/` is an older matching game with its own spec (not using layout.txt).
+- `match/` (an older matching game) was deleted on 2026-11-23; `git checkout -- match` restores it.
 - Builds take a few minutes and go live as soon as they pass; run them in the background.
 
 ## Rules
-- The game page must stay under 100 KB (the About page says "less than 100 KB"; make warns).
-  Exception: games with embedded photos (e.g. `evolution/`, `building/`) may be larger.
 - Never print, echo or commit API keys. Don't change or commit anything in /var/www/openlang.ai
   (e.g. run-vertex.py model changes): it is not part of this repo.
 - `chinese/prompt.txt` is the user's own work: commit it only when asked.

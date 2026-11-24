@@ -21,7 +21,7 @@ Pick a game:
 - Dinosaurs: meet a new dinosaur as you learn.
 - Planes: the history of flight.
 - Space: a journey through the solar system.
-- Great Wall: build the Great Wall of China.
+- Chinese: build the Great Wall of China.
 - Block Craft: mine and build with blocks.
 - Evolution: life on Earth, from the first cells on.
 - Buildings: from the Pyramids to the Shanghai Tower.

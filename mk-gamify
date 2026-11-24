@@ -148,8 +148,16 @@ def message(request, files):
         body = read(path)
         if os.path.relpath(path, ROOT) == "gamify/index.html":
             # A fetch gives a page's text, not its markup: gamify.md as Markdown, then the base spec.
-            body = subprocess.run(["python3", "gamify-html.py", "--text", "gamify.md", "base/prompt.txt"],
+            body = subprocess.run(["python3", "gamify-html.py", "--text", "gamify.md", "grid.md",
+                                   "orders.txt", "base/prompt.txt"],
                                   cwd=ROOT, check=True, capture_output=True, text=True).stdout
+        elif os.path.relpath(path, ROOT) in ("selector/prompt/index.html", "grid/prompt/index.html"):
+            # These pages are selector.md and grid.md rendered: a fetch gives that text.
+            body = read(os.path.join(ROOT, os.path.relpath(path, ROOT).split("/")[0] + ".md"))
+        elif re.fullmatch(r"(.+/)?prompt/index\.html", os.path.relpath(path, ROOT)):
+            # A prompt page (txt-html.py) shows its folder's prompt.txt word for word.
+            folder = os.path.dirname(os.path.dirname(path))
+            body = read(os.path.join(folder, "prompt.txt"))
         text += f"\n\n----- {url} (fetched, complete) -----\n\n{body}"
     return text
 

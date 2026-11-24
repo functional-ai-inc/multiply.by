@@ -2,9 +2,12 @@
 """Make gamify/index.html (https://multiply.by/gamify/): ONE self-contained file for building a
 gamified game in any chatbot.
 
-Usage: gamify-html.py gamify.md base/prompt.txt > gamify/index.html
-       gamify-html.py --text gamify.md base/prompt.txt     (the same content as plain text)
+Usage: gamify-html.py gamify.md grid.md orders.txt base/prompt.txt > gamify/index.html
+       gamify-html.py --text gamify.md grid.md orders.txt base/prompt.txt   (as plain text)
 
+The files before the last are gamify.md, then grid.md (the games grid that gamify.md's "You Won!"
+rule refers to) and orders.txt (the order of its tiles, plain text, shown as written), so the page
+needs nothing else from the web; each is rendered in turn.
 The page is gamify.md rendered as HTML by markdown-it (the Debian package python3-markdown-it),
 then the base build instructions, copied unchanged. The base file is plain text, NOT Markdown
 (Markdown rules would turn its indented lists into code blocks): each title line underlined with
@@ -27,7 +30,12 @@ args = sys.argv[1:]
 as_text = args[:1] == ["--text"]
 if as_text:
     args = args[1:]
-guide, base = (open(p, encoding="utf-8").read() for p in args[:2])
+texts = [open(p, encoding="utf-8").read() for p in args]
+# A .txt file among the guide files (orders.txt) is plain text, not Markdown: in Markdown it is put
+# in a fence, so its lines stay lines; on the page it is shown as written.
+guide_parts = [("```text\n" + t.strip() + "\n```") if p.endswith(".txt") else t.strip()
+               for p, t in zip(args[:-1], texts[:-1])]
+guide, base = "\n\n".join(guide_parts) + "\n", texts[-1]
 BASE_HEADING = "The base build instructions"
 BASE_INTRO = ("The complete base build instructions (https://multiply.by/base/prompt.txt), "
               "copied unchanged. Everything from here to the end of this file is that one file.")

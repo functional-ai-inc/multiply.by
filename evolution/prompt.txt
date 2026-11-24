@@ -1,7 +1,8 @@
 Evolution in five stages: 
-Protocells in deep-sea hydrothermal vents, Haikouichthys,
-land tetrapod, tree-dwelling primate, homo sapiens. 
+protocells in hydrothermal vents,bilaterian worm,Haikouichthys,land tetrapod,
+early mammal,tree primate,Australopithecus,Homo heidelbergensis
 Use photorealistic images, show epoch and location for each.
+Instead of the question format in the spec below, use this format: 2 x ? = 4.
 Follow https://multiply.by/gamify
 Your deliverable is a playable, standalone index.html file 
 that I can download and open in my browser.

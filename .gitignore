@@ -5,6 +5,9 @@
 !/extract-files.py
 !/CLAUDE.md
 !/gamify.md
+!/selector.md
+!/grid.md
+!/orders.txt
 !/ANDROID.md
 !/PRIVACY.md
 !/PRIVACY-WEBSITE.md
@@ -23,7 +26,7 @@
 !/android/assets/listing.txt
 !/android/assets/play-console.txt
 !/game.txt
-!/home.txt
+!/prompt.txt
 !/layout.txt
 !/footer.txt
 !/assemble-spec
@@ -44,6 +47,7 @@
 /games/*
 !/games/page.txt
 !/games/Makefile
+!/games/model
 !/check-scripts.py
 !/play-test.py
 !/make-sitemap.py
@@ -62,10 +66,6 @@
 /chinese/*
 !/chinese/prompt.txt
 !/chinese/model
-!/divide/
-/divide/*
-!/divide/custom.txt
-!/divide/model
 !/monster/
 /monster/*
 !/monster/custom.txt

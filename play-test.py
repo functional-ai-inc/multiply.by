@@ -161,12 +161,18 @@ def play(browser, url, n):
         s = pg.evaluate(STATE)
         if s["won"]:
             break
+        # A missing-factor question ("3 x ? = 21", "? x 7 = 21", or with "__") asks for the blank.
+        mf = (re.search(r"(\d+)\s*[x×]\s*(?:_+|\?)\s*=\s*(\d+)", s["q"])
+              or re.search(r"(?:_+|\?)\s*[x×]\s*(\d+)\s*=\s*(\d+)", s["q"]))
         m = re.search(r"(\d+)\s*([x×÷])\s*(\d+)", s["q"])
-        if not m:
+        if mf:
+            right = str(int(mf[2]) // int(mf[1]))
+        elif not m:
             problem = f"no question in #question / #question-text: {s['q']!r}"
             break
-        a, op, c = int(m[1]), m[2], int(m[3])
-        right = str(a // c if op == "÷" else a * c)
+        else:
+            a, op, c = int(m[1]), m[2], int(m[3])
+            right = str(a // c if op == "÷" else a * c)
         if right not in s["a"]:
             problem = f"the answer {right} is not among the buttons {s['a']}"
             break

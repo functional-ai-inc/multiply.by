@@ -1,0 +1,18 @@
+ORDERS: the order of the games' tiles on Multiply.by (https://multiply.by/orders.txt)
+
+One short name per line, exactly as in the games list of the games grid
+(https://multiply.by/grid/prompt/). The tiles are always in this order: never shuffled, so a
+child finds each game in the same place every time. 
+
+Robot
+Dinosaurs
+Monster
+Block Craft
+Evolution
+Planes
+Train
+Space
+Buildings
+Chinese
+Dot Array
+Base Game

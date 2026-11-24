@@ -1,10 +1,10 @@
-Create a web page using a modern minimalist layout, filling a single phone-size screen.
+Create a web page using a modern minimalist layout.
 Build one standalone HTML file (index.html): plain HTML, CSS and JavaScript, no libraries, nothing
 loaded from any server. All CSS in one <style> in the <head>, all code in one plain <script> at the
 end of the <body>.
 
 <title>About Multiply.by – Learn the Multiplication Table (Times Tables)</title>
-In the <head>, directly after the title, include exactly: <meta name="description" content="Why Multiply.by is a quick, focused way to learn the times tables: free and open source, no sign-up, no ads in the game, and one readable file.">
+In the <head>, directly after the title, include exactly: <meta name="description" content="Why Multiply.by is a quick, focused way to learn the times tables: free and open source, no sign-up, no ads in the games, and one readable file.">
 In the <head>, include exactly: <meta name="viewport" content="width=device-width, initial-scale=1">
 In the <head>, include exactly: <link rel="icon" type="image/svg+xml" href="/icon.svg"> (the app's icon in the browser tab).
 
@@ -42,7 +42,7 @@ Adaptive layout (the page fits phones, tablets and laptops):
 - Phones and tablets (narrower than 1024px): as above, one column: the three sections stacked, with
   horizontal dividers between them.
 - Laptops and wider screens (`@media (min-width: 1024px)`): the three sections (Functionality,
-  Minimalism, Transparency) sit side by side on ONE line, as three equal columns
+  No Friction, Transparency) sit side by side on ONE line, as three equal columns
   (`display: grid; grid-template-columns: repeat(3, 1fr)`), with 1px #e5e7eb vertical dividers
   between them instead of the horizontal ones and about 24px of space on each side of a divider.
   The header and tagline stay above, spanning all three columns. Wrap the three sections in one
@@ -55,11 +55,10 @@ Adaptive layout (the page fits phones, tablets and laptops):
   o Designed for maximum learning speed.
   o Works on your phone or computer.
   o Install for offline use.
-  o Learn <a href="https://multiply.by/divide/">division</a>, too.
 
-<subheader>Zero Friction + Adaptability</subheader>
+<subheader>No Friction</subheader>
   o No sign-up, no cost.
-  o No ads or trackers in the game.
+  o No ads or trackers in the games.
   o Minimal clutter in the base game.
   o <a href="#make-your-own-game">Make your own game</a> from a few lines of text.
 
@@ -80,34 +79,23 @@ GET THE APP (below the three sections, above MORE ABOUT THE SITE, inside the sam
   The trademark line: 0.75rem, color #6b7280, margin 8px 0 0.
 
 MORE ABOUT THE SITE (below GET THE APP, inside the same card)
-- A 1px #e5e7eb divider separates it from the three sections; on every screen size it is one
-  column of prose BELOW them (never beside them), using the card's full width (no max-width on
+- A 1px #e5e7eb divider separates it from GET THE APP above; on every screen size it is one
+  column of prose BELOW the three sections (never beside them), using the card's full width (no max-width on
   the text), left-aligned with the header.
 - Headings: <h2>, bold, 1.25rem, near-black (#111827), about 1.5rem of space above and 0.5rem
   below; each with an id derived from its text (lowercase, spaces to hyphens, punctuation removed,
   e.g. id="how-the-site-was-built"). Paragraphs: body text, 0.75rem apart.
-- The PROMPT under "Make your own game" is one <pre> block showing the prompt exactly as written
-  here (three paragraphs, each one long line that wraps to the box, a blank line between them): monospace at 0.8125rem, line-height 1.45, #111827 on #f9fafb, a 1px
-  #e5e7eb border, 8px rounded corners, padding 10px 12px, `white-space: pre-wrap;
-  overflow-wrap: anywhere` (long lines wrap on a phone, never a sideways scroll).
 
 <h2>Make your own game</h2>
-<p>Each themed game on this site was built by an AI model from a prompt of a few lines, like this
-one for the <a href="https://multiply.by/train/">train game</a>:</p>
-<pre>Multiply express: steam, diesel, high speed rail, maglev. Make the train images photo-realistic. Use simple animation to show speed.
-
-Your deliverable is a complete, playable, standalone index.html file that I can download and open in my browser.
-
-Details at https://multiply.by/gamify</pre>
-<p>Write a few lines about what your child loves, end with the <code>gamify</code> line, and
-give it to ChatGPT, Claude or Gemini. No programming needed.</p>
-<p>See every game and its prompt on the <a href="https://multiply.by/build-it/">Build it</a> page.</p>
+<p>Each themed game on this site was built by an AI model from a prompt of a few lines. Write a
+few lines about what your child loves, end with a link to https://multiply.by/gamify, and give it
+to ChatGPT, Claude or Gemini. No programming needed.</p>
+<p>See every game and its prompt on the <a href="https://multiply.by/build-it/">Build It</a> page.</p>
 
 <h2>How the site was built</h2>
-Every page has a SOURCE button in the upper right corner. It opens the page's
-<code>prompt.txt</code>: the plain-text prompt given to an AI model, which
-writes the single file <code>index.html</code> that your browser shows. (Despite its name, the
-game's <code>index.html</code> is mostly JavaScript and CSS: only about a tenth of it is HTML.)
+Every page has a SOURCE button in the upper right corner. It opens the page's prompt: the plain
+text given to an AI model, which writes the single file <code>index.html</code> that your browser
+shows. (Despite its name, the game's <code>index.html</code> is mostly JavaScript and CSS: only about a tenth of it is HTML.)
 The build instructions were developed over hundreds of hours of human design, testing and debugging. 
 
 <h2>Portability</h2>
@@ -116,11 +104,11 @@ with open-weights models like Kimi. On cheaper models some glitches can be expec
 
 <h2>Scalability</h2>
 The site is static, with no accounts and no server code, so it can cheaply handle large loads.
-The game is a single file of less than 100 KB: it loads quickly even on a slow connection
-and costs almost nothing to serve. Once installed, it runs offline, and the number of players can
-grow without slowing the site down.
+Each game is a single small file that loads quickly even on a slow connection and costs almost
+nothing to serve. Once installed, the site works offline, and the number of players can grow
+without slowing the site down.
 
-<h2>Learned Everywhere</h2>
+<h2>Learned everywhere</h2>
 What children are expected to memorize depends mostly on where they grow up. In different 
 countries, religions and cultures, a child may recite prayers, learn poems by national writers, 
 say a pledge of allegiance every morning, or sing the national anthem.

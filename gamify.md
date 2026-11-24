@@ -80,7 +80,7 @@ writing, and write all of it down: the model that builds the game sees only the 
   a picture that teaches (rows of dots for 3 x 6).
 - What replaces things that don't fit? For example, stars from the number of mistakes instead of
   a clock for children who shouldn't be timed.
-- What is dropped? Say it: "No Share my results button", "No division line". The menu is never
+- What is dropped? Say it: "No Share my results button", "No next-level line". The menu is never
   changed (see "Menu" in G4: the same items as the base game).
 - The look: a palette (hex colors), a font stack, the background, the mascot. Draw every picture
   as inline SVG, CSS or emoji, giving its shapes and colors and the face for each state, unless
@@ -160,9 +160,12 @@ heights, gaps), because the building model otherwise keeps the base layout. What
   score).
 - USE THE SPACE RIGHT OF THE QUESTION for the mascot or the scene. The question card does not need
   the whole width: shrink it to half the row and give the other half to the mascot or the scene
-  (both `flex: 1 1 0; min-width: 0`), with a 0.75rem gap. The question ("7 x 8") still fits in
-  half, also on a 360px phone, because its font size comes from the card. (Monster gives the
-  question about 60%: question card `flex: 1`, MONSTER BOX `flex: 0 0 40%`.) The mascot box is a
+  (both `flex: 1 1 0; min-width: 0`), with a 0.75rem gap. CRITICAL: the question card is AT LEAST
+  HALF the width of the game area at every screen size, phones and phones held sideways included,
+  and its question is the largest text on the screen; never a small line above or beside a
+  picture. The question ("7 x 8") still fits in half, also on a 360px phone, because its font size
+  comes from the card. (Monster gives the question about 60%: question card `flex: 1`, MONSTER
+  BOX `flex: 0 0 40%`.) The mascot box is a
   centered column with the mascot, as large as fits (`flex: 1; min-height: 0; width: 100%`), and
   the Points under it.
 - NAME THE MAIN PICTURE: the one element that shows the game's main picture (the mascot, the
@@ -214,6 +217,15 @@ heights, gaps), because the building model otherwise keeps the base layout. What
   min-width: 0`) on a 360px phone; with two rows on a short screen (`max-height: 500px`) the
   pictures shrink further so the score and buttons stay on screen. After "Practice hard ones"
   ("Practice done!") the rows are the same.
+- THE GAMES GRID ON THE "YOU WON!" SCREEN: at the end of the "You Won!" panel (and of "Practice
+  done!"), after the stage pictures, the score, the buttons and their lines, the games grid
+  exactly as "grid: the games grid of Multiply.by" describes it "On the 'You Won!' screen of a
+  game" (that file comes right after this guide at https://multiply.by/gamify/, and is also at
+  https://multiply.by/grid/prompt/): "Play another game", all twelve of the site's games with
+  their thumbnails (this one marked "Play again"), three to a row, in the order of ORDERS
+  (https://multiply.by/orders.txt, which comes after the grid file at https://multiply.by/gamify/),
+  and NO "More games" link after it (the grid already shows every game). The panel scrolls inside
+  itself when it is taller than the screen; the page never does.
 
 ## G4. What the base game provides (names to refer to)
 
@@ -266,7 +278,7 @@ Use the base file's own names, so the building model ties your changes to its co
 - Timer: `state.timerStart`, `pauseTimer()`, `resume()`, `currentPlayMs()`.
 - End of a game:
   - The "You Won!" overlay: the score, best score, "Your time", the `win-buttons` (Play Again,
-    "Practice hard ones"), the NEXT-LEVEL line, the DIVISION line, and SHARE MY RESULTS (a results
+    "Practice hard ones"), the NEXT-LEVEL line, and SHARE MY RESULTS (a results
     card, shown only on touch devices that can share files).
   - PRACTICE HARD ONES runs a short practice of the weakest facts (`weakFacts()`, ANSWER TIMES)
     and ends with "Practice done!".
@@ -290,7 +302,8 @@ Use the base file's own names, so the building model ties your changes to its co
   element gets `pointer-events: none` and is removed when done. Animate only `transform` and
   `opacity`. Respect REDUCED_MOTION.
 - Everything stays in ONE file: no images, fonts or libraries from any server. Use inline SVG, CSS
-  and emoji (photo-realistic pictures: detailed SVG, see G2).
+  and emoji (photo-realistic pictures: detailed SVG, see G2). The one exception is the games grid
+  on "You Won!": its thumbnails come from the site, and the game works without them.
 - No page scroll on the game, at any screen size. Give a rule for short screens (`max-height:
   500px`, phones held sideways). Things that take room (pictures, mascots, paths) must be able to
   shrink: `flex: 1; min-height: 0`.
@@ -301,7 +314,6 @@ Use the base file's own names, so the building model ties your changes to its co
   drop the timer, say what replaces "Your time" (monster: stars from the number of mistakes).
 - Name every element id that other rules or checks refer to. Otherwise ids may differ between
   builds (e.g. `win-overlay` / `won-overlay`).
-- The 100 KB limit is for the base game only: a gamified game has no size limit.
 - KEEP THE BASE AUDIO CODE EXACTLY (CRITICAL), including the start-up listener that wakes the
   sound on every `touchend`, `mousedown` and `keydown` (7. AUDIO SYSTEM). On an iPhone, sound can
   start only inside a `touchend` or `click`, not a `pointerdown`; the answers react on
@@ -339,6 +351,10 @@ can stall there.
 - The "You Won!" screen shows one small picture per stage, in order: one line at 360px for up to 5
   stages, two lines (top row first) for 6 or more; nothing cut off at 360x640 or 640x360, with the
   title band and menu still usable above it.
+- At the end of the "You Won!" panel, the games grid: "Play another game", all twelve games
+  (this one with a check badge and "Play again") three to a row (one sideways row at 640x360),
+  and no "More games" link after them, reached by scrolling the panel; the page itself does not
+  scroll.
 - Each new feature has a check of its own, stated as something a tester can see, e.g. "after 12
   facts are learned, the first stage of the path is full and confetti falls".
 - The page keeps the base game's `touchend` / `mousedown` / `keydown` audio listener, unchanged,

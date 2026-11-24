@@ -21,12 +21,12 @@ PAGES = [
     ("blocks/", "blocks/index.html", "0.8"),
     ("evolution/", "evolution/index.html", "0.8"),
     ("building/", "building/index.html", "0.8"),
+    ("dots/", "dots/index.html", "0.8"),
     ("base/", "base/index.html", "0.7"),
-    ("divide/", "divide/index.html", "0.7"),
     ("build-it/", "build-it/index.html", "0.6"),
     ("about/", "about/index.html", "0.5"),
-    ("match/", "match/index.html", "0.3"),
     ("gamify/", "gamify/index.html", "0.5"),  # one file for building a gamified game in any chatbot
+    ("android/", "android/index.html", "0.4"),  # the Android app notes (ANDROID.md)
 ]
 
 out = ['<?xml version="1.0" encoding="UTF-8"?>',
