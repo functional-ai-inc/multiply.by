@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Write sitemap.xml for https://multiply.by/ to standard output: one <url> per public page, its
 <lastmod> the date its file last changed (so a rebuild updates it). Run by make.
-Pages are listed by hand below: the model-comparison copies (e.g. /train/carbon/) are left out on
+Pages are listed by hand below: the model-comparison copies (e.g. /trains/carbon/) are left out on
 purpose, and a new game is added here."""
 import os, sys, time
 
@@ -12,10 +12,10 @@ PAGES = [
     ("", "index.html", "1.0"),             # the front page: the game with the strip of games
     ("games/", "games/index.html", "0.9"),
     ("monster/", "monster/index.html", "0.8"),
-    ("train/", "train/index.html", "0.8"),
+    ("trains/", "trains/index.html", "0.8"),
     ("dino/", "dino/index.html", "0.8"),
     ("robot/", "robot/index.html", "0.8"),
-    ("plane/", "plane/index.html", "0.8"),
+    ("planes/", "planes/index.html", "0.8"),
     ("space/", "space/index.html", "0.8"),
     ("chinese/", "chinese/index.html", "0.8"),
     ("blocks/", "blocks/index.html", "0.8"),

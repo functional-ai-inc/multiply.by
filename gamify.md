@@ -23,7 +23,7 @@ The base game itself is fully described by its Base Build Instructions, which fo
      points to /gamify/, gamify.md or the base game's `https://multiply.by/base/prompt/`, even
      though those are the files you were given. (If the base file already points SOURCE to an
      address ending in `/prompt/` inside a game's folder, such as
-     `https://multiply.by/train/prompt/`, keep that address.)
+     `https://multiply.by/trains/prompt/`, keep that address.)
    - SHARING: never write the game's own address into the page; you don't know where it will be
      published. The share icon in the title band shares https://multiply.by/build-it/ with the
      site's message, the same on every page (SHARE THE SITE): keep it exactly. "Share my results"

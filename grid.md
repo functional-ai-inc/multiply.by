@@ -39,10 +39,10 @@ Build the grid exactly as this file describes. The page that uses it says which 
 | Short name  | Key       | Storage name         | Game address                   | Thumbnail (200 x 160)               | Screenshot (412 x 330)   |
 |-------------|-----------|----------------------|--------------------------------|-------------------------------------|--------------------------|
 | Monster     | monster   | monster              | https://multiply.by/monster/   | /thumbnails/monster-thumbnail.png   | /build-it/monster.png    |
-| Train       | train     | multiply-express     | https://multiply.by/train/     | /thumbnails/train-thumbnail.png     | /build-it/train.png      |
+| Trains      | trains    | multiply-express     | https://multiply.by/trains/    | /thumbnails/trains-thumbnail.png    | /build-it/trains.png     |
 | Dinosaurs   | dino      | dino                 | https://multiply.by/dino/      | /thumbnails/dino-thumbnail.png      | /build-it/dino.png       |
 | Robot       | robot     | robot                | https://multiply.by/robot/     | /thumbnails/robot-thumbnail.png     | /build-it/robot.png      |
-| Planes      | plane     | flight               | https://multiply.by/plane/     | /thumbnails/plane-thumbnail.png     | /build-it/plane.png      |
+| Planes      | planes    | flight               | https://multiply.by/planes/    | /thumbnails/planes-thumbnail.png    | /build-it/planes.png     |
 | Space       | space     | starhop              | https://multiply.by/space/     | /thumbnails/space-thumbnail.png     | /build-it/space.png      |
 | Chinese     | chinese   | wall                 | https://multiply.by/chinese/   | /thumbnails/chinese-thumbnail.png   | /build-it/chinese.png    |
 | Block Craft | blocks    | blockcraft           | https://multiply.by/blocks/    | /thumbnails/blocks-thumbnail.png    | /build-it/blocks.png     |

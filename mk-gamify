@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.10
 """Build a GAMIFIED game in the current directory, a folder of the site (for example
-/var/www/multiply.by/train, served at https://multiply.by/train/), from a short prompt.
+/var/www/multiply.by/trains, served at https://multiply.by/trains/), from a short prompt.
 
 prompt.txt in this folder is the prompt, a few lines such as "a gamified version with a train
 motif", written as a person would type it into a chat (claude.ai, ChatGPT, Gemini), with a link
@@ -19,8 +19,8 @@ passes here shows that the prompt and /gamify/ work as published:
     another game on the site (shared saved progress) is reported.
 The only thing added to the conversation is mechanical: Gemini 4 Carbon stops each answer at
 65,536 tokens and is asked to continue.
-It also keeps a copy of each build in a subfolder named after the model (e.g. train/carbon/,
-served at https://multiply.by/train/carbon/), so a build with another model doesn't replace it:
+It also keeps a copy of each build in a subfolder named after the model (e.g. trains/carbon/,
+served at https://multiply.by/trains/carbon/), so a build with another model doesn't replace it:
 index.html, customization.txt and build.txt (model, date, tokens, cost, time, size). The folder's
 own index.html is always the latest build, with its build.txt beside it.
 Served files are written under a temporary name and renamed into place. If index.html is newer

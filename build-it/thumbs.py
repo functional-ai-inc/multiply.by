@@ -13,11 +13,11 @@ from playwright.sync_api import sync_playwright
 # fits 5:4 ("cover": cropped around its centre; "contain": whole, the sides filled with the colour
 # of its top-left corner); and how many right answers come first.
 MAIN = {
-    "train": ("#train-photo", "cover", 16),
+    "trains": ("#train-photo", "cover", 16),
     "monster": ("#monster", "contain", 16),
     "dino": ("#top-row svg", "cover", 16),
     "robot": ("#robot-stage", "contain", 16),
-    "plane": ("#aircraft-photo", "contain", 16),
+    "planes": ("#aircraft-photo", "contain", 16),
     "space": ("#planet-image", "cover", 16),
     "chinese": ("#wall-svg", "cover", 16),
     "blocks": ("#world-svg", "cover", 16),

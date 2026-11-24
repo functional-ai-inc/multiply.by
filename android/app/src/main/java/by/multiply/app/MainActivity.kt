@@ -70,6 +70,7 @@ class MainActivity : ComponentActivity() {
         }
         web.webViewClient = Client()
         setUpShare()
+        setUpHideDivision()
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -102,6 +103,12 @@ class MainActivity : ComponentActivity() {
         override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
             val url = request.url
             if (isSite(url)) {
+                // Division was removed (2026-11-23); older game builds still link to it. As on
+                // the website, /divide/ is /games/, inside the app.
+                if (url.path?.startsWith("/divide") == true) {
+                    view.loadUrl("$ORIGIN/games/")
+                    return true
+                }
                 if (site.fileFor(url.path) != null) return false      // bundled: load it here
                 if (site.isFolderWithoutSlash(url.path)) {             // "/train" -> "/train/"
                     view.loadUrl(url.buildUpon().path(url.path + "/").build().toString())
@@ -109,7 +116,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
             if (!request.isForMainFrame) return true
-            // Not bundled (About, Build It, other sites, mailto:, ...): the browser, after the gate.
+            // Not bundled (other sites, mailto:, ...): the browser, after the gate.
             ParentalGate.ask(this@MainActivity) { openOutside(url) }
             return true
         }
@@ -168,9 +175,36 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /**
+     * Division was removed from the site (2026-11-23), but games built before then still show
+     * "Next: learn division at divide.by" (`#division-line`) and About a "Learn division" item.
+     * Hide them on every page before it is drawn; the generated pages are not edited.
+     */
+    private fun setUpHideDivision() {
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) {
+            WebViewCompat.addDocumentStartJavaScript(web, HIDE_DIVISION_SCRIPT, setOf(ORIGIN))
+        }
+    }
+
     companion object {
         const val ORIGIN = "https://multiply.by"
         const val HOME = "https://multiply.by/"
+        const val HIDE_DIVISION_SCRIPT = """
+            (function () {
+              function add() {
+                var s = document.createElement('style');
+                s.textContent = '#division-line, li:has(a[href*="multiply.by/divide"]),' +
+                  ' a[href*="multiply.by/divide"] { display: none !important; }';
+                document.documentElement.appendChild(s);
+              }
+              if (document.documentElement) { add(); return; }
+              // At document start there may be no <html> yet: add the style when it appears.
+              var o = new MutationObserver(function () {
+                if (document.documentElement) { o.disconnect(); add(); }
+              });
+              o.observe(document, { childList: true });
+            })();
+        """
         const val SHARE_SCRIPT = """
             (function () {
               if (!window.MultiplyApp) return;

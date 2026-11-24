@@ -73,10 +73,10 @@ Opt in if offered: the app fits (no ads, no purchases, no data, curriculum math)
 Track: Production (an organization account needs no closed test first), or Internal testing
   first, to try the Play-installed version on a phone.
 Play App Signing: accept (Google holds the app signing key; ours is only the upload key).
-App bundle: multiply-by-release-YYYYMMDD-HHMM.aab from android/build-app release
+App bundle: multiply-by-release-YYYYMMDD-HHMM.aab from the release build in ANDROID.md (./gradlew bundleRelease)
 Release name: 1.0 (1)
 Release notes (en-US, 500 characters):
   First release: times-table games for children, free, with no ads and no sign-up. Monster,
-  Robot, Train, Dinosaurs, Planes, Space, Chinese, Block Craft, Evolution, Buildings and the
+  Robot, Trains, Dinosaurs, Planes, Space, Chinese, Block Craft, Evolution, Buildings and the
   base game, all working offline.
 Countries: all countries and regions.

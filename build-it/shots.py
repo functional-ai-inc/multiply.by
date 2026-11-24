@@ -5,7 +5,7 @@ scene: from just below the menu bar to just above the answer buttons (the title 
 and footer look the same in every game). The scene is fitted onto one fixed shape, 412 x 330 (saved
 at twice that, 824 x 660, for sharp phone screens): a shorter scene sits at the top and the rest is
 filled with the game's background colour; a taller one is scaled down to fit, centred.
-Usage: shots.py GAME OUT.png   (GAME is the folder, e.g. train: https://multiply.by/train/,
+Usage: shots.py GAME OUT.png   (GAME is the folder, e.g. trains: https://multiply.by/trains/,
 or base for the base game at https://multiply.by/base/)"""
 import io, re, sys
 from PIL import Image

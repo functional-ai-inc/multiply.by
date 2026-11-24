@@ -76,7 +76,7 @@ THE GRID
        than 200), both show "not recorded".
   4. PROMPT: a small label "Prompt" (0.75rem, uppercase, letter-spaced, #6b7280),
      linked to the game's PROMPT PAGE, its prompt.txt address with "prompt.txt" replaced by
-     "prompt/" (for example https://multiply.by/train/prompt/; same color, no underline; dark blue
+     "prompt/" (for example https://multiply.by/trains/prompt/; same color, no underline; dark blue
      on hover). Under it, a
      <div class="prompt"> with the game's prompt.txt, READ FROM THE SITE EACH TIME THE PAGE OPENS (CRITICAL: the
      text is never written into the page; the person edits prompt.txt and this page shows the
@@ -158,11 +158,11 @@ build.txt addresses, see FACTS)
   - Screenshot: /build-it/dino.png
   - build.txt address: https://multiply.by/dino/build.txt
   - prompt.txt address: https://multiply.by/dino/prompt.txt
-- Train
-  - Game address: https://multiply.by/train/
-  - Screenshot: /build-it/train.png
-  - build.txt address: https://multiply.by/train/build.txt
-  - prompt.txt address: https://multiply.by/train/prompt.txt
+- Trains
+  - Game address: https://multiply.by/trains/
+  - Screenshot: /build-it/trains.png
+  - build.txt address: https://multiply.by/trains/build.txt
+  - prompt.txt address: https://multiply.by/trains/prompt.txt
 - Robot Workshop
   - Name in ORDERS: Robot
   - Game address: https://multiply.by/robot/
@@ -185,10 +185,10 @@ build.txt addresses, see FACTS)
   - build.txt address: https://multiply.by/building/build.txt
   - prompt.txt address: https://multiply.by/building/prompt.txt
 - Planes
-  - Game address: https://multiply.by/plane/
-  - Screenshot: /build-it/plane.png
-  - build.txt address: https://multiply.by/plane/build.txt
-  - prompt.txt address: https://multiply.by/plane/prompt.txt
+  - Game address: https://multiply.by/planes/
+  - Screenshot: /build-it/planes.png
+  - build.txt address: https://multiply.by/planes/build.txt
+  - prompt.txt address: https://multiply.by/planes/prompt.txt
 - Chinese
   - Game address: https://multiply.by/chinese/
   - Screenshot: /build-it/chinese.png

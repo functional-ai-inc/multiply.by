@@ -17,7 +17,7 @@ learned. After the game, a short practice round can bring back the facts that we
 Pick a game:
 - Monster: feed a hungry monster and help it grow.
 - Robot: build a robot, part by part.
-- Train: travel from steam engines to maglev trains.
+- Trains: travel from steam engines to maglev trains.
 - Dinosaurs: meet a new dinosaur as you learn.
 - Planes: the history of flight.
 - Space: a journey through the solar system.

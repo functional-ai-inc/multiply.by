@@ -42,7 +42,7 @@ ONLY = set(args.only.split(","))
 PHONE = [
     ("01-monster", "/monster/", 6),
     ("02-robot", "/robot/", 10),
-    ("03-train", "/train/", 5),
+    ("03-trains", "/trains/", 5),
     ("04-dino", "/dino/", 5),
     ("05-blocks", "/blocks/", 6),
     ("06-games", "/games/", 0),
@@ -53,7 +53,7 @@ PHONE = [
 # upright, so these are portrait too. (folder, CSS width x height, pixel ratio): 7-inch 1200 x
 # 1920, 10-inch 1600 x 2560.
 TABLETS = [("tablet-7", 600, 960, 2), ("tablet-10", 800, 1280, 2)]
-TABLET_PAGES = [("01-monster", "/monster/", 6), ("02-train", "/train/", 5),
+TABLET_PAGES = [("01-monster", "/monster/", 6), ("02-trains", "/trains/", 5),
                 ("03-robot", "/robot/", 10), ("04-games", "/games/", 0)]
 VIDEO_PAGE = "/robot/"
 VIDEO_SLOW = [False, False, True, False, False, True, False, False, True, False]  # True: wrong
@@ -136,7 +136,7 @@ p { margin: 8px 0 0; font-size: 30px; color: #374151; }
 </div>
 <div class="row">IMAGES</div>
 </body></html>"""
-FEATURE_GAMES = ["monster", "robot", "train", "dino", "space", "blocks"]
+FEATURE_GAMES = ["monster", "robot", "trains", "dino", "space", "blocks"]
 
 
 def feature(browser):

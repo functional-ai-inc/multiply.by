@@ -4,14 +4,18 @@ Notes for packaging the multiply.by games as an Android app.
 
 The app is built on the machine you are running on (below).
 
-**No root needed:** install everything as the user running the build, in the user's own folders
-(below); Gradle and the libraries go in `~/.gradle` by themselves (`./gradlew`). Use `sudo` or the
-system's package manager only if it works without asking for a password; never ask for or type a
-password. If Python 3 or git is missing and can't be installed without root, stop and ask the
-person to install them.
+**No root or administrator access:** the install neither needs nor uses it. Everything goes in
+the user's own folders (below); Gradle and the libraries go in `~/.gradle` by themselves
+(`./gradlew`).
 
-**Linux, Mac or Windows.** Tested only on Linux. The machine needs about 8 GB of RAM (Gradle
-alone may use 4 GB, `android/gradle.properties`) and about 2 GB of free disk.
+**Optional, a separate user:** to keep all of it (about 2 GB) out of your own home folder, run
+the build as a new user made just for it, e.g. `multiply-build`, and log in or open a terminal as
+that user. Everything then goes in that user's home folder, and deleting the user removes it all.
+Making and deleting the user is done by you, with the computer's usual administrator tools; the
+build itself still needs no root or administrator access.
+
+**Linux, Mac or Windows.** The machine needs about 8 GB of RAM and about 2 GB
+of free disk.
 
 | | Linux | Mac | Windows |
 |---|---|---|---|
@@ -19,7 +23,7 @@ alone may use 4 GB, `android/gradle.properties`) and about 2 GB of free disk.
 | JDK folder (`JAVA_HOME`) | `~/.local/jdk-17` | `~/.local/jdk-17/Contents/Home` | `%USERPROFILE%\.jdks\jdk-17` |
 | Android SDK (`ANDROID_HOME`) | `~/Android/Sdk` | `~/Library/Android/sdk` | `%LOCALAPPDATA%\Android\Sdk` |
 | Build command | `./gradlew assembleDebug` | `./gradlew assembleDebug` | `gradlew.bat assembleDebug` |
-| Python | `python3` | `python3` (the Mac asks once to install its command-line tools, which bring git too) | `py` or `python`; git may need installing |
+| Python | `python3` | `python3` | `py` or `python` |
 
 If a step fails, say which step and show the error.
 
@@ -30,7 +34,10 @@ Anyone can build the app from the public repo, on Linux, Mac or Windows. You nee
 - **Java 17** (a JDK) and the **Android SDK** with Android 16 (API 36). Android Studio installs
   both; without it, install a JDK 17 and Google's command-line tools, then
   `sdkmanager "platforms;android-36" "build-tools;36.0.0" "platform-tools"`.
-- **Python 3** and **git**.
+- **Python 3**. If it is missing, install it in the user's folders with uv
+  (https://docs.astral.sh/uv/: its installer puts `uv` in the user's folders, then
+  `uv python install 3.12`).
+- **git** (optional): without it, download the code as an archive (step 1).
 
 Approximate sizes after installation: JDK 17 about 300 MB; the Android SDK parts above about
 500 MB; Gradle and the app's libraries (the first build downloads them) about 1 GB; Python 3 and
@@ -40,7 +47,9 @@ about 4 MB. About 2 GB of disk in all. An AI agent installs whatever is missing.
 Then:
 
 1. Get the code:
-   `git clone https://github.com/functional-ai-inc/multiply.by.git` and `cd multiply.by/android`.
+   `git clone https://github.com/functional-ai-inc/multiply.by.git` and `cd multiply.by/android`;
+   without git, `curl -L https://github.com/functional-ai-inc/multiply.by/archive/refs/heads/main.tar.gz | tar xz`
+   and `cd multiply.by-main/android`.
 2. Get the games: `python3 gather-assets.py`. It downloads the current pages from
    https://multiply.by (about 4 MB) into `app/src/main/assets/site/`. The built pages are not in
    the repo, so this step is needed; run it again to pick up new games.
@@ -91,14 +100,16 @@ nothing, so the app needs no income:
   bridge, back button, edge-to-edge insets), `SiteFiles.kt` (serves the bundled files and the
   in-app 404 page), `ParentalGate.kt`.
 - `gather-assets.py [--web] [OUT]`: copies the live pages into the app (default OUT
-  `app/src/main/assets/site/`, git-ignored). On the multiply.by server it reads the web folder;
-  anywhere else, or with `--web`, it downloads from https://multiply.by (both give the same files).
+  `app/src/main/assets/site/`, git-ignored). It downloads the pages from https://multiply.by
+  (run inside a copy of the site's folder with its built pages, it reads them there instead;
+  `--web` always downloads; both give the same files).
   It starts at / and /games/ and follows every link to a file that exists on the site, so a new
   game linked from the front page or /games/ is bundled with no list to edit. That includes About
   and Build It (with every game's prompt.txt and build.txt, which Build It reads), each page's
-  SOURCE prompt page, the selector, grid and orders files, and both privacy policies. Never
-  bundled (`EXCLUDE`): /gamify, /sw.js, /faq, /android. Pages no bundled page links to are left
-  out too: /match/, the model-comparison copies (/train/carbon/, ...), robots.txt and the sitemap.
+  SOURCE prompt page, the selector, grid and orders files, both privacy policies, /gamify/ (the
+  build guide every prompt links to) and /android/ (these notes, linked from Build It). Never
+  bundled (`EXCLUDE`): /sw.js, /faq. Pages no bundled page links to are left
+  out too: /match/, the model-comparison copies (/trains/carbon/, ...), robots.txt and the sitemap.
   It writes `files.txt`, the list the app serves from, and prints links to addresses that are not
   on the site.
 
@@ -109,15 +120,15 @@ nothing, so the app needs no income:
 - **Same addresses inside the app.** `shouldInterceptRequest` answers every `https://multiply.by/...`
   request from the app's assets (`assets/site/`). We own the domain, so using it here is fine.
   Pages load unchanged: absolute links work (the front page strip links to
-  `https://multiply.by/train/` etc.), localStorage per origin works as on the website (saved
+  `https://multiply.by/trains/` etc.), localStorage per origin works as on the website (saved
   progress, `multiply_last_game`), and SOURCE's relative `prompt/` link (or `prompt.txt`, on pages built earlier) opens the bundled copy.
   No generated page is edited (the site's rule: never edit a generated page by hand).
 - **Folder addresses:** `SiteFiles` (not `WebViewAssetLoader`, whose `AssetsPathHandler` serves
   exact file paths only) adds `index.html` to a path ending in `/` and sets the MIME type from the
-  extension. A link to `/train` (no slash) is reloaded as `/train/`, so relative links resolve.
+  extension. A link to `/trains` (no slash) is reloaded as `/trains/`, so relative links resolve.
 - Each address, decided in `shouldOverrideUrlLoading` / `shouldInterceptRequest`:
   - a bundled page or file: served from the app;
-  - a page that isn't bundled (/gamify/, another site such as the AI chat sites linked from
+  - a page that isn't bundled (another site such as the AI chat sites linked from
     Build It and the prompts, GitHub, mailto:, ...): the parental gate, then the
     phone's browser (`Intent.ACTION_VIEW`);
   - a file that isn't bundled, or any request to another host: the in-app 404 response (the pages
@@ -153,11 +164,20 @@ nothing, so the app needs no income:
   The Play Console's "Contains ads" answer is therefore No (`android/assets/play-console.txt`).
   The user agent change needs an app release: a phone keeps its installed version's behavior
   until it updates.
+- **No division in the app:** division was removed from the site on 2026-11-23, but games built
+  before then still end with "Next: learn division at divide.by" (`#division-line`, a link to
+  https://multiply.by/divide/), and so did About. The app adds a style before each page is drawn
+  (`HIDE_DIVISION_SCRIPT`, a document-start script like the share one) that hides
+  `#division-line` and any link to /divide (with its list item), and `shouldOverrideUrlLoading`
+  sends any /divide address to /games/ inside the app (as nginx does on the website), never to the
+  parental gate. Rebuilt games lose the line anyway (game.txt no longer has it); the four built
+  in the ChatGPT web app (Evolution, Space, Train, Trains) keep it until the user rebuilds them.
+  Needs an app release.
 - **SOURCE in the app:** a game's SOURCE is the relative link `prompt/`, so it opens the bundled
   prompt page (the game's prompt.txt in a box with a copy button), inside the app with no gate. The
   copy button uses `navigator.clipboard.writeText` with a `select()` fallback: check it on a phone.
-  Links inside a prompt (https://multiply.by/gamify, the AI chat sites) leave the app after the
-  gate; links to bundled pages (/dots/prompt/, /selector/prompt/) stay inside.
+  Links inside a prompt to the AI chat sites leave the app after the gate; links to bundled pages
+  (https://multiply.by/gamify, /dots/prompt/, /selector/prompt/) stay inside.
 - WebView settings: JavaScript on, DOM storage on, file and content access off, no extra windows
   (`target="_blank"` opens in the same view). `mediaPlaybackRequiresUserGesture` is left on (the
   games start audio after a tap); check the Web Audio sounds on a real phone.
@@ -176,10 +196,10 @@ The pages and sizes on 2026-11-20 (each game is one self-contained HTML file):
 | /base/ | 63,991 |
 | /games/ | 17,915 |
 | /monster/ | 83,358 |
-| /train/ | 177,703 |
+| /trains/ | 177,703 |
 | /dino/ | 78,525 |
 | /robot/ | 108,750 |
-| /plane/ | 156,447 |
+| /planes/ | 156,447 |
 | /space/ | 385,380 |
 | /chinese/ | 105,870 |
 | /blocks/ | 120,701 |
@@ -310,4 +330,3 @@ from outside. On launch day: check the link opens the listing, then build the ap
 - **TWA (Bubblewrap or PWABuilder):** the easiest route (a signed `.aab` in minutes from
   pwabuilder.com, plus `/.well-known/assetlinks.json` on the site), but it shows the whole
   website, including the pages that will carry ads, and needs the network on first open.
-- **Building on this web server:** not enough memory (2 GB; the build needs about 8 GB).

@@ -9,7 +9,7 @@ rebuild. GitHub: functional-ai-inc/multiply.by (public).
 - Site map: `/` is the front page: a game (now Dots) with a strip of the other games under the
   answers (prompt `prompt.txt`); `/games/` is the picture chooser (spec `games/page.txt`, the strip's
   "More games" tile); `/base/` is the base game alone (spec
-  `game.txt`); each gamified game is in its own folder (`/train/`, ...);
+  `game.txt`); each gamified game is in its own folder (`/trains/`, ...);
   `/build-it/` ("Build it yourself", menu BUILD IT) shows each game's prompt, model and build time;
   `/about/`. Every page's SOURCE opens its prompt page, `prompt/` beside it (the front page's
   is `/prompt/`, the base game's `/base/prompt/`): the folder's prompt.txt word for word in a
@@ -87,7 +87,7 @@ rebuild. GitHub: functional-ai-inc/multiply.by (public).
     of the first build (by mk-custom, kept in `monster/fable/`): gamify.md no longer links to it
     or to its build-instructions.txt, but don't delete or regenerate either. mk-gamify no longer
     attaches it (a chat user doesn't get it, and builds copied it).
-- Gamified games from a short prompt (e.g. `train/`): `../mk-gamify` from the game's folder. The
+- Gamified games from a short prompt (e.g. `trains/`): `../mk-gamify` from the game's folder. The
   folder's prompt.txt is a few lines of prompt (not a CUSTOMIZATION section); the game's SOURCE opens
   it (as `prompt/`, which mk-gamify also makes). The folder's `model` file names the model (carbon, fable, opus, gpt, kimi or a full id; no
   default). Gemini runs on Vertex; an id with a `/` (gpt = openai/gpt-6.1-terra, kimi =
@@ -101,7 +101,7 @@ rebuild. GitHub: functional-ai-inc/multiply.by (public).
   must open the folder's `prompt/` (relative `prompt/` or its full address), or nothing is published; a GAME shared with another game is
   reported. It also keeps a copy of each build (index.html,
   customization.txt, build.txt with model, tokens, cost, time) in a subfolder per model
-  (`train/carbon/`, `train/fable/`, served for comparison). A failed build keeps the raw answer in
+  (`trains/carbon/`, `trains/fable/`, served for comparison). A failed build keeps the raw answer in
   /tmp/mk-gamify-<folder>-answer.txt. Gemini 4 Carbon stops each answer at 65,536 tokens; mk-gamify
   asks it to continue.
 - `gamify.md`: a guide for an AI model writing the custom.txt of a GAMIFIED version (mascot,
@@ -128,9 +128,10 @@ rebuild. GitHub: functional-ai-inc/multiply.by (public).
   A `location ~ ^/(build-it/[^/]+\.png|thumbnails/.+)$` block does the same (no-cache) for the
   game screenshots and strip pictures, which are retaken under the same names after a rebuild.
 - Android app (Google Play, `by.multiply.app`): notes in `ANDROID.md`, which `make` renders to
-  /android/ (`md-html.py`; generated, git-ignored). The Kotlin project, `gather-assets.py`,
-  `build-app` (builds on the `android-build` VM; `release` signs with the upload key in
-  ~/.multiply-play/, never in git) and `store-assets.py` (the Play listing's pictures and video,
+  /android/ (`md-html.py`; generated, git-ignored), the one way to build the app: on the local
+  machine with the Gradle wrapper, as /android/ describes (the release build signs with the
+  upload key in ~/.multiply-play/, never in git). The Kotlin project, `gather-assets.py` and
+  `store-assets.py` (the Play listing's pictures and video,
   into `android/assets/`) are in `android/`. The app's privacy policy, `PRIVACY.md`, is rendered the
   same way to /privacy/; the website's, `PRIVACY-WEBSITE.md` (ads on non-game pages, server log),
   to /privacy/website/, linked from footer.txt.
