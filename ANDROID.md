@@ -319,12 +319,6 @@ show the link, a 404 until the app is published. That is fine while the site has
 from outside. On launch day: check the link opens the listing, then build the app (its bundled
 /games/ already has the link).
 
-## Fixes to the site before packaging
-
-- The web manifest's "maskable" icon is the same image as the normal one; Android crops maskable
-  icons to a circle or squircle, so its edges may be cut off (the website's installed app only;
-  the Android app has its own adaptive icon, above).
-
 ## Not chosen, and why
 
 - **TWA (Bubblewrap or PWABuilder):** the easiest route (a signed `.aab` in minutes from

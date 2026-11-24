@@ -48,6 +48,7 @@ STYLE = """
 body { margin: 0 auto; max-width: 52rem; padding: 1rem 16px 3rem; background: #fff; color: #1a1a1a;
   font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; overflow-wrap: anywhere; }
 h1, h2, h3 { line-height: 1.25; margin: 1.6em 0 0.5em; }
+a { color: #1e40af; }
 code { font: 0.9em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: #f3f3f3;
   padding: 0.1em 0.3em; border-radius: 3px; }
 pre { background: #f6f6f6; border: 1px solid #e3e3e3; border-radius: 6px; padding: 0.8em 1em;
@@ -56,9 +57,11 @@ pre code { background: none; padding: 0; font: inherit; }
 .plain { white-space: pre-wrap; font-size: 0.94rem; }
 @media (prefers-color-scheme: dark) {
   body { background: #161616; color: #e6e6e6; }
+  a { color: #93c5fd; }
   code, pre { background: #222; border-color: #333; }
 }
 """
+# No page footer: the base spec at the end already ends with the copyright notice.
 # No HTML passes through: a tag written in the text ("an <img>, <svg> or <div>") is shown as text.
 body = MarkdownIt("commonmark", {"html": False}).enable("table").render(guide)
 # The base file: an <h2> for each underlined title, the text between as written.

@@ -7,6 +7,7 @@ Used for /android/ (from ANDROID.md). The Markdown is rendered by markdown-it (t
 python3-markdown-it), CommonMark plus tables; any HTML written in the file is shown as text, never
 used as markup. The page title is the file's first "# " heading.
 """
+import datetime
 import html
 import re
 import sys
@@ -30,16 +31,24 @@ pre code { background: none; padding: 0; font: inherit; }
 table { border-collapse: collapse; margin: 0.5em 0 1em; display: block; overflow-x: auto; }
 th, td { border: 1px solid #e3e3e3; padding: 0.3em 0.6em; text-align: left; vertical-align: top; }
 th { background: #f6f6f6; }
+footer { margin-top: 3rem; padding-top: 0.75rem; border-top: 1px solid #e5e7eb; color: #6b7280;
+  font-size: 0.8rem; text-align: center; }
 @media (prefers-color-scheme: dark) {
   body { background: #161616; color: #e6e6e6; }
+  footer { border-color: #333; color: #9ca3af; }
   a { color: #93c5fd; }
   code, pre, th { background: #222; }
   pre, th, td { border-color: #333; }
 }
 """
+# The site's copyright line (as layout.txt's footer), at the end of the page.
+FOOTER = (f'<footer>Copyright (c) {datetime.date.today().year} by <a href="https://functional.by" '
+          'target="_blank" rel="noreferrer">Functional AI Inc</a>. Published under the '
+          '<a href="https://opensource.org/licenses/MIT" target="_blank" rel="noreferrer">MIT '
+          'License</a>.</footer>\n')
 body = MarkdownIt("commonmark", {"html": False}).enable("table").render(text)
 sys.stdout.write(
     '<!doctype html>\n<html lang="en">\n<meta charset="utf-8">\n'
     '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
     '<link rel="icon" type="image/svg+xml" href="/icon.svg">\n'
-    f"<title>{html.escape(title)}</title>\n<style>{STYLE}</style>\n{body}</html>\n")
+    f"<title>{html.escape(title)}</title>\n<style>{STYLE}</style>\n{body}{FOOTER}</html>\n")

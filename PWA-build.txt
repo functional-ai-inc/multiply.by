@@ -16,7 +16,7 @@ BUILD STEPS
 1. The base game page is built from base/prompt.txt into build/index.html, and the front page (the base game with a strip of the other games) from prompt.txt into build/home/index.html (plain pages, no PWA).
 2. Every file between a BEGIN FILE and END FILE marker line below is copied out exactly, without the marker lines (extract-files.py does this). pwa-head.html goes into build/; all other files go into the site folder.
 3. base/index.html (the base game, https://multiply.by/base/) is build/index.html, and index.html (the front page, https://multiply.by/) is build/home/index.html, each with the contents of build/pwa-head.html inserted on the line just before </head>. Each plain page must contain exactly one </head>.
-4. icon-192.png and icon-512.png are converted from icon.svg with ImageMagick at exactly 192x192 and 512x512 pixels.
+4. icon-192.png and icon-512.png are converted from icon.svg with ImageMagick at exactly 192x192 and 512x512 pixels. icon-512.png is also the manifest's "maskable" icon (Android crops it to its launcher shape): that works because icon.svg's background fills the whole square and its artwork stays inside the central circle of 80% of the width (now 73%); keep it so if the icon changes.
 5. og-image.png (the link preview picture, 1200x630) is converted from og-image.svg with ImageMagick.
 
 The result in the site folder: index.html, base/index.html, manifest.webmanifest, sw.js, pwa.js, icon.svg, icon-192.png, icon-512.png, og-image.svg, og-image.png.
