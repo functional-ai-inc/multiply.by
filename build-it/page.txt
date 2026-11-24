@@ -126,11 +126,12 @@ ANDROID BUILD (below the grid, above the footer)
   rounded corners, soft shadow, padding 16px, a flex column with 12px gaps), the full width of the
   grid (never one column of it).
 - Inside, from top to bottom:
-  1. An <h2> "Android Build", like the card names (bold, 1.25rem, #111827, no margin; not a link),
-     with the ANDROID LOGO before the words: a flex row (`display: flex; align-items: center;
-     gap: 10px;`) with this inline SVG first, 32 x 32px, `aria-hidden="true"` (the Android robot's
-     head, green #3DDC84):
-       <svg viewBox="0 0 24 24" width="32" height="32" aria-hidden="true"><path fill="#3DDC84" d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85a.637.637 0 0 0-.83.22l-1.88 3.24a11.43 11.43 0 0 0-8.94 0L5.65 5.67a.643.643 0 0 0-.87-.2c-.28.18-.37.54-.22.83L6.4 9.48A10.78 10.78 0 0 0 1 18h22a10.78 10.78 0 0 0-5.4-8.52zM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z"/></svg>
+  1. An <h2> "Android™ Build" (the ™ right after "Android", as written), like the card names
+     (bold, 1.25rem, #111827, no margin; not a link), with a PHONE ICON before the words: a flex
+     row (`display: flex; align-items: center; gap: 10px;`) with this inline SVG first, 32 x 32px,
+     `aria-hidden="true"` (a phone with a download arrow, the site's blue #3b82f6; NOT the Android
+     robot or any Google artwork):
+       <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v7"/><path d="M9 11.5l3 3 3-3"/><path d="M10.5 18.5h3"/></svg>
   2. This text, exactly (body text, #374151): "Feed this prompt to your AI agent (Claude Code,
      Gemini Antigravity or OpenAI Codex) to produce an installable Android app."
   3. A prompt box with a copy button, EXACTLY the cards' prompt box and COPY BUTTON (same look,
@@ -139,9 +140,14 @@ ANDROID BUILD (below the grid, above the footer)
      Its web address is a link like those in the cards' boxes (bold #1e40af, not underlined,
      new tab). The copy button copies exactly that one line. The button is enabled from the
      start (nothing loads). No "Prompt" label above the box.
-  4. Under the box, the logo's credit (its license, CC BY 3.0, asks for it), 0.75rem, #6b7280:
-     "The Android robot is reproduced or modified from work created and shared by Google and used
-     according to terms described in the Creative Commons 3.0 Attribution License."
+  4. Under the box, a note on what the build needs (0.875rem, #374151), one paragraph, exactly:
+     "What the agent needs (installs automatically if missing): Java 17, Android SDK, Gradle,
+     Python 3, git, the site multiply.by."
+     then one line: "In all, about 2 GB of disk and 8 GB of RAM. Linux, Mac or Windows (tested
+     only on Linux). Everything installs in your home folder; no administrator (root) access
+     needed."
+  5. Under that, the trademark notice, 0.75rem, #6b7280, exactly:
+     "Android is a trademark of Google LLC."
 
 GAMES (the data for the cards, in NO particular order: the cards follow ORDERS below; the name
 after each "- " is the SHORT NAME, see NAME; the screenshots are files in this folder; the
@@ -226,8 +232,11 @@ CHECKS
   read from the site, as one flowing paragraph: no line breaks from the file, the words joined
   by single spaces (the base game: "Base game, no custom gamification. To see the actual prompt,
   select the SOURCE button on the game."); the name, the screenshot and "Play …" all open the game.
-- Under the cards, the ANDROID BUILD block: the green Android head and "Android Build" on one
-  line, its text, and a box with "Build an
+- Under the cards, the ANDROID BUILD block: the blue phone icon and "Android™ Build" on one
+  line (no Android robot), its text, the note on what the build needs (one line: Java 17, Android SDK,
+  Gradle, Python 3, git, the site multiply.by), the line with "about 2 GB of disk and 8 GB of
+  RAM",
+  and a box with "Build an
   installable APK using https://multiply.by/android" (the address a bold link); its copy button
   puts exactly that line on the clipboard and shows the check mark. At 360px it fits the screen,
   no sideways scroll.

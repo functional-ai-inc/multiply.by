@@ -2,6 +2,27 @@
 
 Notes for packaging the multiply.by games as an Android app.
 
+The app is built on the machine you are running on (below).
+
+**No root needed:** install everything as the user running the build, in the user's own folders
+(below); Gradle and the libraries go in `~/.gradle` by themselves (`./gradlew`). Use `sudo` or the
+system's package manager only if it works without asking for a password; never ask for or type a
+password. If Python 3 or git is missing and can't be installed without root, stop and ask the
+person to install them.
+
+**Linux, Mac or Windows.** Tested only on Linux. The machine needs about 8 GB of RAM (Gradle
+alone may use 4 GB, `android/gradle.properties`) and about 2 GB of free disk.
+
+| | Linux | Mac | Windows |
+|---|---|---|---|
+| JDK 17 archive | `linux-x64` or `aarch64` `.tar.gz` | `mac-aarch64` (Apple silicon) or `x64` `.tar.gz` | `windows-x64` `.zip` |
+| JDK folder (`JAVA_HOME`) | `~/.local/jdk-17` | `~/.local/jdk-17/Contents/Home` | `%USERPROFILE%\.jdks\jdk-17` |
+| Android SDK (`ANDROID_HOME`) | `~/Android/Sdk` | `~/Library/Android/sdk` | `%LOCALAPPDATA%\Android\Sdk` |
+| Build command | `./gradlew assembleDebug` | `./gradlew assembleDebug` | `gradlew.bat assembleDebug` |
+| Python | `python3` | `python3` (the Mac asks once to install its command-line tools, which bring git too) | `py` or `python`; git may need installing |
+
+If a step fails, say which step and show the error.
+
 ## Build the app yourself
 
 Anyone can build the app from the public repo, on Linux, Mac or Windows. You need:
@@ -10,6 +31,11 @@ Anyone can build the app from the public repo, on Linux, Mac or Windows. You nee
   both; without it, install a JDK 17 and Google's command-line tools, then
   `sdkmanager "platforms;android-36" "build-tools;36.0.0" "platform-tools"`.
 - **Python 3** and **git**.
+
+Approximate sizes after installation: JDK 17 about 300 MB; the Android SDK parts above about
+500 MB; Gradle and the app's libraries (the first build downloads them) about 1 GB; Python 3 and
+git about 100 MB (usually already installed); the site's pages (games, About, Build It, prompts)
+about 4 MB. About 2 GB of disk in all. An AI agent installs whatever is missing.
 
 Then:
 
@@ -25,7 +51,10 @@ Then:
      `./gradlew assembleDebug` (Windows: `gradlew.bat assembleDebug`). The first build downloads
      Gradle and the libraries, a few minutes. The app is
      `app/build/outputs/apk/debug/app-debug.apk`.
-4. Install it: `adb install app/build/outputs/apk/debug/app-debug.apk`, or copy the file to the
+4. When the build is done, print the APK's full path (e.g.
+   `/home/you/multiply.by/android/app/build/outputs/apk/debug/app-debug.apk`), so the person who
+   asked for it can find it. An AI agent building it ends its answer with that path.
+5. Install it: `adb install app/build/outputs/apk/debug/app-debug.apk`, or copy the file to the
    phone and open it there (Android asks once to allow installs from that app).
 
 A debug build is signed with your own computer's key, so it can't be installed over the Play
@@ -43,9 +72,7 @@ nothing, so the app needs no income:
 - **Google Play:** the developer account is $25 once (already paid: organization account). Play
   charges nothing to publish or update an app, and nothing per download.
 - **Hosting:** none; the games ship inside the app, which works without the website.
-- **Building:** the `android-build` VM, about $5 a month for its disk while stopped, plus about
-  $0.13 an hour during a build. Zero if the VM is deleted between releases (a new one sets itself
-  up in about 3 minutes) or if builds move to GitHub Actions (free for a public repo).
+- **Building:** free, on your own computer.
 
 ## The project (`android/`)
 
@@ -74,10 +101,6 @@ nothing, so the app needs no income:
   out too: /match/, the model-comparison copies (/train/carbon/, ...), robots.txt and the sitemap.
   It writes `files.txt`, the list the app serves from, and prints links to addresses that are not
   on the site.
-- `build-app [debug]` (the site owner's route): stages the project in a temp folder (the
-  gathered pages are never written into the web folder), starts `android-build` if stopped,
-  builds over IAP SSH with `./gradlew`, copies the APK to `~/multiply-android/` (outside the web folder), and stops
-  the VM again if it started it. `build-app release` builds what Play takes (next section).
 
 ## How the app works
 
@@ -115,10 +138,21 @@ nothing, so the app needs no income:
     website and in the app: Monster `https://multiply.by/munchy/`, Planes `/flight/`, Great Wall
     `/greatwall/`, Block Craft `/blockcraft/` (each game's `shareText()`).
 - **No ads anywhere in the app**, on every page, the bundled About and Build It included. The
-  website may show ads on its non-game pages (`PRIVACY-WEBSITE.md`), but in the app every request
-  to another host gets the in-app 404, so no ad code can load. When ads are added to the website,
-  the ad slots must collapse when their ad does not load, so the app shows no empty boxes; check
-  this before the release that follows.
+  website may show ads on its non-game pages (`PRIVACY-WEBSITE.md`); the app shows the same
+  pages without them, in two layers:
+  1. **The app identifies itself.** `MainActivity.kt` adds `MultiplyByApp/VERSION` (e.g.
+     `MultiplyByApp/1.0`) to the WebView's user agent. Every page that carries ads on the
+     website says in its spec (`layout.txt`, `build-it/page.txt`, `about/about.txt`, wherever the
+     ads are added): "If `navigator.userAgent` contains `MultiplyByApp`, create no ad slots and
+     load no ad script." So in the app the page looks exactly as it would with no ads at all: no
+     empty boxes, no ad requests. When ads are added to the website, put that sentence in the
+     spec, rebuild the page, and check it in the app (or in a desktop browser with its user agent
+     set to include `MultiplyByApp`) before the next release.
+  2. **Safety net:** every request to another host gets the in-app 404 (above), so even a page
+     that forgot the check can't load ad code; its ad slot would at worst stay empty.
+  The Play Console's "Contains ads" answer is therefore No (`android/assets/play-console.txt`).
+  The user agent change needs an app release: a phone keeps its installed version's behavior
+  until it updates.
 - **SOURCE in the app:** a game's SOURCE is the relative link `prompt/`, so it opens the bundled
   prompt page (the game's prompt.txt in a box with a copy button), inside the app with no gate. The
   copy button uses `navigator.clipboard.writeText` with a `select()` fallback: check it on a phone.
@@ -159,151 +193,27 @@ thumbnails (`/thumbnails/*.png`), the /games/ screenshots (`/build-it/*.png`; to
 upload. A new or rebuilt game reaches the app only with a new release
 (the website updates instantly; the app does not).
 
-## Build machine (Google Cloud VM `android-build`)
-
-Created 2026-11-20 09:18 UTC by Claude Code (gcloud from the web server), for building the app.
-**Keep it stopped when not building.**
-
-### The VM
-
-| Setting | Value |
-|---|---|
-| Name | `android-build` (instance id 7764053744562318987) |
-| Project | `functional-ai` (gcloud account: the site owner's Google account) |
-| Zone / region | `us-east1-b` / `us-east1` (the project's default) |
-| Machine type | e2-standard-4: 4 vCPU, 16 GB RAM, standard (not preemptible / spot) |
-| Boot disk | `android-build`, 50 GB pd-balanced, deleted with the VM (auto-delete on) |
-| Image | Ubuntu 24.04 LTS, `ubuntu-2404-noble-amd64-v20261105` (family `ubuntu-2404-lts-amd64`, project `ubuntu-os-cloud`) |
-| Network | `default` network and subnetwork; internal IP 10.142.15.228; an **ephemeral** external IP (a new one at every start; not needed: SSH goes through IAP) |
-| Service account | the project's default Compute Engine account, default scopes (Storage read-only, Logging, Monitoring, ...) |
-| Shielded VM | vTPM and integrity monitoring on, Secure Boot off (the defaults) |
-| Maintenance | live migrate, automatic restart |
-| Labels / network tags | none |
-| Startup script | in the instance metadata, key `startup-script` (below) |
-
-It was created with:
-
-```
-gcloud compute instances create android-build --zone=us-east1-b --machine-type=e2-standard-4 \
-  --image-family=ubuntu-2404-lts-amd64 --image-project=ubuntu-os-cloud \
-  --boot-disk-size=50GB --boot-disk-type=pd-balanced \
-  --metadata-from-file=startup-script=startup.sh
-```
-
-### Cost
-
-About $0.13 an hour while running (e2-standard-4 in us-east1). Stopped (TERMINATED), only the
-50 GB disk is billed, about $5 a month. Deleting the VM deletes its disk too.
-
-### What is installed (checked 2026-11-20)
-
-- OpenJDK 17.0.21 (`openjdk-17-jdk-headless`), plus `unzip`, `zip`, `git`, `curl`.
-- Android SDK in `/opt/android-sdk`: cmdline-tools (`cmdline-tools/latest`, from
-  `commandlinetools-linux-11076708_latest.zip`), platform-tools 37.0.3, platforms android-35 and
-  android-36, build-tools 35.0.0 and 36.0.0. SDK licenses accepted.
-- Gradle 8.14.3 in `/opt/gradle-8.14.3` (link `/opt/gradle`).
-- Environment for every login shell, `/etc/profile.d/android.sh`: `ANDROID_HOME` and
-  `ANDROID_SDK_ROOT` = `/opt/android-sdk`; PATH adds the cmdline-tools, platform-tools and Gradle
-  bin folders.
-- Disk: 4.2 GB used of 48 GB.
-- Setup log: `/var/log/android-setup.log` (ends with a SUMMARY block); marker file
-  `/opt/android-setup.done`.
-
-### History
-
-1. Created; the startup script ran once (about 3 minutes), wrote its log and the marker, and
-   powered the VM off.
-2. Started again only to read the log (SSH without IAP hung; with `--tunnel-through-iap` it
-   worked), then stopped. Status now: TERMINATED.
-
-### Using it
-
-```
-gcloud compute instances start android-build --zone=us-east1-b
-gcloud compute ssh android-build --zone=us-east1-b --tunnel-through-iap
-gcloud compute instances stop android-build --zone=us-east1-b
-gcloud compute instances describe android-build --zone=us-east1-b --format='value(status)'
-```
-
-- **SSH needs `--tunnel-through-iap`**; without it the connection hangs.
-- Copy files with `gcloud compute scp --tunnel-through-iap ...` (e.g. the built `.aab` back).
-- On a start, the startup script runs again but exits at once (the marker file exists), so the
-  VM stays up.
-- To delete it (VM and disk): `gcloud compute instances delete android-build --zone=us-east1-b`.
-
-### The startup script (as installed in the metadata)
-
-```bash
-#!/bin/bash
-# One-time setup of an Android build machine; powers the VM off when done.
-# Later boots skip it (the marker file exists), so a started VM stays up for work.
-MARK=/opt/android-setup.done
-LOG=/var/log/android-setup.log
-[ -f "$MARK" ] && exit 0
-exec >>"$LOG" 2>&1
-set -x
-export DEBIAN_FRONTEND=noninteractive
-apt-get update
-apt-get install -y openjdk-17-jdk-headless unzip zip git curl
-
-SDK=/opt/android-sdk
-mkdir -p $SDK/cmdline-tools
-cd /tmp
-curl -fsSLo tools.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
-unzip -q tools.zip -d $SDK/cmdline-tools && mv $SDK/cmdline-tools/cmdline-tools $SDK/cmdline-tools/latest
-SM=$SDK/cmdline-tools/latest/bin/sdkmanager
-yes | $SM --sdk_root=$SDK --licenses >/dev/null
-for p in "platform-tools" "platforms;android-35" "build-tools;35.0.0" "platforms;android-36" "build-tools;36.0.0"; do
-  $SM --sdk_root=$SDK --install "$p" || echo "SKIPPED: $p"
-done
-yes | $SM --sdk_root=$SDK --update || true
-
-GV=8.14.3
-curl -fsSLo gradle.zip https://services.gradle.org/distributions/gradle-$GV-bin.zip && unzip -q gradle.zip -d /opt && ln -sfn /opt/gradle-$GV /opt/gradle
-
-cat > /etc/profile.d/android.sh <<'P'
-export ANDROID_HOME=/opt/android-sdk
-export ANDROID_SDK_ROOT=/opt/android-sdk
-export PATH=$PATH:/opt/android-sdk/cmdline-tools/latest/bin:/opt/android-sdk/platform-tools:/opt/gradle/bin
-P
-chmod -R a+rX $SDK
-
-set +x
-echo "===== SUMMARY ====="
-java -version 2>&1 | head -1
-/opt/gradle/bin/gradle --version 2>/dev/null | grep '^Gradle'
-$SM --sdk_root=$SDK --list_installed 2>/dev/null | grep -E 'platform|build-tools|cmdline'
-df -h / | tail -1
-echo "===== DONE ====="
-touch "$MARK"
-sync
-poweroff
-```
-
 ## Release build (what is uploaded to Play)
 
-`android/build-app release` builds, on the VM, the **App Bundle** (`.aab`, the file Play takes)
-and an **APK of the same build** (to install on a phone and check before uploading), both signed
-with the **upload key**, into `~/multiply-android/` as `multiply-by-release-DATE.aab` and `.apk`.
+From the `android` folder, after `python3 gather-assets.py`: `./gradlew bundleRelease
+assembleRelease` builds the **App Bundle** (`.aab`, the file Play takes, in
+`app/build/outputs/bundle/release/`) and an **APK of the same build** (to install on a phone and
+check before uploading, in `app/build/outputs/apk/release/`), both signed with the **upload key**.
 
-- **The upload key** is in `~/.multiply-play/` on the server (`upload-key.jks` and
-  `upload-key.properties` with its password), outside the web folder and the repo; the folder and
-  files are readable by their owner only. The first release build made it, on the VM (RSA 4096,
-  valid 10,000 days, alias `upload`), with a random password that was never printed. For a
-  build, `build-app` copies the two files into the temporary build folder and deletes them from
-  the VM afterwards. **Back up `~/.multiply-play/`** somewhere safe and private (e.g. a password
-  manager): with Play App Signing, a lost upload key can be replaced through Play Console
-  support, but that takes days.
+- **The upload key:** `upload-key.jks` and `upload-key.properties` (`storeFile=upload-key.jks`,
+  `storePassword=...`, `keyAlias=upload`, `keyPassword=...`) in the `android` folder for the
+  build (both git-ignored; without them a release build is unsigned). The site's own key (RSA
+  4096, valid 10,000 days, alias `upload`) is kept in `~/.multiply-play/` on the site owner's
+  machine, readable by its owner only; copy the two files in for a release build and delete them
+  after. **Back it up** somewhere safe and private (e.g. a password manager): with Play App
+  Signing, a lost upload key can be replaced through Play Console support, but that takes days.
 - **Play App Signing:** accept it when creating the release. Google then signs what phones
   download with its own app signing key; ours only proves an upload comes from us.
 - **Version:** `versionCode` (1, then +1 for every upload; Play refuses a number it has seen) and
   `versionName` ("1.0", what users see) in `app/build.gradle.kts`.
 - **Building your own release** (from the public repo): make your own key with `keytool
   -genkeypair -keystore upload-key.jks -storetype PKCS12 -alias upload -keyalg RSA -keysize 4096
-  -validity 10000`, put it and an `upload-key.properties` (`storeFile=upload-key.jks`,
-  `storePassword=...`, `keyAlias=upload`, `keyPassword=...`, the same password twice) in the
-  `android` folder (both git-ignored), then `./gradlew bundleRelease assembleRelease`; the files
-  are in `app/build/outputs/bundle/release/` and `app/build/outputs/apk/release/`.
+  -validity 10000` and its `upload-key.properties` (the same password twice), then build as above.
 - **Check before uploading:** install the release APK on a phone (`adb install`; uninstall a
   debug build first, it has another key) and play a game through.
 
@@ -400,4 +310,4 @@ from outside. On launch day: check the link opens the listing, then build the ap
 - **TWA (Bubblewrap or PWABuilder):** the easiest route (a signed `.aab` in minutes from
   pwabuilder.com, plus `/.well-known/assetlinks.json` on the site), but it shows the whole
   website, including the pages that will carry ads, and needs the network on first open.
-- **Building on this web server:** not enough memory, no Java.
+- **Building on this web server:** not enough memory (2 GB; the build needs about 8 GB).

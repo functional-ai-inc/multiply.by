@@ -63,6 +63,10 @@ class MainActivity : ComponentActivity() {
             allowFileAccess = false
             allowContentAccess = false
             setSupportMultipleWindows(false)   // target="_blank" links open in this WebView
+            // Marks the app to the pages: a page that shows ads on the website creates no ad
+            // slots and loads no ad script when navigator.userAgent contains "MultiplyByApp"
+            // (ANDROID.md, "No ads anywhere in the app").
+            userAgentString = "$userAgentString MultiplyByApp/${BuildConfig.VERSION_NAME}"
         }
         web.webViewClient = Client()
         setUpShare()

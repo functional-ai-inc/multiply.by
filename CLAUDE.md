@@ -141,6 +141,11 @@ rebuild. GitHub: functional-ai-inc/multiply.by (public).
 - Never print, echo or commit API keys. Don't change or commit anything in /var/www/openlang.ai
   (e.g. run-vertex.py model changes): it is not part of this repo.
 - `chinese/prompt.txt` is the user's own work: commit it only when asked.
+- ADS (website only, never in the Android app or in the games): when ads are added to any page's
+  spec (`layout.txt`, `build-it/page.txt`, `about/about.txt`, ...), the spec must also say: "If
+  `navigator.userAgent` contains `MultiplyByApp`, create no ad slots and load no ad script." The
+  app adds `MultiplyByApp/VERSION` to its user agent (ANDROID.md, "No ads anywhere in the app");
+  after the rebuild, check the page with that user agent: no ad boxes, no ad requests.
 - Specs: wrap prose at about 100 columns; only code fragments and exact HTML may run longer.
 - After a rebuild, test the live page with Playwright (python, chromium) at 360x640, 640x360
   (landscape), 768x1024 (tablet) and 1280x800: no console errors, nothing cut off, no page scroll
