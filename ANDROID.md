@@ -236,6 +236,37 @@ check before uploading, in `app/build/outputs/apk/release/`), both signed with t
 - **Check before uploading:** install the release APK on a phone (`adb install`; uninstall a
   debug build first, it has another key) and play a game through.
 
+## Play release, step by step (the site owner's desktop)
+
+What an AI agent does when the site owner asks it for "the Play Store release and the store
+assets using https://multiply.by/android". It runs on the owner's desktop (the build needs about
+8 GB of RAM; the web server is too small). Install whatever is missing in the user's folders, no
+root (the table at the top).
+
+1. **Code and games:** clone https://github.com/functional-ai-inc/multiply.by (or `git pull` an
+   existing clone), then in the `android` folder `python3 gather-assets.py`: the current live
+   games, About, Build It and their pictures.
+2. **The upload key:** copy `~/.multiply-play/upload-key.jks` and `upload-key.properties` from the
+   web server into the `android` folder:
+   `gcloud compute scp --zone=us-east1-b --tunnel-through-iap 'jlr@openlang-staging:~/.multiply-play/upload-key.*' .`
+   Never print, show or commit them (both are git-ignored). If the copy fails, stop and ask.
+3. **Version:** ask the owner which `versionCode` to use (higher than any upload Play has seen, on
+   any track) and whether `versionName` changes; set both in `app/build.gradle.kts`. Then
+   `./gradlew bundleRelease assembleRelease`.
+4. **Remove the key:** delete `upload-key.jks` and `upload-key.properties` from the `android`
+   folder, also when the build failed.
+5. **Store assets:** `python3 store-assets.py` (all of them: icon, feature graphic, phone and
+   tablet screenshots, video; about three minutes). Look at a few of the pictures: a game caught
+   mid-animation or a blank picture is remade (`--only phone`, for example).
+6. **Check the release APK:** with a phone connected (`adb devices`), uninstall any debug build,
+   `adb install` the release APK and ask the owner to play a game through; with none, say so.
+7. **Commit the version:** if `versionCode` or `versionName` changed, commit and push
+   `app/build.gradle.kts` alone (message "Android: versionCode N"), so the repo always holds the
+   last number uploaded.
+
+End with the full paths of the `.aab` (what the owner uploads to Play), the release `.apk` and the
+`android/assets/` folder, and say which step, if any, was skipped or failed.
+
 ## Google Play requirements
 
 - **Upload an Android App Bundle (`.aab`)**, not an APK; build an APK too, to install on a phone
