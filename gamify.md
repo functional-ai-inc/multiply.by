@@ -285,10 +285,22 @@ Use the base file's own names, so the building model ties your changes to its co
 - Menu:
   - The base game has the site's menu: the logo in the title band; in the bar MUTE, the GAMES icon,
     BUILD IT and SOURCE (always visible) and, on phones, the menu button whose panel holds HOME,
-    GAMES (icon and word), ABOUT, RULES (a popup) and RESET. CRITICAL: a gamified game keeps EXACTLY
+    GAME BOARD (icon and words), ABOUT, RULES (a popup) and RESET. CRITICAL: a gamified game keeps EXACTLY
     this menu, the same items in the same order, with the same ids and classes: it adds no item and
     drops none. A new panel (a sticker book, a garage, a map) opens from a button inside the game
     area, not from the menu bar.
+  - Copy the menu's HTML and CSS from MENU BAR, PHONES and WIDER SCREENS in the SITE LAYOUT part
+    of the base file (near its end): read that part in full before writing the menu, never rebuild
+    the menu from this summary.
+    Two things models get wrong (CRITICAL):
+    - GAME BOARD is the panel's second item (`class="menu-item panel-only"`: the four blue squares
+      and the words GAME BOARD) on phones. On tablets and computers the panel's items sit in the
+      bar's row and this one is HIDDEN (`#menu-panel .panel-only { display: none; }`): a game's
+      row reads MUTE, HOME, ABOUT, RULES, RESET, then the GAMES icon ALONE (no word on a game
+      page), BUILD IT and SOURCE. The words GAME BOARD never show in a game's row.
+    - The logo (the red "x") and the GAMES icon (four rounded squares filled #3b82f6) are the exact
+      SVGs given there, not redrawn; the menu button (three lines) is the LAST item of the bar, at
+      its right end.
 - Site frame (the SITE LAYOUT part of the file):
   - The TITLE BAND is `<h1><a id="tagline" href="https://multiply.by/"><strong>Multiply.by:</strong>
     ...</a></h1>`, sized to fit by `fitTagline()`, with the share icon and share menu. A gamified

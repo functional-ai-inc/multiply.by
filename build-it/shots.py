@@ -30,8 +30,9 @@ with sync_playwright() as p:
     for move in range(MOVES):
         q = question(pg)
         m = re.search(r"(\d+)\s*[x×]\s*(\d+)", q)
-        # A missing factor ("3 x __ = 18" or "__ x 3 = 18", Evolution): the answer is the factor.
-        f = re.search(r"(\d+)\s*[x×]\s*_+\s*=\s*(\d+)|_+\s*[x×]\s*(\d+)\s*=\s*(\d+)", q)
+        # A missing factor ("3 x __ = 18", "__ x 3 = 18" or "3 x ? = 18", Evolution): the answer is
+        # the factor.
+        f = re.search(r"(\d+)\s*[x×]\s*(?:_+|\?)\s*=\s*(\d+)|(?:_+|\?)\s*[x×]\s*(\d+)\s*=\s*(\d+)", q)
         if f:
             a, c = (f[1], f[2]) if f[1] else (f[3], f[4])
             answer = str(int(c) // int(a))
@@ -40,7 +41,9 @@ with sync_playwright() as p:
         else:
             sys.exit(f"{game}: move {move + 1}: no question found in {q!r}")
         buttons = pg.locator("#answers button")
-        texts = [t.strip().split("\n")[-1].strip() for t in buttons.all_inner_texts()]
+        # Each button's text in the largest font: a build may add a small key number (1-4)
+        # above or below the answer.
+        texts = buttons.evaluate_all("bs => bs.map((x => { let best = '', size = 0; const w = document.createTreeWalker(x, NodeFilter.SHOW_TEXT); for (let n; (n = w.nextNode());) { const t = n.data.trim(); if (!t) continue; const px = parseFloat(getComputedStyle(n.parentElement).fontSize); if (px > size) { size = px; best = t; } } return best; }))")
         if answer not in texts:
             sys.exit(f"{game}: answer {answer} not among {texts}")
         buttons.nth(texts.index(answer)).click()
@@ -51,7 +54,9 @@ with sync_playwright() as p:
             pass
         pg.wait_for_timeout(700)
     pg.wait_for_timeout(1500)
-    top, bottom = pg.evaluate("""() => [(document.getElementById('menu-bar') || document.querySelector('nav')).getBoundingClientRect().bottom,
+    top, bottom = pg.evaluate("""() => [(document.getElementById('menu-bar')
+                                         || document.getElementById('menu-toggle')?.closest('nav, header')
+                                         || document.querySelector('nav')).getBoundingClientRect().bottom,
                                         document.getElementById('answers').getBoundingClientRect().top]""")
     shot = Image.open(io.BytesIO(pg.screenshot())).convert("RGB")
     browser.close()

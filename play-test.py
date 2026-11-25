@@ -41,8 +41,16 @@ W, H = map(int, args.size.split("x"))
 STATE = """() => {
   const q = document.querySelector('#question, #question-text');
   const b = [...document.querySelectorAll('#answers button')];
-  // The answer is the button's last line (a build may show a key number above it).
-  const ans = x => x.innerText.trim().split(String.fromCharCode(10)).pop().trim();
+  // The answer is the button's last line, leaving out its key number (1-4), which a build may
+  // show above or below the answer.
+  const ans = (x, i) => {
+    let l = x.innerText.trim().split(String.fromCharCode(10)).map(t => t.trim()).filter(Boolean);
+    if (l.length > 1) {
+      const k = l.lastIndexOf(String(i + 1));  // remove ONE key line: the answer may equal it
+      if (k >= 0) l.splice(k, 1);
+    }
+    return (l.pop() || '').trim();
+  };
   return {q: q ? q.innerText.trim() : '', a: b.map(ans),
           enabled: b.filter(x => !x.disabled).length,
           won: /you won|play again/i.test(document.body.innerText)};
@@ -105,6 +113,19 @@ def size_check(html):
     return "; ".join(out) or None
 
 
+def right_answer(q):
+    """The right answer to question text q ("3 x 7", "3 x ? = 21", "21 ÷ 3"), or None."""
+    mf = (re.search(r"(\d+)\s*[x×]\s*(?:_+|\?)\s*=\s*(\d+)", q)
+          or re.search(r"(?:_+|\?)\s*[x×]\s*(\d+)\s*=\s*(\d+)", q))
+    if mf:
+        return str(int(mf[2]) // int(mf[1]))
+    m = re.search(r"(\d+)\s*([x×÷])\s*(\d+)", q)
+    if not m:
+        return None
+    a, op, c = int(m[1]), m[2], int(m[3])
+    return str(a // c if op == "÷" else a * c)
+
+
 def menu_check(pg):
     """Open the menu panel, tap an answer: the tap must only close the panel."""
     toggle = pg.locator("#menu-toggle")
@@ -117,7 +138,10 @@ def menu_check(pg):
         return "the menu button did not open #menu-panel"
     # The open panel is a dropdown UNDER the bar; the bar keeps its buttons on screen.
     where = pg.evaluate("""() => {
-      const bar = document.getElementById('menu-bar').getBoundingClientRect();
+      // #menu-bar is the layout's id; a page without it: the bar that holds the menu button
+      const bar = (document.getElementById('menu-bar')
+        || document.getElementById('menu-toggle').closest('nav, header')
+        || document.querySelector('nav')).getBoundingClientRect();
       const panel = document.getElementById('menu-panel').getBoundingClientRect();
       const off = ['#games-link', '#build-it-link', '#source-link', '#menu-toggle']
         .map(sel => document.querySelector(sel)).filter(e => e && e.getClientRects().length)
@@ -128,7 +152,25 @@ def menu_check(pg):
         return "the open menu panel is inside the menu bar, not a dropdown under it"
     if where["off"]:
         return f"with the menu panel open, {', '.join(where['off'])} went off the screen"
-    pg.locator("#answers button").first.click()
+    # Tap the RIGHT answer: if the tap gets through, the question surely moves on (a wrong
+    # answer can leave the same question showing, and the bug would pass unseen).
+    # The open panel may cover part of the answers: tap a point of the button that is really on
+    # top there (as a child would), and the right one if any of it shows, else the first that does.
+    right = right_answer(before["q"])
+    k = before["a"].index(right) if right in before["a"] else 0
+    pt = pg.evaluate("""k => {
+      const bs = [...document.querySelectorAll('#answers button')];
+      const spot = b => { const r = b.getBoundingClientRect();
+        for (const [fx, fy] of [[.5,.5],[.15,.5],[.85,.5],[.5,.15],[.5,.85],[.15,.15],[.15,.85]]) {
+          const x = r.left + r.width * fx, y = r.top + r.height * fy;
+          const e = document.elementFromPoint(x, y);
+          if (e && b.contains(e)) return [x, y];
+        } return null; };
+      return spot(bs[k]) || bs.map(spot).find(Boolean) || null;
+    }""", k)
+    if not pt:
+        return "with the menu panel open, every answer button is covered"
+    pg.mouse.click(pt[0], pt[1])
     pg.wait_for_timeout(600)
     after = pg.evaluate(STATE)
     if pg.locator("#menu-panel").first.is_visible():

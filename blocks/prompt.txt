@@ -2,9 +2,9 @@ Block Craft: a blocky mining and building adventure. Every right answer is one
 swing of the pickaxe or one block placed. First dig down through grass, dirt, stone and
 ore to collect blocks, then build with them. Each stage is a bigger build: a hut, a
 stone house, a watchtower, a castle.
-Original pixel-art style drawn in SVG: fine, detailed pixel art. Each block's
-texture is 16x16 pixels. Builds are made of many small blocks. Cracks spread on
-the block being mined, blocks pop into the inventory, then fly into place.
+Original pixel-art style drawn in SVG: fine, detailed pixel art. Builds are made
+of many small blocks. Cracks spread on the block being mined, blocks pop into the
+inventory, then fly into place.
 
 Follow https://multiply.by/gamify
 

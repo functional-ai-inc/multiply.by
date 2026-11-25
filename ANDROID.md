@@ -2,17 +2,15 @@
 
 Notes for packaging the multiply.by games as an Android app.
 
-The app is built on the machine you are running on (below).
+**What the agent needs** (installs automatically if missing): Java 17, Android SDK, Gradle,
+Python 3, git, the site multiply.by.
 
 **No root or administrator access:** the install neither needs nor uses it. Everything goes in
-the user's own folders (below); Gradle and the libraries go in `~/.gradle` by themselves
-(`./gradlew`).
+the user's own folders (below).
 
 **Optional, a separate user:** to keep all of it (about 2 GB) out of your own home folder, run
 the build as a new user made just for it, e.g. `multiply-build`, and log in or open a terminal as
 that user. Everything then goes in that user's home folder, and deleting the user removes it all.
-Making and deleting the user is done by you, with the computer's usual administrator tools; the
-build itself still needs no root or administrator access.
 
 **Linux, Mac or Windows.** The machine needs about 8 GB of RAM and about 2 GB
 of free disk.
@@ -22,6 +20,7 @@ of free disk.
 | JDK 17 archive | `linux-x64` or `aarch64` `.tar.gz` | `mac-aarch64` (Apple silicon) or `x64` `.tar.gz` | `windows-x64` `.zip` |
 | JDK folder (`JAVA_HOME`) | `~/.local/jdk-17` | `~/.local/jdk-17/Contents/Home` | `%USERPROFILE%\.jdks\jdk-17` |
 | Android SDK (`ANDROID_HOME`) | `~/Android/Sdk` | `~/Library/Android/sdk` | `%LOCALAPPDATA%\Android\Sdk` |
+| Gradle and libraries (first build) | `~/.gradle` | `~/.gradle` | `%USERPROFILE%\.gradle` |
 | Build command | `./gradlew assembleDebug` | `./gradlew assembleDebug` | `gradlew.bat assembleDebug` |
 | Python | `python3` | `python3` | `py` or `python` |
 
@@ -310,8 +309,8 @@ which is a 404 until the app is published:
 - `about/about.txt`, GET THE APP: a line, Google's official "Get it on Google Play" badge
   (`/google-play.png`, 188 x 56; Google's `en_badge_web_generic.png` with only its transparent
   margin trimmed, tracked in git) and the trademark line Google asks for.
-- `footer.txt`, LEFT column: a "Get the Android app" link. The footer is on About, Build It and
-  /games/; /games/ is bundled in the app, where the link goes through the parental gate like the
+- `footer.txt`, LEFT column: the same official badge, smaller (161 x 48), and the trademark
+  line. The footer is on About, Build It and /games/; /games/ is bundled in the app, where the link goes through the parental gate like the
   footer's other links.
 
 **Live before launch, on purpose**: About, Build It and /games/ were rebuilt on 2026-11-21 and

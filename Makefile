@@ -8,7 +8,7 @@ ICONS = icon-192.png icon-512.png
 PROMPT_PAGES = $(sort prompt/index.html base/prompt/index.html \
   $(patsubst %/prompt.txt,%/prompt/index.html,$(wildcard */prompt.txt)))
 
-all: gamify/index.html android/index.html privacy/index.html privacy/website/index.html selector/prompt/index.html grid/prompt/index.html base/index.html index.html $(FILES) $(ICONS) og-image.png sitemap.xml \
+all: gamify/index.html android/index.html chat-gpt-local.html privacy/index.html privacy/website/index.html selector/prompt/index.html grid/prompt/index.html base/index.html index.html $(FILES) $(ICONS) og-image.png sitemap.xml \
   $(PROMPT_PAGES)
 
 prompt-pages: $(PROMPT_PAGES)
@@ -47,6 +47,13 @@ android/index.html: ANDROID.md md-html.py
 	mkdir -p android
 	python3 md-html.py ANDROID.md > android/index.html.tmp
 	mv android/index.html.tmp android/index.html
+
+# https://multiply.by/chat-gpt-local.html: how Claude Code on the owner's desktop (with Claude in
+# Chrome) builds the ChatGPT games (trains, planes, space, building, evolution), chat-gpt-local.md
+# rendered as a page. No AI model.
+chat-gpt-local.html: chat-gpt-local.md md-html.py
+	python3 md-html.py chat-gpt-local.md > chat-gpt-local.html.tmp
+	mv chat-gpt-local.html.tmp chat-gpt-local.html
 
 # https://multiply.by/privacy/: the privacy policy (the app's Play listing links to it), PRIVACY.md
 # rendered as a page. No AI model.

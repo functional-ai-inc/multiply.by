@@ -19,11 +19,12 @@ rebuild. GitHub: functional-ai-inc/multiply.by (public).
 - `layout.txt` is the frame shared by every page: title band with the "x" logo (both link to
   https://multiply.by/), share icon and desktop share menu, THE ONE MENU of every page, footer. The
   menu: always visible MUTE (games), the GAMES icon (four squares), BUILD IT and SOURCE (outlined
-  buttons); on phones a menu button (three lines) opens a panel with HOME, GAMES (icon and word),
+  buttons); on phones a menu button (three lines) opens a panel with HOME, GAME BOARD (icon and words),
   ABOUT and, on games, RULES and RESET; on tablets and computers all in one row. Pages only name
   their current item and SOURCE address.
-- `footer.txt`: the three-column site info block (About Multiply.by, Feedback, Functional AI
-  Inc.) above the copyright line, on the front page, About and Build It, put in by an optional
+- `footer.txt`: the three-column site info block (Get the app: the official Google Play
+  badge; Feedback and the privacy policy link; Functional AI Inc.) above the copyright line, on /games/,
+  About and Build It, put in by an optional
   `#include footer.txt` line.
 - Each page has its own spec with one `#include layout.txt` line; `assemble-spec PAGE.txt`
   expands it into that page's `prompt.txt` (generated, git-ignored, served: every page's SOURCE
@@ -137,6 +138,13 @@ rebuild. GitHub: functional-ai-inc/multiply.by (public).
   to /privacy/website/, linked from footer.txt.
 - `match/` (an older matching game) was deleted on 2026-11-23; `git checkout -- match` restores it.
 - Builds take a few minutes and go live as soon as they pass; run them in the background.
+- ChatGPT games (trains, planes, space, building, evolution) are never built here: the owner's
+  desktop Claude Code with Claude in Chrome follows `chat-gpt-local.md` (tracked; `make` renders
+  it to https://multiply.by/chat-gpt-local.html, git-ignored), ending with `make` in build-it/.
+- BUILD ORDER: games (and the base game and front page) first, then Build It and /games/. Both show
+  screenshots of the live games (`build-it/*.png`, taken by `shots.py` from the live page), so
+  after a game rebuild run `make` in `build-it/`: it retakes the shot of every game whose
+  index.html is newer. Never build Build It or /games/ in parallel with the games they show.
 
 ## Rules
 - Never print, echo or commit API keys. Don't change or commit anything in /var/www/openlang.ai

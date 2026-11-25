@@ -115,12 +115,29 @@ SHARE THE SITE (the share icon at the right end of the title band)
     outside the menu and the icon, and on Escape (a `keydown` listener on window; if the page
     already has one, for example to close a panel, use that same listener, and Escape closes the
     share menu first if it is open).
-  - CLOSING ON A PRESS OUTSIDE (CRITICAL): use ONE `pointerdown` listener on `window` registered
+  - CLOSING ON A PRESS OUTSIDE (CRITICAL): ONE `pointerdown` listener on `window` registered
     with `{ capture: true }`, NOT a `click` listener: a page may have buttons that act on
     `pointerdown`, which comes before `click`, or buttons that are briefly `disabled`, and disabled
-    buttons fire no `click`. In it: if the menu is open and `e.target` is not inside #share-menu or
-    #share-site, close the menu and call `e.stopPropagation()`, so that press ONLY closes the menu
-    and does nothing else on the page. When the menu is closed it does nothing.
+    buttons fire no `click`. It closes this menu AND the menu panel (MENU PANEL below), and a
+    press that closed either ONLY closes it: it does nothing else on the page (on a game it does
+    not answer and does not start the timer). Use exactly this code; `closeShareMenu()` and
+    `closeMenuPanel()` are the page's functions that close each (they set `shareMenuOpen` /
+    `menuOpen` false and `aria-expanded` to "false"):
+
+      window.addEventListener('pointerdown', e => {
+        let closed = false;
+        if (shareMenuOpen && !e.target.closest('#share-menu, #share-site')) {
+          closeShareMenu(); closed = true;
+        }
+        if (menuOpen && !e.target.closest('#menu-panel, #menu-toggle')) {
+          closeMenuPanel(); closed = true;
+        }
+        if (closed) e.stopPropagation();
+      }, { capture: true });
+
+    Keep the ONE `e.stopPropagation()` at the end, after both checks, never inside only one of
+    them (a build swallowed the press for the share menu but not for the menu panel, so closing
+    the panel by tapping an answer also answered it). When both are closed it does nothing.
   - "Is the menu open?" is ONE boolean, `shareMenuOpen`, false when the page loads, set true by
     opening and false by closing; never read it from `style.display` (an empty inline style at
     page load would count as "open", and the first press anywhere on the page, often a child's
@@ -150,7 +167,7 @@ on tablets and computers everything is in one row and there is no menu button.
 
 - THE ITEMS, in this order:
   1. MUTE (game pages only): the speaker icon button, described by the game.
-  2. THE MENU PANEL items: HOME, GAMES (the four squares and the word, phones only), ABOUT, then
+  2. THE MENU PANEL items: HOME, GAME BOARD (the four squares and the words, phones only), ABOUT, then
      the game's RULES and RESET (game pages only).
   3. GAMES: the games icon (the four squares of the front page's "More games" tile), ALWAYS
      VISIBLE on every page and every screen: from anywhere, one tap reaches the games page.
@@ -164,11 +181,11 @@ on tablets and computers everything is in one row and there is no menu button.
       (MUTE button, game pages only)
       <div id="menu-panel">
         <a class="menu-item" href="https://multiply.by/">HOME</a>
-        <a class="menu-item panel-only" href="https://multiply.by/games/">(games icon, 18px)<span>GAMES</span></a>
+        <a class="menu-item panel-only" href="https://multiply.by/games/">(games icon, 18px)<span>GAME BOARD</span></a>
         <a class="menu-item" href="https://multiply.by/about/">ABOUT</a>
         (RULES and RESET buttons, class menu-item, game pages only)
       </div>
-      <a class="menu-item" id="games-link" href="https://multiply.by/games/" aria-label="Games" title="Games">(games icon)</a>
+      <a class="menu-item" id="games-link" href="https://multiply.by/games/" aria-label="Game Board" title="Game Board">(games icon)<span class="games-word">GAME BOARD</span></a>
       <a class="menu-button" id="build-it-link" href="https://multiply.by/build-it/">BUILD IT</a>
       <a class="menu-button" id="source-link" href="SOURCE ADDRESS">SOURCE</a>
       <button type="button" id="menu-toggle" aria-label="Menu" title="Menu" aria-expanded="false" aria-controls="menu-panel">(icon)</button>
@@ -178,8 +195,11 @@ on tablets and computers everything is in one row and there is no menu button.
     SVG, 22px x 22px, viewBox "0 0 24 24", aria-hidden="true", four rounded squares in a 2 x 2 grid,
     fill #3b82f6 (the "More games" tile's blue): <rect x="3" y="3" width="8" height="8" rx="2"/>,
     <rect x="13" y="3" width="8" height="8" rx="2"/>, <rect x="3" y="13" width="8" height="8"
-    rx="2"/>, <rect x="13" y="13" width="8" height="8" rx="2"/>. The icon only, no word, at every
-    screen size (its name is in `aria-label` and `title`).
+    rx="2"/>, <rect x="13" y="13" width="8" height="8" rx="2"/>. Its name is in `aria-label` and
+    `title`. The words GAME BOARD after it (<span class="games-word">) show ONLY on wider
+    screens (below) on pages WITHOUT MUTE (the games page, About, Build It: their row has room),
+    where icon and words are an outlined button like BUILD IT; everywhere else (phones, and every
+    game page) it is the plain icon alone: `.games-word { display: none; }`.
   - ABOUT opens the About page.
   - BUILD IT opens "Build it yourself": each game with the prompt and model that built it. Two
     words, never broken across two lines.
@@ -234,7 +254,7 @@ included)
     #menu-panel .menu-item:hover, #menu-panel .menu-item:focus-visible { background: #eff6ff; }
   (The bar is `position: relative`, so `top: 100%` is just under it.)
 - GAMES IN THE PANEL (class `panel-only`): the same four-squares icon as the bar's GAMES icon
-  (the same SVG, here 18px x 18px), then the word GAMES 8px after it, on one line. Seeing the
+  (the same SVG, here 18px x 18px), then the words GAME BOARD 8px after it, on one line. Seeing the
   icon next to its name teaches what the plain icon in the bar means. It opens
   https://multiply.by/games/ like the bar's icon (on the games page both are the current page).
 - "Is the panel open?" is ONE boolean, `menuOpen`, false when the page loads, set true by opening
@@ -248,12 +268,13 @@ included)
   RULES opens the How to Play panel, RESET resets), on Escape (the page's one `keydown` listener
   on window: Escape closes the panel first if it is open), and on a press anywhere outside the
   panel and the menu button.
-- CLOSING ON A PRESS OUTSIDE (CRITICAL), exactly as for the share menu: the SAME ONE `pointerdown`
-  listener on `window` with `{ capture: true }` handles both: if the panel is open and
-  `e.target` is not inside #menu-panel or #menu-toggle, close it and call `e.stopPropagation()`,
-  so that press ONLY closes the panel: on a game page it does not answer and does not start the
-  timer. When the panel is closed it does nothing. A check: with the panel never opened, the very
-  first tap on an answer counts.
+- CLOSING ON A PRESS OUTSIDE (CRITICAL): the share menu's listener above (CLOSING ON A PRESS
+  OUTSIDE), copied exactly, handles the panel too: its `menuOpen` check closes the panel, and its
+  one `e.stopPropagation()` at the end makes that press ONLY close the panel: on a game page it
+  does not answer and does not start the timer. Never a second listener for the panel. Two
+  checks: with the panel never opened, the very first tap on an answer counts; with it open, a
+  tap on the right answer only closes the panel (the question, the score and the timer stay as
+  they were).
 
 WIDER SCREENS (tablets and computers: `@media (min-width: 768px) and (min-height: 600px)`, where
 the column is up to 720px wide)
@@ -264,9 +285,19 @@ the column is up to 720px wide)
       min-width: auto; flex-shrink: 0; }
     #menu-panel .menu-item { height: auto; padding: 0 8px; font-size: 15px; width: auto; }
     #menu-panel .panel-only { display: none; }
+  and, on pages without MUTE only (a game page leaves these rules out: its row is full), GAMES
+  becomes a THIRD OUTLINED BUTTON, the icon and the words GAME BOARD, exactly like BUILD IT and
+  SOURCE beside it (same border, corners, height, padding, text):
+    .games-word { display: inline; margin-left: 8px; }
+    #games-link { align-self: center; height: 2.25rem; padding: 0 12px; border: 1.5px solid #2563eb;
+      border-radius: 0.375rem; background: white; color: #1e40af; font-size: 14px;
+      font-weight: bold; letter-spacing: 0.02em; text-decoration: none; white-space: nowrap; }
+    #games-link svg { width: 18px; height: 18px; }
+    #games-link:hover, #games-link:focus-visible, #games-link[aria-current="page"] {
+      background: #eff6ff; }
   The panel's items sit in the bar (the bar's height), and the panel's GAMES item is hidden: the
   GAMES icon is already in the row. The row reads: MUTE, HOME, ABOUT, RULES, RESET, then the GAMES
-  icon, BUILD IT and SOURCE at the right end.
+  icon (a GAME BOARD button on pages without MUTE), BUILD IT and SOURCE at the right end.
 - Sizes: bar height 3.25rem; menu items `padding: 0 8px`, text 15px; the GAMES icon and the speaker
   icon 24px x 24px; the outlined buttons height 2.25rem, `padding: 0 12px`, text 14px; the share
   icon 28px x 28px (the logo as given under THE LOGO). The column can be as narrow as 400px on these
@@ -306,12 +337,13 @@ CHECKS FOR THE SITE LAYOUT (THE FINISHED PAGE MUST PASS ALL OF THESE)
   opens https://multiply.by/.
 - Menu bar, on a 360px phone and in landscape (640x360): one line with MUTE (game pages), the
   GAMES icon, BUILD IT and SOURCE as outlined buttons, and the menu button; nothing cut off. The
-  GAMES icon opens https://multiply.by/games/. The menu button opens the panel with HOME, GAMES (icon and word), ABOUT
+  GAMES icon opens https://multiply.by/games/. The menu button opens the panel with HOME, GAME BOARD (icon and words), ABOUT
   (and RULES, RESET on game pages), one per line; choosing an item,
   Escape, or a tap outside closes it, and that closing tap does nothing else (on a game it does not
   answer). With the panel never opened, the first tap on an answer counts.
 - Menu bar at 768x1024 and 1280x800: one row, MUTE, HOME, ABOUT, RULES, RESET, then the GAMES
-  icon, BUILD IT and SOURCE at the right; no menu button; no two items overlap or touch, and SOURCE
+  icon (on the games page, About and Build It an outlined button with the icon and GAME BOARD,
+  like BUILD IT; the plain icon alone on games), BUILD IT and SOURCE at the right; no menu button; no two items overlap or touch, and SOURCE
   ends inside the column's right edge. The current page's item is marked.
 - Footer text: the footer reads exactly "Copyright (c) <current year> by Functional AI Inc.
   Published under the MIT License.", with normal spaces between all words, and none of it is cut

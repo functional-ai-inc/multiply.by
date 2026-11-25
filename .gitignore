@@ -88,3 +88,4 @@
 /match/*
 !/match/build-instructions.txt
 !/match/Makefile
+/chat-gpt-local.html

@@ -26,7 +26,9 @@ Build the grid exactly as this file describes. The page that uses it says which 
      Which picture (thumbnail or screenshot) depends on where the grid is used, see below. Both
      are 5:4. The image keeps its 5:4 space while it loads; if it fails to load (offline, for
      example) it is hidden (`onerror` sets its `visibility: hidden`), and the tile and its name
-     stay.
+     stay. Its `src` is the FULL address from the list below (https://multiply.by/...), so it
+     loads also in a page opened from a downloaded file. Every tile has its picture: NEVER put
+     emoji, icons, drawings or text-only links in place of the pictures.
 - The names are written into the page from the games list below (with `textContent` when the
   script makes the tiles): the page reads nothing from the games (no fetch). The pictures are the
   only files the grid loads.
@@ -36,20 +38,20 @@ Build the grid exactly as this file describes. The page that uses it says which 
 
 ## The games
 
-| Short name  | Key       | Storage name         | Game address                   | Thumbnail (200 x 160)               | Screenshot (412 x 330)   |
-|-------------|-----------|----------------------|--------------------------------|-------------------------------------|--------------------------|
-| Monster     | monster   | monster              | https://multiply.by/monster/   | /thumbnails/monster-thumbnail.png   | /build-it/monster.png    |
-| Trains      | trains    | multiply-express     | https://multiply.by/trains/    | /thumbnails/trains-thumbnail.png    | /build-it/trains.png     |
-| Dinosaurs   | dino      | dino                 | https://multiply.by/dino/      | /thumbnails/dino-thumbnail.png      | /build-it/dino.png       |
-| Robot       | robot     | robot                | https://multiply.by/robot/     | /thumbnails/robot-thumbnail.png     | /build-it/robot.png      |
-| Planes      | planes    | flight               | https://multiply.by/planes/    | /thumbnails/planes-thumbnail.png    | /build-it/planes.png     |
-| Space       | space     | starhop              | https://multiply.by/space/     | /thumbnails/space-thumbnail.png     | /build-it/space.png      |
-| Chinese     | chinese   | wall                 | https://multiply.by/chinese/   | /thumbnails/chinese-thumbnail.png   | /build-it/chinese.png    |
-| Block Craft | blocks    | blockcraft           | https://multiply.by/blocks/    | /thumbnails/blocks-thumbnail.png    | /build-it/blocks.png     |
-| Evolution   | evolution | evolution            | https://multiply.by/evolution/ | /thumbnails/evolution-thumbnail.png | /build-it/evolution.png  |
-| Buildings   | building  | buildingsthroughtime | https://multiply.by/building/  | /thumbnails/building-thumbnail.png  | /build-it/building.png   |
-| Dot Array   | dots      | dots                 | https://multiply.by/dots/      | /thumbnails/dots-thumbnail.png      | /build-it/dots.png       |
-| Base Game   | base      | Multiply             | https://multiply.by/base/      | /thumbnails/base-thumbnail.png      | /build-it/base.png       |
+| Short name  | Key       | Storage name         | Game address                   | Thumbnail (200 x 160)                                  | Screenshot (412 x 330)                     |
+|-------------|-----------|----------------------|--------------------------------|--------------------------------------------------------|--------------------------------------------|
+| Monster     | monster   | monster              | https://multiply.by/monster/   | https://multiply.by/thumbnails/monster-thumbnail.png   | https://multiply.by/build-it/monster.png   |
+| Trains      | trains    | multiply-express     | https://multiply.by/trains/    | https://multiply.by/thumbnails/trains-thumbnail.png    | https://multiply.by/build-it/trains.png    |
+| Dinosaurs   | dino      | dino                 | https://multiply.by/dino/      | https://multiply.by/thumbnails/dino-thumbnail.png      | https://multiply.by/build-it/dino.png      |
+| Robot       | robot     | robot                | https://multiply.by/robot/     | https://multiply.by/thumbnails/robot-thumbnail.png     | https://multiply.by/build-it/robot.png     |
+| Planes      | planes    | flight               | https://multiply.by/planes/    | https://multiply.by/thumbnails/planes-thumbnail.png    | https://multiply.by/build-it/planes.png    |
+| Space       | space     | starhop              | https://multiply.by/space/     | https://multiply.by/thumbnails/space-thumbnail.png     | https://multiply.by/build-it/space.png     |
+| Chinese     | chinese   | wall                 | https://multiply.by/chinese/   | https://multiply.by/thumbnails/chinese-thumbnail.png   | https://multiply.by/build-it/chinese.png   |
+| Block Craft | blocks    | blockcraft           | https://multiply.by/blocks/    | https://multiply.by/thumbnails/blocks-thumbnail.png    | https://multiply.by/build-it/blocks.png    |
+| Evolution   | evolution | evolution            | https://multiply.by/evolution/ | https://multiply.by/thumbnails/evolution-thumbnail.png | https://multiply.by/build-it/evolution.png |
+| Buildings   | building  | buildingsthroughtime | https://multiply.by/building/  | https://multiply.by/thumbnails/building-thumbnail.png  | https://multiply.by/build-it/building.png  |
+| Dot Array   | dots      | dots                 | https://multiply.by/dots/      | https://multiply.by/thumbnails/dots-thumbnail.png      | https://multiply.by/build-it/dots.png      |
+| Base Game   | base      | Multiply             | https://multiply.by/base/      | https://multiply.by/thumbnails/base-thumbnail.png      | https://multiply.by/build-it/base.png      |
 
 Twelve games. Base Game is the plain game all the others are built from. The STORAGE NAME is the
 game's `CONFIG.GAME`: it saves its best score (in the 2 to 9 mode) in localStorage under
@@ -93,9 +95,11 @@ game's `CONFIG.GAME`: it saves its best score (in the 2 to 9 mode) in localStora
   "Best: 990 · Mistakes: 3". It is two spans with " · "
   between them (#9ca3af), each set with `textContent`, read when the page opens with the page's
   safe storage, in try/catch:
-  - BEST: "Best: 990" (bold, #15803d), from the game's best score key (see STORAGE NAME above). A
-    game with no best score yet (the key is missing or not a number) shows "Best: –" in #9ca3af,
-    normal weight.
+  - BEST: "Best: 990" (bold, #15803d), from the game's best score key (see STORAGE NAME above).
+    A game with no best score yet (no game finished: the key is missing or not a number) shows,
+    in its place, "Correct: N" (#6b7280, normal weight; never "Best: –"): N is the number of
+    questions answered right in the saved progress, the length of its `learnedIds` array (0 if
+    it is not an array).
   - MISTAKES: "Mistakes: 3" (#6b7280), the `mistakes` field of the game's saved progress,
     `'openlang_Math_' + STORAGE NAME + '_progress'` (JSON, `JSON.parse` in try/catch): the game
     being played, or the last one finished (Play Again clears it). No saved progress, or
@@ -121,7 +125,8 @@ game's `CONFIG.GAME`: it saves its best score (in the 2 to 9 mode) in localStora
 - A tap anywhere on a tile opens its game and saves its key under `multiply_last_game`.
 - Games page: with Dot Array won with 990 points and its saved progress at 3 mistakes, its tile says
   "Best: 990 · Mistakes: 3" on one line; a game with no best score and no saved progress says
-  "No results"; one with saved progress and no best score says "Best: – · Mistakes: N". At 360px
+  "No results"; one with saved progress (8 questions right, 2 mistakes) and no best score says
+  "Correct: 8 · Mistakes: 2", never "Best: –". At 360px
   and 640px "Best: 1260 · Mistakes: 10" fits on the line, not cut off.
 - With the pictures missing, each tile keeps its 5:4 space and its name.
 - On "You Won!" at 360px, "Play again" shows in full, its check badge on the picture; nothing of

@@ -31,7 +31,7 @@ page's content (the games), the site info (SITE INFO below) and the footer.
   (`@media (min-width: 1024px)`): `width: min(1120px, 94vw)` (overriding the layout's 720px
   column, for the title band, menu bar, site info and footer too).
 
-<header>Pick a game!</header>
+<header>Game Board</header>
 The header sits above the grid, left-aligned with it, 16px below the menu bar: bold, about
 1.75rem, near-black (#111827). The grid follows it directly (no line of text between them).
 

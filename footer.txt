@@ -14,24 +14,29 @@ SITE INFO (a three-column block at the bottom of the page, directly above the co
   with each other: an <h2>, bold, 1rem, line-height 1.5, color #111827, margin 0 0 6px. The RIGHT
   column's title is also an <h2>, but larger (see RIGHT). The three columns start at the same top
   edge.
-- No other lines, links or icons than those below.
+- No other lines, links, pictures or icons than those below.
 
-LEFT: title "About Multiply.by". Text, one paragraph, exactly:
-"Free times-table games: no sign-up, no ads in the games, and they work offline. Every page on
-this site is built by an AI model from a plain-text prompt that you can read and build yourself."
-Then a second line directly under the paragraph (no margin between them), exactly:
-<a href="https://play.google.com/store/apps/details?id=by.multiply.app" target="_blank" rel="noreferrer">Get the Android app</a>
-styled like the Feedback column's email link: dark blue #1e40af, bold, no underline (underlined
-on hover).
-Then a third line directly under it (no margin between them), exactly:
-<a href="https://multiply.by/privacy/website/">Privacy policy</a>
-in the same link style.
+LEFT: the Android app, nothing else. Title "Get the app". Text, one line, exactly:
+"The games on Android: free, no ads, no in-app purchases, and it works offline."
+Then the Google Play badge, 10px under the text, left-aligned, and a trademark line under it:
+<a class="play-badge" href="https://play.google.com/store/apps/details?id=by.multiply.app" target="_blank" rel="noreferrer"><img src="/google-play.png" alt="Get it on Google Play" width="161" height="48"></a>
+<p class="play-tm">Google Play and the Google Play logo are trademarks of Google LLC.</p>
+- The text: margin 0.
+- The badge is Google's official "Get it on Google Play" badge (`/google-play.png`, 564 x 168),
+  shown unchanged (never redrawn, recolored, cropped or stretched), exactly 161px wide and 48px
+  tall; the link `display: inline-block`, no underline, a clear focus outline for the keyboard;
+  the img `display: block`. Scope this CSS to #site-info (`#site-info .play-badge`, `#site-info
+  .play-tm`) so it never changes another badge on the same page (About has a larger one).
+- The trademark line: 0.75rem, line-height 1.4, color #6b7280, margin 6px 0 0.
 
-CENTER: title "Feedback". Text (two short lines, tight vertical spacing: no margin between them):
+CENTER: title "Feedback". Text (two short lines and a link, tight vertical spacing: no margin between them):
 "Found a bug? Have an idea for a new game or feature?"
 "Drop us an email: contact@functional.by"
 The address is a mailto: link (<a href="mailto:contact@functional.by">), dark blue #1e40af, bold,
 no underline (underlined on hover).
+Then, 12px of blank space under the email line (`margin-top: 12px`), a last line, exactly:
+<a href="https://multiply.by/privacy/website/">Privacy policy</a>
+in the same link style.
 
 RIGHT: the company. The WHOLE COLUMN is one link to the company's page: the title and the text
 under it are both inside one <a> (a block element filling the column), so a click or tap anywhere
@@ -62,4 +67,7 @@ CHECKS FOR SITE INFO
 - The company title shows the crimson Inter φ (the SVG) before "Functional AI Inc.", larger than the
   name, its lower point on the name's baseline; a click on the title or on the
   text under it opens https://functional.by in a new tab.
+- The LEFT column is only the app: its title, one line, the Google Play badge (161 x 48, not
+  stretched, opens the Play listing in a new tab) and the trademark line under it. The Privacy
+  policy link is the CENTER column's last line.
 - The copyright line is still the very last line of the page.

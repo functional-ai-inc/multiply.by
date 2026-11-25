@@ -14,7 +14,7 @@ Each question shows one fact, such as 7 x 8, and four answers to tap. A fact cou
 only when it is answered right: a missed one comes back near the end, until every fact is
 learned. After the game, a short practice round can bring back the facts that were hardest.
 
-Pick a game:
+Game Board:
 - Monster: feed a hungry monster and help it grow.
 - Robot: build a robot, part by part.
 - Trains: travel from steam engines to maglev trains.
