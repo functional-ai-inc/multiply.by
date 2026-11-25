@@ -11,6 +11,7 @@
 !/ANDROID.md
 !/PRIVACY.md
 !/PRIVACY-WEBSITE.md
+!/chat-gpt-local.md
 !/android/
 /android/index.html
 /android/app/src/main/assets/
@@ -88,4 +89,3 @@
 /match/*
 !/match/build-instructions.txt
 !/match/Makefile
-/chat-gpt-local.html
