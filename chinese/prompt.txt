@@ -1,0 +1,18 @@
+Build the Great Wall: every right answer lays a brick on the wall, which
+grows across the mountains. Each stage finishes a section with a new
+watchtower: earth wall, stone wall, brick wall with battlements, then the
+grand pass gate lit with red lanterns at sunset. A monkey king waves and
+cheers as each section is finished.
+For audio, use Xiao Jiu Jiu (the Chinese times-table chant, e.g. 三七二十一)
+instead of the default audio: speak the chant for each right answer. Under the
+question, show the start of its chant (三七……). After a right answer, show the
+full chant of that question (三七二十一) on its own line, which stays until the
+next right answer replaces it, so it can always be read.
+Misty layered mountains in soft blue-gray gradients (the feel of a Chinese
+ink painting), drawn in SVG, simple animations (bricks dropping into place,
+flags waving, lanterns glowing), no photos.
+
+Follow https://multiply.by/gamify
+
+Your deliverable is a playable, standalone index.html file
+that I can download and open in my browser.

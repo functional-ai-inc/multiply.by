@@ -149,7 +149,6 @@ rebuild. GitHub: functional-ai-inc/multiply.by (public).
 ## Rules
 - Never print, echo or commit API keys. Don't change or commit anything in /var/www/openlang.ai
   (e.g. run-vertex.py model changes): it is not part of this repo.
-- `chinese/prompt.txt` is the user's own work: commit it only when asked.
 - ADS (website only, never in the Android app or in the games): when ads are added to any page's
   spec (`layout.txt`, `build-it/page.txt`, `about/about.txt`, ...), the spec must also say: "If
   `navigator.userAgent` contains `MultiplyByApp`, create no ad slots and load no ad script." The
