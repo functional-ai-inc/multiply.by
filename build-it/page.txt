@@ -113,10 +113,12 @@ THE GRID
        aria-label say "Copied" for 1.5 seconds, then turn back. While the prompt loads the
        button is disabled (40% opacity); if loading fails it is hidden.
      THE BASE GAME has no short prompt: its label is "Prompt", linked to its complete prompt
-     (the prompt.txt address below), and its box (the same box, same look) holds exactly this text, as one paragraph like the
-     others: "Base game, no custom gamification. To see the actual prompt, select the SOURCE
-     button on the game." The base game's box has no copy button (and no room kept for one:
-     its right padding is 12px).
+     (the prompt.txt address below), and its box (the same box, same look, its web address a
+     link like the others) holds exactly this text, written into the page (not fetched), as one
+     paragraph like the others: "Base game with no modifications. Your deliverable is a complete,
+     playable, standalone index.html file that I can download and open in my browser. Details at
+     https://multiply.by/base/prompt" It has the same COPY BUTTON as the other boxes, enabled
+     from the start (nothing loads), copying exactly that text.
   5. PLAY: a link "Play NAME →" to the game (bold, dark blue #1e40af, no underline), at the
      bottom of the card.
 
@@ -230,8 +232,9 @@ CHECKS
   rows), with no sideways scroll at any width and nothing cut off.
 - Each card shows its name, screenshot, the model and build time line, and its prompt.txt text as
   read from the site, as one flowing paragraph: no line breaks from the file, the words joined
-  by single spaces (the base game: "Base game, no custom gamification. To see the actual prompt,
-  select the SOURCE button on the game."); the name, the screenshot and "Play …" all open the game.
+  by single spaces (the base game: "Base game with no modifications. Your deliverable is a
+  complete, playable, standalone index.html file that I can download and open in my browser.
+  Details at https://multiply.by/base/prompt", the address a link); the name, the screenshot and "Play …" all open the game.
 - Under the cards, the ANDROID BUILD block: the blue phone icon and "Android™ Build" on one
   line (no Android robot), its text, the note on what the build needs (one line: Java 17, Android SDK,
   Gradle, Python 3, git, the site multiply.by), the line with "about 2 GB of disk and 8 GB of
@@ -243,7 +246,8 @@ CHECKS
 - Card names, exactly as GAMES gives them (Robot Workshop, not Robot). No name changes after the page opens.
 - Each web address in a prompt box (e.g. https://multiply.by/gamify) is a link to itself, shown
   exactly as written, bold and not underlined; nothing else in the box is a link. Each game's copy button puts its prompt.txt text, with the
-  file's line breaks, on the clipboard and shows the check mark; the base game has no copy button.
+  file's line breaks, on the clipboard and shows the check mark; the base game's copy button puts its text (above) on
+  the clipboard.
 - The page passes with the screenshots missing too: each image keeps its 412:330 space (its width
   and height attributes) and shows its alt text.
 - After a prompt.txt or build.txt is changed on the site, reloading this page shows the new
