@@ -6,6 +6,15 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+// Release signing: the upload key (never in git; see ANDROID.md, "Release build"), from
+// android/upload-key.properties or else ~/.multiply-play/upload-key.properties (the owner's copy,
+// read in place: nothing to copy before a build). Its storeFile is relative to the properties
+// file's folder. Without either, a release build stops (end of this file).
+val keyFile: File = listOf(
+    rootProject.file("upload-key.properties"),
+    File(System.getProperty("user.home"), ".multiply-play/upload-key.properties"),
+).firstOrNull { it.exists() } ?: rootProject.file("upload-key.properties")
+
 android {
     namespace = "by.multiply.app"
     compileSdk = 36
@@ -18,14 +27,13 @@ android {
         versionName = "1.0"
     }
 
-    // Release signing: the upload key, from android/upload-key.properties (never in git; see
-    // ANDROID.md, "Release build"). Without that file a release build is left unsigned.
-    val keyFile = rootProject.file("upload-key.properties")
+    // Release signing with the upload key (keyFile, above).
     if (keyFile.exists()) {
         val key = Properties().apply { keyFile.inputStream().use { load(it) } }
         signingConfigs {
             create("upload") {
-                storeFile = rootProject.file(key.getProperty("storeFile"))
+                val store = File(key.getProperty("storeFile"))
+                storeFile = if (store.isAbsolute) store else File(keyFile.parentFile, store.path)
                 storePassword = key.getProperty("storePassword")
                 keyAlias = key.getProperty("keyAlias")
                 keyPassword = key.getProperty("keyPassword")
@@ -67,5 +75,18 @@ tasks.named("preBuild") {
             throw GradleException(
                 "The games are missing: run  python3 gather-assets.py  in the android folder first.")
         }
+    }
+}
+
+// A release build without the upload key would be unsigned, and Play refuses it: stop instead.
+gradle.taskGraph.whenReady {
+    val release = allTasks.any {
+        it.project == project && it.name.endsWith("Release") &&
+            (it.name.startsWith("bundle") || it.name.startsWith("assemble"))
+    }
+    if (release && !keyFile.exists()) {
+        throw GradleException(
+            "No upload key: put upload-key.properties and upload-key.jks in ~/.multiply-play/ " +
+            "(or in the android folder). See ANDROID.md, \"Release build\".")
     }
 }

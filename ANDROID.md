@@ -88,8 +88,9 @@ nothing, so the app needs no income:
   8.13, Kotlin 2.2, compileSdk and targetSdk 36, minSdk 24, AndroidX `activity` and `webkit` only.
   The Gradle wrapper (`gradlew`, `gradlew.bat`, `gradle/wrapper/`) pins Gradle 8.14.3 and
   downloads it on first use. `preBuild` stops with a clear message if the games haven't been
-  gathered. Release signing reads `upload-key.properties` when it is there (see "Release build"
-  below; without it a release build is unsigned). Launcher icon: an adaptive icon for Android 8+
+  gathered. Release signing reads `upload-key.properties` from the `android` folder or from
+  `~/.multiply-play/` (see "Release build" below); without it a release build stops with a clear
+  message, so it never makes an unsigned bundle. Launcher icon: an adaptive icon for Android 8+
   (`res/mipmap-anydpi-v26/ic_launcher.xml`: the page color behind
   `res/drawable/ic_launcher_foreground.xml`, the "2x2" of `icon.svg` as a vector, scaled to fit
   the 66 dp circle every launcher shape keeps; also the monochrome layer for Android 13's themed
@@ -220,16 +221,20 @@ assembleRelease` builds the **App Bundle** (`.aab`, the file Play takes, in
 check before uploading, in `app/build/outputs/apk/release/`), both signed with the **upload key**.
 
 - **The upload key:** `upload-key.jks` and `upload-key.properties` (`storeFile=upload-key.jks`,
-  `storePassword=...`, `keyAlias=upload`, `keyPassword=...`) in the `android` folder for the
-  build (both git-ignored; without them a release build is unsigned). The site's own key (RSA
-  4096, valid 10,000 days, alias `upload`) is kept in `~/.multiply-play/` on the site owner's
-  machine, readable by its owner only; copy the two files in for a release build and delete them
-  after. **Back it up** somewhere safe and private (e.g. a password manager): with Play App
+  `storePassword=...`, `keyAlias=upload`, `keyPassword=...`). The build reads them IN PLACE from
+  `~/.multiply-play/` (a path in `storeFile` is relative to that folder), or from the `android`
+  folder if they are there (both git-ignored); nothing is copied before a build, so an AI agent
+  never handles the key. Without them a release build stops. The site's own key (RSA 4096, valid
+  10,000 days, alias `upload`) is in `~/.multiply-play/` on the web server and on the owner's
+  desktop, readable by its owner only (`chmod 700` the folder, `600` the files). The owner puts
+  it on a new desktop once, by hand, from their own terminal:
+  `gcloud compute scp --zone=us-east1-b --tunnel-through-iap --recurse 'jlr@openlang-staging:~/.multiply-play' ~/`
+  **Back it up** somewhere safe and private (e.g. a password manager): with Play App
   Signing, a lost upload key can be replaced through Play Console support, but that takes days.
 - **Play App Signing:** accept it when creating the release. Google then signs what phones
   download with its own app signing key; ours only proves an upload comes from us.
-- **Version:** `versionCode` (1, then +1 for every upload; Play refuses a number it has seen) and
-  `versionName` ("1.0", what users see) in `app/build.gradle.kts`.
+- **Version:** `versionCode` (+1 for every release build; Play refuses a number it has seen, and
+  skipped numbers are fine) and `versionName` ("1.0", what users see) in `app/build.gradle.kts`.
 - **Building your own release** (from the public repo): make your own key with `keytool
   -genkeypair -keystore upload-key.jks -storetype PKCS12 -alias upload -keyalg RSA -keysize 4096
   -validity 10000` and its `upload-key.properties` (the same password twice), then build as above.
@@ -240,29 +245,28 @@ check before uploading, in `app/build/outputs/apk/release/`), both signed with t
 
 What an AI agent does when the site owner asks it for "the Play Store release and the store
 assets using https://multiply.by/android". It runs on the owner's desktop (the build needs about
-8 GB of RAM; the web server is too small). Install whatever is missing in the user's folders, no
-root (the table at the top).
+8 GB of RAM; the web server is too small), UNATTENDED: ask nothing, decide by these steps, and
+report at the end. Install whatever is missing in the user's folders, no root (the table at the
+top).
 
 1. **Code and games:** clone https://github.com/functional-ai-inc/multiply.by (or `git pull` an
    existing clone), then in the `android` folder `python3 gather-assets.py`: the current live
    games, About, Build It and their pictures.
-2. **The upload key:** copy `~/.multiply-play/upload-key.jks` and `upload-key.properties` from the
-   web server into the `android` folder:
-   `gcloud compute scp --zone=us-east1-b --tunnel-through-iap 'jlr@openlang-staging:~/.multiply-play/upload-key.*' .`
-   Never print, show or commit them (both are git-ignored). If the copy fails, stop and ask.
-3. **Version:** ask the owner which `versionCode` to use (higher than any upload Play has seen, on
-   any track) and whether `versionName` changes; set both in `app/build.gradle.kts`. Then
-   `./gradlew bundleRelease assembleRelease`.
-4. **Remove the key:** delete `upload-key.jks` and `upload-key.properties` from the `android`
-   folder, also when the build failed.
+2. **The upload key:** check that `~/.multiply-play/upload-key.properties` and
+   `upload-key.jks` exist (`ls`; never open, print or copy them). If they don't, stop and tell
+   the owner the one command under "Release build" that puts them there.
+3. **Version:** raise `versionCode` in `app/build.gradle.kts` by 1 (leave `versionName` as it
+   is unless the owner's request names a new one). Then `./gradlew bundleRelease assembleRelease`.
+   It signs with the key in place; with no key it stops instead of making an unsigned bundle.
+4. **Check the signature:** `jarsigner -verify` on the `.aab` says "jar verified"
+   (`keytool -printcert -jarfile` on it shows the certificate); otherwise stop and report.
 5. **Store assets:** `python3 store-assets.py` (all of them: icon, feature graphic, phone and
    tablet screenshots, video; about three minutes). Look at a few of the pictures: a game caught
    mid-animation or a blank picture is remade (`--only phone`, for example).
-6. **Check the release APK:** with a phone connected (`adb devices`), uninstall any debug build,
-   `adb install` the release APK and ask the owner to play a game through; with none, say so.
-7. **Commit the version:** if `versionCode` or `versionName` changed, commit and push
-   `app/build.gradle.kts` alone (message "Android: versionCode N"), so the repo always holds the
-   last number uploaded.
+6. **Phone:** if a phone is connected (`adb devices`), uninstall any debug build and
+   `adb install` the release APK, for the owner to try; with none, say so. Don't wait for it.
+7. **Commit the version:** commit and push `app/build.gradle.kts` alone (message "Android:
+   versionCode N"), so the repo always holds the last number built.
 
 End with the full paths of the `.aab` (what the owner uploads to Play), the release `.apk` and the
 `android/assets/` folder, and say which step, if any, was skipped or failed.
