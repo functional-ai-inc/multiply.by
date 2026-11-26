@@ -23,7 +23,7 @@ android {
         applicationId = "by.multiply.app"   // never change after publishing
         minSdk = 24
         targetSdk = 36
-        versionCode = 1        // +1 for every upload to Play
+        versionCode = 3        // +1 for every upload to Play
         versionName = "1.0"
     }
 
