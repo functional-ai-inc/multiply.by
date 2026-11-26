@@ -369,7 +369,8 @@ def video(browser):
 
 os.makedirs(OUT, exist_ok=True)
 with sync_playwright() as p:
-    browser = p.chromium.launch()
+    # Full Chromium: the headless shell crashes on some machines (SIGSEGV at launch)
+    browser = p.chromium.launch(channel="chromium")
     if "icon" in ONLY:
         icon()
     if "feature" in ONLY:
