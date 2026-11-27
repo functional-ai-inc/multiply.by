@@ -62,8 +62,6 @@ rebuild. GitHub: functional-ai-inc/multiply.by (public).
     strip uses `thumbnails/GAME-thumbnail.png` instead (screenshots are illegible that small):
     `thumbs.py` crops each game's main picture (the robot: a finished one drawn by the game's own
     buildMiniRobotSvg); made only when missing, so a hand-made replacement is kept. Tracked in git.
-  - `FAQ/faq.txt`: the FAQ, still in progress by the user, not built yet. The URL is /faq
-    (currently 404); the folder needs renaming to `faq` and a Makefile like about's.
 - `make` in this folder builds the base game and the front page. Base game: game.txt ->
   `base/prompt.txt` -> the model named in `model` (e.g. kimi; `run-model`, which reuses mk-gamify's
   model calls; build/build.txt notes tokens, cost, time) -> `build/index.html` -> PWA tags from
@@ -85,9 +83,9 @@ rebuild. GitHub: functional-ai-inc/multiply.by (public).
   - `monster/`: Multiply Monster, a gamified version for 2nd and 3rd graders (Munch, path,
     stickers, stars; `?easy` = 2, 5 and 10). Now built with `../mk-gamify` (see below) from
     `monster/prompt.txt` (a short prompt), model `fable`. Its `custom.txt` is the hand-made design
-    of the first build (by mk-custom, kept in `monster/fable/`): gamify.md no longer links to it
-    or to its build-instructions.txt, but don't delete or regenerate either. mk-gamify no longer
-    attaches it (a chat user doesn't get it, and builds copied it).
+    of the first build (by mk-custom, kept in `monster/fable/`): gamify.md no longer links to it,
+    but don't delete or regenerate it (its build-instructions.txt was deleted on 2026-11-27).
+    mk-gamify no longer attaches it (a chat user doesn't get it, and builds copied it).
 - Gamified games from a short prompt (e.g. `trains/`): `../mk-gamify` from the game's folder. The
   folder's prompt.txt is a few lines of prompt (not a CUSTOMIZATION section); the game's SOURCE opens
   it (as `prompt/`, which mk-gamify also makes). The folder's `model` file names the model (carbon, fable, opus, gpt, kimi or a full id; no
