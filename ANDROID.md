@@ -2,17 +2,8 @@
 
 Notes for packaging the multiply.by games as an Android app.
 
-**One command does it all.** Get the code (step 1 below), then, in its `android` folder:
-`python3 build.py` (Windows: `py build.py`). It installs whatever is missing (Java 17, the
-Android SDK and its licenses, Gradle and the libraries), gathers the games, builds, and prints
-the APK's full path. It says which step failed if one does; the steps by hand are below.
-
-**What the agent needs** (installs automatically if missing): Java 17, Android SDK, Gradle,
-Python 3, git, the site multiply.by.
-
-**Expect questions from the agent.** It asks before running each command, and it may show a
-security warning, because its instructions come from a web page (this one). That is normal: read
-each command before you allow it. With `build.py` there are only a few.
+**What the build needs:** Java 17 and the Android SDK, installed in the user's own folders if
+missing.
 
 **No root or administrator access:** the install neither needs nor uses it. Everything goes in
 the user's own folders (below).
@@ -26,7 +17,6 @@ of free disk.
 
 | | Linux | Mac | Windows |
 |---|---|---|---|
-| JDK 17 archive | `linux-x64` or `aarch64` `.tar.gz` | `mac-aarch64` (Apple silicon) or `x64` `.tar.gz` | `windows-x64` `.zip` |
 | JDK folder (`JAVA_HOME`) | `~/.local/jdk-17` | `~/.local/jdk-17/Contents/Home` | `%USERPROFILE%\.jdks\jdk-17` |
 | Android SDK (`ANDROID_HOME`) | `~/Android/Sdk` | `~/Library/Android/sdk` | `%LOCALAPPDATA%\Android\Sdk` |
 | Gradle and libraries (first build) | `~/.gradle` | `~/.gradle` | `%USERPROFILE%\.gradle` |
@@ -52,12 +42,9 @@ Anyone can build the app from the public repo, on Linux, Mac or Windows. You nee
   `uv python install 3.12`).
 - **git** (optional): without it, download the code as an archive (step 1).
 
-Approximate sizes after installation: JDK 17 about 300 MB; the Android SDK parts above about
-500 MB; Gradle and the app's libraries (the first build downloads them) about 1 GB; Python 3 and
-git about 100 MB (usually already installed); the site's pages (games, About, Build It, prompts)
-about 4 MB. About 2 GB of disk in all. An AI agent installs whatever is missing.
+An AI agent installs whatever is missing.
 
-Then (steps 2 and 3, and installing Java and the SDK, are what `build.py` does):
+Then:
 
 1. Get the code:
    `git clone https://github.com/functional-ai-inc/multiply.by.git` and `cd multiply.by/android`;
@@ -67,7 +54,8 @@ Then (steps 2 and 3, and installing Java and the SDK, are what `build.py` does):
    https://multiply.by (about 4 MB) into `app/src/main/assets/site/`. The built pages are not in
    the repo, so this step is needed; run it again to pick up new games.
 3. Build, either way:
-   - **Android Studio:** open the `android` folder, then Run (to a phone over USB, or an emulator).
+   - **Android Studio:** open the `android` folder, then Build > Build App Bundle(s) / APK(s) >
+     Build APK(s).
    - **Command line:** tell Gradle where the SDK is (the `ANDROID_HOME` environment variable, or
      a file `local.properties` with the line `sdk.dir=/path/to/Android/sdk`), then
      `./gradlew assembleDebug` (Windows: `gradlew.bat assembleDebug`). The first build downloads
@@ -76,8 +64,6 @@ Then (steps 2 and 3, and installing Java and the SDK, are what `build.py` does):
 4. When the build is done, print the APK's full path (e.g.
    `/home/you/multiply.by/android/app/build/outputs/apk/debug/app-debug.apk`), so the person who
    asked for it can find it. An AI agent building it ends its answer with that path.
-5. Install it: `adb install app/build/outputs/apk/debug/app-debug.apk`, or copy the file to the
-   phone and open it there (Android asks once to allow installs from that app).
 
 A debug build is signed with your own computer's key, so it can't be installed over the Play
 Store version: uninstall that first. To publish **your own version**, give it its own package
@@ -104,23 +90,18 @@ nothing, so the app needs no income:
   downloads it on first use. `preBuild` stops with a clear message if the games haven't been
   gathered. Release signing reads `upload-key.properties` from the `android` folder or from
   `~/.multiply-play/` (see "Release build" below); without it a release build stops with a clear
-  message, so it never makes an unsigned bundle. Launcher icon: an adaptive icon for Android 8+
-  (`res/mipmap-anydpi-v26/ic_launcher.xml`: the page color behind
-  `res/drawable/ic_launcher_foreground.xml`, the "2x2" of `icon.svg` as a vector, scaled to fit
-  the 66 dp circle every launcher shape keeps; also the monochrome layer for Android 13's themed
-  icons), and `res/mipmap-*/ic_launcher.png` (48 to 192 px, rendered from `icon.svg`) for older
-  phones.
+  message, so it never makes an unsigned bundle. Launcher icon (since 2026-11-27; the site
+  keeps its "2x2"): an orange-to-crimson x with a soft shadow on a peach gradient, all made by
+  `make-icons.py` from the design at its top, which also writes `android/icon.svg` (the whole
+  icon, the store icon's source). An adaptive icon for Android 8+
+  (`res/mipmap-anydpi-v26/ic_launcher.xml`: `res/drawable/ic_launcher_background.xml`, the
+  gradient; `res/mipmap-*/ic_launcher_foreground.png`, the x with its shadow, sized so it fills
+  the same share of the 72 dp the launcher shows as in `icon.svg`; and
+  `res/drawable/ic_launcher_monochrome.xml`, the x alone for Android 13's themed icons), and
+  `res/mipmap-*/ic_launcher.png` (48 to 192 px, the whole icon) for older phones.
 - `app/src/main/java/by/multiply/app/`: `MainActivity.kt` (the WebView, address rules, share
   bridge, back button, edge-to-edge insets), `SiteFiles.kt` (serves the bundled files and the
   in-app 404 page), `ParentalGate.kt`.
-- `build.py [--setup-only] [--java DIR] [--sdk DIR]`: the one-command build (top of this page),
-  Python's standard library only. Java: JAVA_HOME or `java` if it is 17 to 24, else the JDK
-  folder in the table, else Eclipse Temurin 17 downloaded there (api.adoptium.net). SDK:
-  ANDROID_HOME, ANDROID_SDK_ROOT, `local.properties` or the table's folder, else Google's
-  command-line tools downloaded there (the latest, read from Google's repository index). Then
-  the licenses, the SDK packages, `local.properties`, `gather-assets.py`, `gradlew
-  assembleDebug`, and the APK's path. Tested on 2026-11-27 up to the Gradle step on Linux, in an
-  empty home folder (`--setup-only`).
 - `gather-assets.py [--web] [OUT]`: copies the live pages into the app (default OUT
   `app/src/main/assets/site/`, git-ignored). It downloads the pages from https://multiply.by
   (run inside a copy of the site's folder with its built pages, it reads them there instead;
@@ -158,9 +139,7 @@ nothing, so the app needs no income:
 - **Service worker:** `/sw.js` is not bundled, so it gets the 404. `pwa.js` catches a failed
   registration (`startOffline()` ends with `.catch(function () {})`), and it registers only when the
   page looks installed (`isInstalled()`) or a service worker already exists, which a fresh WebView
-  probably never does. Still check the console on a phone (Chrome's `chrome://inspect`; debug builds
-  allow it): Chromium can log a failed request even when the script catches it, and the play tests
-  treat console errors as failures. The install prompt in `pwa.js` does nothing in a WebView.
+  probably never does. The install prompt in `pwa.js` does nothing in a WebView.
 - **Share:** WebView has no `navigator.share`, so the app adds one before each page's scripts run
   (`addDocumentStartJavaScript`, only on https://multiply.by) that posts the text to the app
   (`addWebMessageListener`, object `MultiplyApp`). The app asks the parental gate, then opens
@@ -197,12 +176,12 @@ nothing, so the app needs no income:
   Needs an app release.
 - **SOURCE in the app:** a game's SOURCE is the relative link `prompt/`, so it opens the bundled
   prompt page (the game's prompt.txt in a box with a copy button), inside the app with no gate. The
-  copy button uses `navigator.clipboard.writeText` with a `select()` fallback: check it on a phone.
+  copy button uses `navigator.clipboard.writeText` with a `select()` fallback.
   Links inside a prompt to the AI chat sites leave the app after the gate; links to bundled pages
   (https://multiply.by/gamify, /dots/prompt/, /selector/prompt/) stay inside.
 - WebView settings: JavaScript on, DOM storage on, file and content access off, no extra windows
   (`target="_blank"` opens in the same view). `mediaPlaybackRequiresUserGesture` is left on (the
-  games start audio after a tap); check the Web Audio sounds on a real phone.
+  games start audio after a tap).
 - Portrait (as the web manifest), edge to edge (required from Android 15) with the page padded
   clear of the system bars on a #fafaf9 background. Back: WebView history back, then the system's
   back (leaves the app). Rotation and dark-mode changes don't restart the Activity, so a game in
@@ -239,8 +218,8 @@ upload. A new or rebuilt game reaches the app only with a new release
 
 From the `android` folder, after `python3 gather-assets.py`: `./gradlew bundleRelease
 assembleRelease` builds the **App Bundle** (`.aab`, the file Play takes, in
-`app/build/outputs/bundle/release/`) and an **APK of the same build** (to install on a phone and
-check before uploading, in `app/build/outputs/apk/release/`), both signed with the **upload key**.
+`app/build/outputs/bundle/release/`) and an **APK of the same build** (in
+`app/build/outputs/apk/release/`), both signed with the **upload key**.
 
 - **The upload key:** `upload-key.jks` and `upload-key.properties` (`storeFile=upload-key.jks`,
   `storePassword=...`, `keyAlias=upload`, `keyPassword=...`). The build reads them IN PLACE from
@@ -260,8 +239,6 @@ check before uploading, in `app/build/outputs/apk/release/`), both signed with t
 - **Building your own release** (from the public repo): make your own key with `keytool
   -genkeypair -keystore upload-key.jks -storetype PKCS12 -alias upload -keyalg RSA -keysize 4096
   -validity 10000` and its `upload-key.properties` (the same password twice), then build as above.
-- **Check before uploading:** install the release APK on a phone (`adb install`; uninstall a
-  debug build first, it has another key) and play a game through.
 
 ## Play release, step by step (the site owner's desktop)
 
@@ -285,9 +262,7 @@ top).
 5. **Store assets:** `python3 store-assets.py` (all of them: icon, feature graphic, phone and
    tablet screenshots, video; about three minutes). Look at a few of the pictures: a game caught
    mid-animation or a blank picture is remade (`--only phone`, for example).
-6. **Phone:** if a phone is connected (`adb devices`), uninstall any debug build and
-   `adb install` the release APK, for the owner to try; with none, say so. Don't wait for it.
-7. **Commit the version:** commit and push `app/build.gradle.kts` alone (message "Android:
+6. **Commit the version:** commit and push `app/build.gradle.kts` alone (message "Android:
    versionCode N"), so the repo always holds the last number built.
 
 End with the full paths of the `.aab` (what the owner uploads to Play), the release `.apk` and the
@@ -295,8 +270,7 @@ End with the full paths of the `.aab` (what the owner uploads to Play), the rele
 
 ## Google Play requirements
 
-- **Upload an Android App Bundle (`.aab`)**, not an APK; build an APK too, to install on a phone
-  for testing.
+- **Upload an Android App Bundle (`.aab`)**, not an APK.
 - **Target SDK:** Play requires a recent target API level for new apps (35 at least; check the
   current rule when submitting). SDK 36 is installed.
 - **Signing:** the upload key and Play App Signing (previous section).
@@ -323,8 +297,8 @@ https://multiply.by/android/assets/ so it can be looked at or downloaded from an
 |---|---|---|
 | `listing.txt` | App name, short and full description, category | 30, 80 and 4000 characters |
 | `play-console.txt` | The answers to the Play Console's forms, page by page: app details, store settings, privacy policy, app access, ads, content rating, target audience (6-8 and 9-12: the Families policy), data safety ("no data collected"), release notes | |
-| `icon-512.png` | The store icon, the site's `icon-512.png` (the "2x2" of `icon.svg`) | 512 x 512 PNG, square: Play rounds the corners |
-| `feature-graphic.png` | Logo, name, one line and six game pictures (the front page's thumbnails) | 1024 x 500, no transparency |
+| `icon-512.png` | The store icon: the app's `android/icon.svg` (`make-icons.py`), rendered at 512 x 512 | 512 x 512 PNG, square: Play rounds the corners |
+| `feature-graphic.png` | The app icon, name, one line and six game pictures (the front page's thumbnails) | 1024 x 500, no transparency |
 | `phone/NN-PAGE.png` | Phone screenshots in store order, About first (parents choose the app, and its lists persuade them most): 1. the card from "About Multiply.by" with its three lists (the card ends there, 1080 x 1813; its link drawn as plain text); 2. "Make your own game" and "How the site was built" (the card ends there, 1080 x 1480); 3. Build It (from "Build it yourself", no title band or menu, drawn at a 540 px wide page so the first game's whole prompt fits); 4. Portability and Scalability; 5. Learned everywhere alone (the site info and footer are left out); 6. the /games/ chooser | 2 to 8, 9:16, 1080 x 1920 |
 | `tablet-7/`, `tablet-10/` | Tablet screenshots, upright like the app: the same six as the phone's (`TABLET_PAGES = PHONE`), at tablet size; About's pages are too short to scroll on a tablet, so its pictures start at the card and are shorter than 9:16 | optional; 1200 x 1920 and 1600 x 2560 |
 | `robot.mp4` | The Robot game played from the start to "You Won!" on a phone: the first 10 moves (7 right, 3 wrong) at 1.4x speed with the game's sounds and a mouse pointer, the rest at 12x, silent, then 3 s on "You Won!". About 28 s, 1080 x 1920, about 2 MB | Play takes a YouTube link only |

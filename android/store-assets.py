@@ -9,7 +9,7 @@ then `playwright install chromium`), Pillow, and ffmpeg for the video. It reads 
 live site, the same pages gather-assets.py puts in the app, so run it after the games you show
 were rebuilt. Each part takes a few seconds, the video about two minutes.
 
-  icon-512.png          the store icon: icon.svg at 512 x 512 (Play adds the rounded corners)
+  icon-512.png          the store icon: the app's icon.svg (make-icons.py) at 512 x 512
   feature-graphic.png   1024 x 500, no transparency (Play's rule): logo, name, line, game pictures
   phone/NN-PAGE.png     1080 x 1920 (9:16) phone screenshots, at most 8 (Play's limit), in store
                         order. Games are shown mid-game: a few questions answered right first.
@@ -122,10 +122,18 @@ def flat(path):
     Image.open(path).convert("RGB").save(path, optimize=True)
 
 
-def icon():
+ICON_SVG = os.path.join(HERE, "icon.svg")   # the app's icon (make-icons.py), not the site's
+
+
+def icon(browser):
+    """The store icon: the app's own icon.svg at 512 x 512, square (Play rounds the corners)."""
     path = os.path.join(OUT, "icon-512.png")
-    with urllib.request.urlopen(f"{SITE}/icon-512.png") as r, open(path, "wb") as f:
-        f.write(r.read())
+    pg = browser.new_page(viewport={"width": 512, "height": 512})
+    svg = open(ICON_SVG).read().replace("<svg ", '<svg width="512" height="512" ', 1)
+    pg.set_content(f'<html><body style="margin:0">{svg}</body></html>')
+    pg.screenshot(path=path)
+    pg.close()
+    flat(path)
     im = Image.open(path)
     assert im.size == (512, 512), im.size
     print("icon-512.png", im.size)
@@ -136,7 +144,8 @@ html, body { margin: 0; width: 1024px; height: 500px; overflow: hidden; }
 body { background: #fafaf9; font-family: system-ui, "Segoe UI", Roboto, Arial, sans-serif;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 34px; }
 .top { display: flex; align-items: center; gap: 22px; }
-.top svg { width: 210px; height: 113px; flex: none; }
+.top svg { width: 150px; height: 150px; flex: none; border-radius: 34px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.18); }
 h1 { margin: 0; font-size: 76px; line-height: 1; color: #1e40af; letter-spacing: -1px; }
 p { margin: 8px 0 0; font-size: 30px; color: #374151; }
 .row { display: flex; gap: 12px; }
@@ -144,10 +153,7 @@ p { margin: 8px 0 0; font-size: 30px; color: #374151; }
   border: 1px solid #e5e7eb; box-shadow: 0 2px 6px rgba(0,0,0,0.12); background: #fff; }
 </style></head><body>
 <div class="top">
-  <svg viewBox="80 160 352 190"><g fill="none" stroke="#991b1b" stroke-width="30" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M 102 222 C 102 182 182 182 182 222 C 182 252 102 282 102 322 L 186 322"/>
-  <path d="M 226 252 L 286 322 M 286 252 L 226 322"/>
-  <path d="M 330 222 C 330 182 410 182 410 222 C 410 252 330 282 330 322 L 414 322"/></g></svg>
+  ICON
   <div><h1>Multiply.by</h1><p>Learn the times tables with games</p></div>
 </div>
 <div class="row">IMAGES</div>
@@ -158,7 +164,8 @@ FEATURE_GAMES = ["monster", "robot", "trains", "dino", "space", "blocks"]
 def feature(browser):
     imgs = "".join(f'<img src="{SITE}/thumbnails/{g}-thumbnail.png" alt="">' for g in FEATURE_GAMES)
     pg = browser.new_page(viewport={"width": 1024, "height": 500})
-    pg.set_content(FEATURE.replace("IMAGES", imgs), wait_until="networkidle")
+    page = FEATURE.replace("IMAGES", imgs).replace("ICON", open(ICON_SVG).read())
+    pg.set_content(page, wait_until="networkidle")
     path = os.path.join(OUT, "feature-graphic.png")
     pg.screenshot(path=path)
     pg.close()
@@ -411,7 +418,7 @@ with sync_playwright() as p:
     # Full Chromium: the headless shell crashes on some machines (SIGSEGV at launch)
     browser = p.chromium.launch(channel="chromium")
     if "icon" in ONLY:
-        icon()
+        icon(browser)
     if "feature" in ONLY:
         feature(browser)
     if "phone" in ONLY:
