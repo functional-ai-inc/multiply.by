@@ -46,7 +46,7 @@ No programming needed.
 Multiply.by is open source (MIT License) by Functional AI Inc.
 
 == Promo video (YouTube link) ==
-assets/robot.mp4, uploaded to YouTube; paste its link.
+assets/multiply.mp4, uploaded to YouTube; paste its link.
 
 == Category and tags ==
 Category: Education. Tags: math, educational games.

@@ -14,7 +14,7 @@ were rebuilt. Each part takes a few seconds, the video about two minutes.
   phone/NN-PAGE.png     1080 x 1920 (9:16) phone screenshots, at most 8 (Play's limit), in store
                         order. Games are shown mid-game: a few questions answered right first.
   tablet-7/, tablet-10/  portrait tablet screenshots, 1200 x 1920 and 1600 x 2560 (TABLETS)
-  robot.mp4             the Robot game played from the start to "You Won!" on a phone,
+  multiply.mp4          the Robot game played from the start to "You Won!" on a phone,
                         1080 x 1920, H.264: the first 10 moves (7 right, 3 wrong) at 1.4x
                         with the game's sounds and a mouse pointer, the rest at 12x, silent. Play takes a video only as a YouTube
                         link: upload it to YouTube (unlisted is fine), then paste the link.
@@ -41,29 +41,23 @@ ONLY = set(args.only.split(","))
 # picture only[, CSS selector whose bottom, plus 12px, ends the picture[, CSS width instead of the
 # phone's: a wider page drawn into the same picture, so more fits]]]]). Parents choose the
 # app, and the About page's lists persuade them most, so About comes first: its card from
-# "About Multiply.by" (the three lists), then the rest of the card from "Make your own game".
+# "About Multiply.by" (the three lists), then the rest of the card, in the page's order.
 PHONE = [
     # The three lists alone (the card ends after Transparency), the link in them in plain text.
     # (Selectors by the page's structure and section ids: class names change when it is rebuilt.)
     ("01-about", "/about/", 0, "main",
      "main > .sections ~ * { display: none !important; }"
      " .sections a { color: inherit !important; font-weight: inherit !important; }", "main"),
-    # Then "Make your own game" and "How the site was built" (the card ends after them; Learned
-    # everywhere, between them on the page, has a picture of its own).
+    # Then "Make your own game" and "Learned everywhere", the next two on the page (the card ends
+    # after them).
     ("02-about-more", "/about/", 0, ".more",
-     "#learned-everywhere, #learned-everywhere ~ *:not(#how-the-site-was-built,"
-     " #how-the-site-was-built ~ *), #portability, #portability ~ * { display: none !important; }",
-     "main"),
+     "#how-it-was-built, #how-it-was-built ~ * { display: none !important; }", "main"),
     # From "Build it yourself", drawn smaller so the first game's whole prompt fits.
     ("03-build-it", "/build-it/", 0, "main h2", None, None, 540),
-    # The rest of the About card, Portability and Scalability (the site info and footer below
-    # the card are left out: the Google Play badge, and contact details).
-    ("04-about-portability", "/about/", 0, "#portability",
-     None, "main"),
-    # Learned everywhere alone (on the page it comes after "Make your own game").
-    ("05-about-learned", "/about/", 0, "#learned-everywhere",
-     "#how-the-site-was-built, #how-the-site-was-built ~ * { display: none !important; }", "main"),
-    ("06-games", "/games/", 0),
+    # The rest of the About card: How it was built, Portability and Scalability (the site
+    # info and footer below the card are left out: the Google Play badge, and contact details).
+    ("04-about-rest", "/about/", 0, "#how-it-was-built", None, "main"),
+    ("05-games", "/games/", 0),
 ]
 # Tablet screenshots (optional on Play, needed to be featured on tablets): the app is held
 # upright, so these are portrait too. (folder, CSS width x height, pixel ratio): 7-inch 1200 x
@@ -208,8 +202,12 @@ def shots(browser, folder, pages, w, h, ratio):
         path = os.path.join(folder, name + ".png")
         bottom = sh
         if end:
-            bottom = min(sh, pg.evaluate(
-                "s => document.querySelector(s).getBoundingClientRect().bottom", end) + 12)
+            full = pg.evaluate(
+                "s => document.querySelector(s).getBoundingClientRect().bottom", end) + 12
+            if full > sh + 1:
+                print(f"  WARNING: {name}: {end} ends {round(full - sh)} px below the screen: "
+                      "the picture cuts it off (show less, or draw the page wider)")
+            bottom = min(sh, full)
         clip = {"x": 0, "y": y0, "width": sw, "height": bottom - y0} if (y0 or end) else None
         pg.screenshot(path=path, clip=clip)
         ctx.close()
@@ -390,7 +388,7 @@ def video(browser):
             d = span(t, frames[i + 1][0]) if i + 1 < len(frames) else VIDEO_END
             lst.write(f"file '{f}'\nduration {max(d, 0.001):.4f}\n")
         lst.write(f"file '{frames[-1][1]}'\n")
-    mp4 = os.path.join(OUT, "robot.mp4")
+    mp4 = os.path.join(OUT, "multiply.mp4")
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0",
            "-i", os.path.join(tmp, "list.txt")]
     if rec:   # the sound of the first part, at its own time
@@ -409,7 +407,7 @@ def video(browser):
     shutil.rmtree(tmp, ignore_errors=True)
     secs = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of",
                            "default=nw=1:nk=1", mp4], capture_output=True, text=True).stdout.strip()
-    print(f"robot.mp4: {moves} moves ({len(VIDEO_SLOW)} at {VIDEO_FIRST}x), {len(frames)} frames, "
+    print(f"multiply.mp4: {moves} moves ({len(VIDEO_SLOW)} at {VIDEO_FIRST}x), {len(frames)} frames, "
           f"{float(secs):.0f} s, {os.path.getsize(mp4) / 1e6:.1f} MB")
 
 

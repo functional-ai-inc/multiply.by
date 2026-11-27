@@ -81,7 +81,7 @@ MORE ABOUT THE SITE (below the three sections, inside the same card; the Google 
   (never `text-align: center`). The divider above it still spans the card's full width.
 - Headings: <h2>, bold, 1.25rem, near-black (#111827), about 1.5rem of space above and 0.5rem
   below; each with an id derived from its text (lowercase, spaces to hyphens, punctuation removed,
-  e.g. id="how-the-site-was-built"). Paragraphs: body text, 0.75rem apart.
+  e.g. id="how-it-was-built"). Paragraphs: body text, 0.75rem apart.
 
 <h2>Make your own game</h2>
 <p>Each themed game on this site was built by an AI model from a brief prompt. Write a few lines
@@ -98,7 +98,7 @@ But there is one memorization task that is the same everywhere: the multiplicati
 Children learn it at least up to 9; in Britain they go <a href="https://multiply.by/base/?12">up to 12</a>, and in India often
 <a href="https://multiply.by/base/?20">up to 20</a>.
 
-<h2>How the site was built</h2>
+<h2>How it was built</h2>
 Every page has a SOURCE button in the upper right corner. It opens the page's prompt: the plain
 text given to an AI model, which writes the single file <code>index.html</code> that your browser
 shows. (Despite its name, the games' <code>index.html</code> is mostly JavaScript and CSS: only about a tenth of it is HTML.)

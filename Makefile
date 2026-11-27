@@ -2,6 +2,8 @@ SPEC  = base/prompt.txt
 PWA   = PWA-build.txt
 FILES = manifest.webmanifest sw.js pwa.js icon.svg og-image.svg
 ICONS = icon-192.png icon-512.png
+# Stands for all the Play store screenshots (phone and tablets), which store-assets.py makes together.
+STORE_SHOTS = android/assets/phone/01-about.png
 
 # Every page's prompt as a web page too: FOLDER/prompt.txt -> FOLDER/prompt/index.html
 # (https://multiply.by/FOLDER/prompt/), and the front page's prompt.txt -> prompt/index.html.
@@ -9,7 +11,7 @@ PROMPT_PAGES = $(sort prompt/index.html base/prompt/index.html \
   $(patsubst %/prompt.txt,%/prompt/index.html,$(wildcard */prompt.txt)))
 
 all: gamify/index.html android/index.html chat-gpt-local.html privacy/index.html privacy/website/index.html selector/prompt/index.html grid/prompt/index.html base/index.html index.html $(FILES) $(ICONS) og-image.png sitemap.xml \
-  $(PROMPT_PAGES)
+  $(PROMPT_PAGES) $(STORE_SHOTS)
 
 prompt-pages: $(PROMPT_PAGES)
 .PHONY: all prompt-pages
@@ -47,6 +49,12 @@ android/index.html: ANDROID.md md-html.py
 	mkdir -p android
 	python3 md-html.py ANDROID.md > android/index.html.tmp
 	mv android/index.html.tmp android/index.html
+
+# The Play store screenshots (android/assets/phone/, tablet-7/, tablet-10/), retaken when a page
+# they show changes. store-assets.py photographs the LIVE site, so this runs after the page is
+# published (as every build here is). Needs Playwright with Chromium; about two minutes.
+$(STORE_SHOTS): about/index.html build-it/index.html games/index.html android/store-assets.py
+	cd android && python3 store-assets.py --only phone,tablet
 
 # https://multiply.by/chat-gpt-local.html: how Claude Code on the owner's desktop (with Claude in
 # Chrome) builds the ChatGPT games (trains, planes, space, building, evolution), chat-gpt-local.md

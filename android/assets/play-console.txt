@@ -13,10 +13,10 @@ Declarations: Developer Program Policies, US export laws: accept.
 App name, short description, full description: listing.txt
 App icon: icon-512.png
 Feature graphic: feature-graphic.png
-Phone screenshots: phone/01-about.png ... phone/06-games.png, in that order
-7-inch tablet screenshots: tablet-7/01-about.png ... 06-games.png, in that order
-10-inch tablet screenshots: tablet-10/01-about.png ... 06-games.png, in that order
-Video: the YouTube link of robot.mp4
+Phone screenshots: phone/01-about.png ... phone/05-games.png, in that order
+7-inch tablet screenshots: tablet-7/01-about.png ... 05-games.png, in that order
+10-inch tablet screenshots: tablet-10/01-about.png ... 05-games.png, in that order
+Video: the YouTube link of multiply.mp4
 
 == Store settings ==
 App category: Education
