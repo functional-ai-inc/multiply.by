@@ -41,26 +41,28 @@ ONLY = set(args.only.split(","))
 # picture only[, CSS selector whose bottom, plus 12px, ends the picture[, CSS width instead of the
 # phone's: a wider page drawn into the same picture, so more fits]]]]). Parents choose the
 # app, and the About page's lists persuade them most, so About comes first: its card from
-# "About Multiply.by" (the three lists), then the rest of the card from "Make your own game"
-# (skipping GET THE APP: a Google Play badge has no place in the Play listing itself).
+# "About Multiply.by" (the three lists), then the rest of the card from "Make your own game".
 PHONE = [
     # The three lists alone (the card ends after Transparency), the link in them in plain text.
     # (Selectors by the page's structure and section ids: class names change when it is rebuilt.)
     ("01-about", "/about/", 0, "main",
      "main > .sections ~ * { display: none !important; }"
      " .sections a { color: inherit !important; font-weight: inherit !important; }", "main"),
-    # Then "Make your own game" and "How the site was built" (the card ends after them).
+    # Then "Make your own game" and "How the site was built" (the card ends after them; Learned
+    # everywhere, between them on the page, has a picture of its own).
     ("02-about-more", "/about/", 0, ".more",
-     "#portability, #portability ~ * { display: none !important; }", "main"),
+     "#learned-everywhere, #learned-everywhere ~ *:not(#how-the-site-was-built,"
+     " #how-the-site-was-built ~ *), #portability, #portability ~ * { display: none !important; }",
+     "main"),
     # From "Build it yourself", drawn smaller so the first game's whole prompt fits.
     ("03-build-it", "/build-it/", 0, "main h2", None, None, 540),
     # The rest of the About card, Portability and Scalability (the site info and footer below
-    # the card are left out: the Google Play badge again, and contact details).
+    # the card are left out: the Google Play badge, and contact details).
     ("04-about-portability", "/about/", 0, "#portability",
-     "#monetization-model, #monetization-model ~ * { display: none !important; }", "main"),
-    # Learned everywhere alone: Monetization model (ads on the website, "portfolio asset") is not
-    # for parents in the listing of an app that has no ads.
-    ("05-about-learned", "/about/", 0, "#learned-everywhere", None, "main"),
+     None, "main"),
+    # Learned everywhere alone (on the page it comes after "Make your own game").
+    ("05-about-learned", "/about/", 0, "#learned-everywhere",
+     "#how-the-site-was-built, #how-the-site-was-built ~ * { display: none !important; }", "main"),
     ("06-games", "/games/", 0),
 ]
 # Tablet screenshots (optional on Play, needed to be featured on tablets): the app is held

@@ -24,7 +24,8 @@ page's content in a card, the site info (SITE INFO below) and the footer.
 <tagline>A quick, focused way to learn the multiplication table.</tagline>
 The tagline is one short line directly under the header, not a section heading: normal weight,
 slightly smaller than body text, muted gray (#6b7280).
-Links in the card: no underline (text-decoration: none), bold, dark blue #1e40af.
+Links in the card: dark blue #1e40af, NORMAL weight (never bold, so a linked point looks like the
+others), no underline; underlined on hover and keyboard focus.
 
 Style:
 - Page background light gray (#f3f4f6).
@@ -41,7 +42,9 @@ Style:
 
 Adaptive layout (the page fits phones, tablets and laptops):
 - Phones and tablets (narrower than 1024px): as above, one column: the three sections stacked, with
-  horizontal dividers between them.
+  horizontal dividers between them. On tablets (the layout's wider-screen rule,
+  `@media (min-width: 768px) and (min-height: 600px)`, below 1024px wide) the card's max-width is
+  640px instead of 480px, so it doesn't leave wide empty margins.
 - Laptops and wider screens (`@media (min-width: 1024px)`): the three sections (Functionality,
   No Friction, Transparency) sit side by side on ONE line, as three equal columns
   (`display: grid; grid-template-columns: repeat(3, 1fr)`), with 1px #e5e7eb vertical dividers
@@ -55,6 +58,7 @@ Adaptive layout (the page fits phones, tablets and laptops):
 <subheader>Functionality</subheader>
   o Designed for maximum learning speed.
   o Gamified versions keep children engaged.
+  o Make your own game from a few lines of text.
   o Works on all your devices.
 
 <subheader>No Friction</subheader>
@@ -65,23 +69,16 @@ Adaptive layout (the page fits phones, tablets and laptops):
 <subheader>Transparency</subheader>
   o Open source: free to copy, change and share.
   o <a href="https://multiply.by/build-it/">See exactly how each game was built.</a>
-  o Make your own game from a few lines of text.
+  o <a href="https://multiply.by/build-it/#android-build">Build the app yourself.</a>
 
-GET THE APP (below the three sections, above MORE ABOUT THE SITE, inside the same card)
-- A 1px #e5e7eb divider above it (as between the other parts of the card), then, centered on every
-  screen size, one line of text, the Google Play badge under it, and a trademark line:
-  <p class="get-app">Get the games as an Android app: free, no ads, no in-app purchases.</p>
-  <a class="play-badge" href="https://play.google.com/store/apps/details?id=multiply.by.app" target="_blank" rel="noreferrer"><img src="/google-play.png" alt="Get it on Google Play" width="188" height="56"></a>
-  <p class="play-tm">Google Play and the Google Play logo are trademarks of Google LLC.</p>
-- The text: body text, color #374151, margin 0 0 10px. The badge is Google's official badge,
-  shown unchanged (never redrawn, recolored, cropped or stretched), exactly 188px wide and 56px
-  tall; the link `display: inline-block`, no underline, a clear focus outline for the keyboard.
-  The trademark line: 0.75rem, color #6b7280, margin 8px 0 0.
-
-MORE ABOUT THE SITE (below GET THE APP, inside the same card)
-- A 1px #e5e7eb divider separates it from GET THE APP above; on every screen size it is one
-  column of prose BELOW the three sections (never beside them), using the card's full width (no max-width on
-  the text), left-aligned with the header.
+MORE ABOUT THE SITE (below the three sections, inside the same card; the Google Play badge is in the
+  site info below the card, so the card has none)
+- A 1px #e5e7eb divider separates it from the three sections above; on every screen size it is one
+  column of prose BELOW the three sections (never beside them). Its text (headings and paragraphs)
+  is at most 46rem wide on every screen (`max-width: 46rem`, about 80 to 85 characters a line), so
+  lines stay easy to read on wide screens where the card is 960px. The block is CENTERED in the card
+  (`margin: 0 auto`), with equal space on both sides; the text inside it stays left-aligned
+  (never `text-align: center`). The divider above it still spans the card's full width.
 - Headings: <h2>, bold, 1.25rem, near-black (#111827), about 1.5rem of space above and 0.5rem
   below; each with an id derived from its text (lowercase, spaces to hyphens, punctuation removed,
   e.g. id="how-the-site-was-built"). Paragraphs: body text, 0.75rem apart.
@@ -92,10 +89,19 @@ about what your child loves, end with a link to multiply.by/gamify, and give it
 to ChatGPT, Claude or Gemini. No programming needed.</p>
 <p>See every game and its prompt on the <a href="https://multiply.by/build-it/">Build It</a> page.</p>
 
+<h2>Learned everywhere</h2>
+What children are expected to memorize depends mostly on where they grow up. In different 
+countries, religions and cultures, a child may recite prayers, learn poems by national writers, 
+say a pledge of allegiance every morning, or sing the national anthem.
+
+But there is one memorization task that is the same everywhere: the multiplication table. 
+Children learn it at least up to 9; in Britain they go <a href="https://multiply.by/base/?12">up to 12</a>, and in India often
+<a href="https://multiply.by/base/?20">up to 20</a>.
+
 <h2>How the site was built</h2>
 Every page has a SOURCE button in the upper right corner. It opens the page's prompt: the plain
 text given to an AI model, which writes the single file <code>index.html</code> that your browser
-shows. (Despite its name, the game's <code>index.html</code> is mostly JavaScript and CSS: only about a tenth of it is HTML.)
+shows. (Despite its name, the games' <code>index.html</code> is mostly JavaScript and CSS: only about a tenth of it is HTML.)
 
 <h2>Portability</h2>
 The build instructions are written to work with models from Google, Anthropic or OpenAI, and
@@ -106,20 +112,6 @@ The site is static, with no accounts and no server code, so it can cheaply handl
 Each game is a single small file that loads quickly even on a slow connection and costs almost
 nothing to serve, so the number of players can grow without slowing the site down. The Android
 app works offline.
-
-<h2>Monetization model</h2>
-Given the site's scalability, unintrusive ads can generate a profit. The site also serves as a
-portfolio asset and a proof of concept for building software from plain-text
-prompts.
-
-<h2>Learned everywhere</h2>
-What children are expected to memorize depends mostly on where they grow up. In different 
-countries, religions and cultures, a child may recite prayers, learn poems by national writers, 
-say a pledge of allegiance every morning, or sing the national anthem.
-
-But there is one memorization task that is the same everywhere: the multiplication table. 
-Children learn it at least up to 9; in Britain they go <a href="https://multiply.by/base/?12">up to 12</a>, and in India often
-<a href="https://multiply.by/base/?20">up to 20</a>.
 
 #include footer.txt
 

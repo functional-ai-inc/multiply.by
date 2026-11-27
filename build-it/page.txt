@@ -134,7 +134,10 @@ ANDROID BUILD (below the grid, above the footer)
 - A block of its own under the last row of cards, the grid's width (the same 12px of space at the
   sides), 24px below the grid: a CARD with the cards' look (white, 1px #e5e7eb border, 12px
   rounded corners, soft shadow, padding 16px, a flex column with 12px gaps), the full width of the
-  grid (never one column of it).
+  grid (never one column of it). The card has id="android-build": the About page links to
+  https://multiply.by/build-it/#android-build. The grid is filled by script, which moves the block
+  down, so once the cards are in place, if the address ends in #android-build, scroll the card
+  into view (`scrollIntoView({block: 'start'})`).
 - Inside, from top to bottom:
   1. An <h2> "Android™ Build" (the ™ right after "Android", as written), like the card names
      (bold, 1.25rem, #111827, no margin; not a link), with a PHONE ICON before the words: a flex
@@ -142,8 +145,9 @@ ANDROID BUILD (below the grid, above the footer)
      `aria-hidden="true"` (a phone with a download arrow, the site's blue #3b82f6; NOT the Android
      robot or any Google artwork):
        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v7"/><path d="M9 11.5l3 3 3-3"/><path d="M10.5 18.5h3"/></svg>
-  2. This text, exactly (body text, #374151): "Feed this prompt to your AI agent (Claude Code,
-     Gemini Antigravity or OpenAI Codex) to produce an installable Android app."
+  2. This text, exactly (body text, #374151): "Feed this prompt to an AI agent that runs on your
+     computer (Claude Code, Gemini Antigravity or OpenAI Codex CLI) to build the Multiply.by
+     Android app."
   3. A prompt box with a copy button, EXACTLY the cards' prompt box and COPY BUTTON (same look,
      same behavior, same check mark), holding this prompt, written into the page (not fetched):
      "Build an installable APK using https://multiply.by/android"
@@ -153,8 +157,14 @@ ANDROID BUILD (below the grid, above the footer)
   4. Under the box, a note on what the build needs (0.8125rem, #374151), one line, exactly:
      "Requires 2 GB of disk and 8 GB of RAM; Linux, Mac or Windows. No administrator (root)
      access needed."
-  5. Under that, the trademark notice, 0.75rem, #6b7280, exactly:
-     "Android is a trademark of Google LLC."
+  5. Under that, THE READY-MADE APP, the simple alternative to building it: a line (body text,
+     #374151, margin 0), exactly: "Or skip the build: get the ready-made app on Google Play."
+     The words "Google Play" are a link to the Play listing, opening in a new tab (no picture, no
+     badge):
+     <a class="android-play" href="https://play.google.com/store/apps/details?id=multiply.by.app" target="_blank" rel="noreferrer">Google Play</a>
+     Dark blue #1e40af, bold, not underlined (underlined on hover and keyboard focus).
+  6. Under that, the trademark notice, 0.75rem, #6b7280, exactly:
+     "Android and Google Play are trademarks of Google LLC."
 
 GAMES (the data for the cards, in NO particular order: the cards follow ORDERS below; the name
 after each "- " is the SHORT NAME, see NAME; the screenshots are files in this folder; the
@@ -244,7 +254,9 @@ CHECKS
   line (no Android robot), its text, the line "Requires 2 GB of disk and
   8 GB of RAM; Linux, Mac or Windows. No administrator (root) access needed.", and a box with
   "Build an installable APK using https://multiply.by/android" (the address a bold link); its copy button
-  puts exactly that line on the clipboard and shows the check mark. At 360px it fits the screen,
+  puts exactly that line on the clipboard and shows the check mark. Under them, "Or skip the
+  build: get the ready-made app on Google Play.", "Google Play" a link opening the Play listing
+  in a new tab (no badge), then "Android and Google Play are trademarks of Google LLC." At 360px it fits the screen,
   no sideways scroll.
 - Card names, exactly as GAMES gives them (Robot Workshop, not Robot). No name changes after the page opens.
 - Each web address in a prompt box (e.g. https://multiply.by/gamify) is a link to itself, shown

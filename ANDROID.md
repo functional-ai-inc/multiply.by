@@ -33,6 +33,10 @@ Anyone can build the app from the public repo, on Linux, Mac or Windows. You nee
 - **Java 17** (a JDK) and the **Android SDK** with Android 16 (API 36). Android Studio installs
   both; without it, install a JDK 17 and Google's command-line tools, then
   `sdkmanager "platforms;android-36" "build-tools;36.0.0" "platform-tools"`.
+  **Accept the SDK licenses** before the first build: `yes | sdkmanager --licenses` (Windows:
+  run `sdkmanager.bat --licenses` and answer `y` to each). A fresh SDK refuses to build until they
+  are accepted ("Failed to install the following SDK components ... licences have not been
+  accepted"); Android Studio asks the same question in its setup.
 - **Python 3**. If it is missing, install it in the user's folders with uv
   (https://docs.astral.sh/uv/: its installer puts `uv` in the user's folders, then
   `uv python install 3.12`).
@@ -303,7 +307,7 @@ https://multiply.by/android/assets/ so it can be looked at or downloaded from an
 | `play-console.txt` | The answers to the Play Console's forms, page by page: app details, store settings, privacy policy, app access, ads, content rating, target audience (6-8 and 9-12: the Families policy), data safety ("no data collected"), release notes | |
 | `icon-512.png` | The store icon, the site's `icon-512.png` (the "2x2" of `icon.svg`) | 512 x 512 PNG, square: Play rounds the corners |
 | `feature-graphic.png` | Logo, name, one line and six game pictures (the front page's thumbnails) | 1024 x 500, no transparency |
-| `phone/NN-PAGE.png` | Phone screenshots in store order, About first (parents choose the app, and its lists persuade them most): 1. the card from "About Multiply.by" with its three lists (the card ends there, 1080 x 1813; its link drawn as plain text); 2. "Make your own game" and "How the site was built" (the card ends there, 1080 x 1480); 3. Build It (from "Build it yourself", no title band or menu, drawn at a 540 px wide page so the first game's whole prompt fits); 4. Portability and Scalability; 5. Learned everywhere alone (Monetization model, about the website's ads, is left out of an app listing with no ads, as are the site info and footer); 6. the /games/ chooser | 2 to 8, 9:16, 1080 x 1920 |
+| `phone/NN-PAGE.png` | Phone screenshots in store order, About first (parents choose the app, and its lists persuade them most): 1. the card from "About Multiply.by" with its three lists (the card ends there, 1080 x 1813; its link drawn as plain text); 2. "Make your own game" and "How the site was built" (the card ends there, 1080 x 1480); 3. Build It (from "Build it yourself", no title band or menu, drawn at a 540 px wide page so the first game's whole prompt fits); 4. Portability and Scalability; 5. Learned everywhere alone (the site info and footer are left out); 6. the /games/ chooser | 2 to 8, 9:16, 1080 x 1920 |
 | `tablet-7/`, `tablet-10/` | Tablet screenshots, upright like the app: the same six as the phone's (`TABLET_PAGES = PHONE`), at tablet size; About's pages are too short to scroll on a tablet, so its pictures start at the card and are shorter than 9:16 | optional; 1200 x 1920 and 1600 x 2560 |
 | `robot.mp4` | The Robot game played from the start to "You Won!" on a phone: the first 10 moves (7 right, 3 wrong) at 1.4x speed with the game's sounds and a mouse pointer, the rest at 12x, silent, then 3 s on "You Won!". About 28 s, 1080 x 1920, about 2 MB | Play takes a YouTube link only |
 
