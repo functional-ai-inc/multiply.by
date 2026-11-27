@@ -2,8 +2,17 @@
 
 Notes for packaging the multiply.by games as an Android app.
 
+**One command does it all.** Get the code (step 1 below), then, in its `android` folder:
+`python3 build.py` (Windows: `py build.py`). It installs whatever is missing (Java 17, the
+Android SDK and its licenses, Gradle and the libraries), gathers the games, builds, and prints
+the APK's full path. It says which step failed if one does; the steps by hand are below.
+
 **What the agent needs** (installs automatically if missing): Java 17, Android SDK, Gradle,
 Python 3, git, the site multiply.by.
+
+**Expect questions from the agent.** It asks before running each command, and it may show a
+security warning, because its instructions come from a web page (this one). That is normal: read
+each command before you allow it. With `build.py` there are only a few.
 
 **No root or administrator access:** the install neither needs nor uses it. Everything goes in
 the user's own folders (below).
@@ -34,9 +43,10 @@ Anyone can build the app from the public repo, on Linux, Mac or Windows. You nee
   both; without it, install a JDK 17 and Google's command-line tools, then
   `sdkmanager "platforms;android-36" "build-tools;36.0.0" "platform-tools"`.
   **Accept the SDK licenses** before the first build: `yes | sdkmanager --licenses` (Windows:
-  run `sdkmanager.bat --licenses` and answer `y` to each). A fresh SDK refuses to build until they
-  are accepted ("Failed to install the following SDK components ... licences have not been
-  accepted"); Android Studio asks the same question in its setup.
+  run `sdkmanager.bat --licenses` and answer `y` to each). An SDK with older tools refuses to
+  build until they are accepted ("Failed to install the following SDK components ... licences
+  have not been accepted"); Android Studio asks the same question in its setup. The newest
+  command-line tools no longer ask (sdkmanager says "The --licenses option is no longer needed").
 - **Python 3**. If it is missing, install it in the user's folders with uv
   (https://docs.astral.sh/uv/: its installer puts `uv` in the user's folders, then
   `uv python install 3.12`).
@@ -47,7 +57,7 @@ Approximate sizes after installation: JDK 17 about 300 MB; the Android SDK parts
 git about 100 MB (usually already installed); the site's pages (games, About, Build It, prompts)
 about 4 MB. About 2 GB of disk in all. An AI agent installs whatever is missing.
 
-Then:
+Then (steps 2 and 3, and installing Java and the SDK, are what `build.py` does):
 
 1. Get the code:
    `git clone https://github.com/functional-ai-inc/multiply.by.git` and `cd multiply.by/android`;
@@ -103,6 +113,14 @@ nothing, so the app needs no income:
 - `app/src/main/java/by/multiply/app/`: `MainActivity.kt` (the WebView, address rules, share
   bridge, back button, edge-to-edge insets), `SiteFiles.kt` (serves the bundled files and the
   in-app 404 page), `ParentalGate.kt`.
+- `build.py [--setup-only] [--java DIR] [--sdk DIR]`: the one-command build (top of this page),
+  Python's standard library only. Java: JAVA_HOME or `java` if it is 17 to 24, else the JDK
+  folder in the table, else Eclipse Temurin 17 downloaded there (api.adoptium.net). SDK:
+  ANDROID_HOME, ANDROID_SDK_ROOT, `local.properties` or the table's folder, else Google's
+  command-line tools downloaded there (the latest, read from Google's repository index). Then
+  the licenses, the SDK packages, `local.properties`, `gather-assets.py`, `gradlew
+  assembleDebug`, and the APK's path. Tested on 2026-11-27 up to the Gradle step on Linux, in an
+  empty home folder (`--setup-only`).
 - `gather-assets.py [--web] [OUT]`: copies the live pages into the app (default OUT
   `app/src/main/assets/site/`, git-ignored). It downloads the pages from https://multiply.by
   (run inside a copy of the site's folder with its built pages, it reads them there instead;
