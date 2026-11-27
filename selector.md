@@ -16,7 +16,7 @@ and THE GAME's prompt disagree, this file wins.
 - **SOURCE** on this page: `<a href="https://multiply.by/prompt/">` (the front page's own prompt,
   not THE GAME's).
 - **Menu**: as in THE GAME's prompt, with HOME as the current page (`aria-current="page"`). The
-  games strip and its More games tile are also a way to the other games.
+  games strip and its Game Board tile are also a way to the other games.
 - **The games grid on "You Won!"** (if THE GAME has one): THE GAME's tile is the one marked "Play
   again", although this page's address is https://multiply.by/.
 - **The front page always opens ready to play**: it is HOME, so the logo, the title band and HOME
@@ -34,7 +34,9 @@ and THE GAME's prompt disagree, this file wins.
   strip: title band, menu bar, game area, strip and footer all fit, and the page itself still
   never scrolls. The game area is what gives up the room: it keeps `flex: 1; min-height: 0`; its
   pictures (the scene, the mascot, the dot array) shrink and the answer buttons become shorter,
-  but every indicator stays whole and nothing overlaps the answers.
+  but every indicator stays whole and nothing overlaps the answers. THE GAME's prompt sizes the
+  game area's parts by the game area's own height (container queries on `#game-area`), not by
+  the screen's: keep those rules exactly, they are what makes the game fit above the strip.
 
 ## The games strip
 
@@ -65,12 +67,23 @@ and THE GAME's prompt disagree, this file wins.
      height: auto; aspect-ratio: 5 / 4; object-fit: cover; border-radius: 6px;` (`alt=""` because
      the name is already the tile's text). The pictures are thumbnails, 200 x 160 (5:4): one
      simple picture of the game (a locomotive, the monster, a dinosaur), not a screenshot.
-- The LAST TILE is always MORE GAMES: the same tile, name "More games", linking to
+- The LAST TILE is always GAME BOARD: the same tile, name "Game Board" (the words of the menu's
+  GAME BOARD item; never "More games"), linking to
   https://multiply.by/games/, with an inline SVG in place of the picture (same 5:4 box, background
   #eff6ff, 6px rounded corners): four rounded squares in a 2 x 2 grid, #3b82f6, centered, about
-  half the box's height.
-- **Wider screens** (`@media (min-width: 768px) and (min-height: 600px)`, as the menu bar): tiles
-  `flex: 0 0 108px`, names 14px.
+  half the box's height. Its name is NEVER cut ("Game B..." would hide the words): this one tile
+  is `flex: 0 0 auto; min-width: var(--tile)`, as wide as its whole name needs (padding
+  included), its name `overflow: visible; text-overflow: clip`; its SVG box stays exactly the size
+  of the other tiles' pictures (`width: calc(var(--tile) - 10px); align-self: center;`, 5:4), so
+  every tile is the same height. `--tile` is a CSS variable on `#games-strip` holding the tiles'
+  width: 88px, 108px on tall wide screens, 72px on medium-height screens (set in the same media
+  rules below); every game tile is `flex: 0 0 var(--tile)`.
+- **Tall wide screens** (`@media (min-width: 768px) and (min-height: 900px)`, a tablet held
+  upright, a big monitor): tiles `flex: 0 0 108px`, names 14px. Only there: a laptop screen
+  (1366x768, 1280x800) keeps the 88px tiles, the game needs the height more than the strip.
+- **Medium-height screens** (`@media (min-height: 501px) and (max-height: 760px)`: a laptop with
+  the browser's bars, a small phone): smaller tiles, `flex: 0 0 72px`, names 11px, the strip's gap
+  6px, so the strip is about 90px tall and the game keeps its room.
 - **Short screens** (`@media (max-height: 500px)`, e.g. a phone on its side): no pictures (the
   `<img>` and the SVG are `display: none`); each tile is a name-only chip: `flex: 0 0 auto;
   height: 28px; padding: 0 10px; justify-content: center;`, name 12px. The strip's padding is
@@ -86,7 +99,7 @@ finger.
    a game in the strip games, skip this step).
 2. Then the other games in the order of ORDERS (https://multiply.by/orders.txt), each only if
    not already placed (and never THE GAME) and never shuffled, so each game keeps its place.
-3. MORE GAMES last.
+3. GAME BOARD last.
 
 - A tap on a game tile (a `click` listener; the link opens the game as usual) saves that game's
   key under `multiply_last_game` (with the safe storage: if storage fails, the link still works).
@@ -103,11 +116,13 @@ file: its tiles and layout are the ones described here, its order the one above.
 
 ## Checks (in addition to THE GAME's)
 
-- At 360x640, 640x360, 768x1024 and 1280x800: the title band, menu bar, question, four answers,
-  strip and footer are all on screen, nothing cut off, and the page does not scroll by a pixel.
-  Every indicator is whole and ends above the answers.
-- On a computer, the mouse wheel over the strip scrolls it sideways to More games.
-- The strip shows the eleven games and then More games; on a phone it scrolls sideways inside
+- At 360x640, 640x360, 768x1024, 1280x800 and 1366x654 (a laptop with the browser's bars): the
+  title band, menu bar, question, four answers, strip and footer are all on screen, nothing cut
+  off, and the page does not scroll by a pixel.
+  Every indicator is whole and ends above the answers, and every answer's number is whole
+  inside its button (at 1366x654 the strip is about 90px tall, the buttons about 100px).
+- On a computer, the mouse wheel over the strip scrolls it sideways to Game Board.
+- The strip shows the eleven games and then Game Board; on a phone it scrolls sideways inside
   itself; in landscape it shows name-only chips.
 - On a first visit (nothing saved under `multiply_last_game`), the strip is in the order of
   ORDERS; reloading the page never changes it.

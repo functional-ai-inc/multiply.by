@@ -6,7 +6,7 @@ the <head>, all code in one plain <script> at the end of the <body>.
 This is the GAMES page of https://multiply.by/ (https://multiply.by/games/): a child picks a
 times-tables game to play. It is for children of about 6 to 11: big pictures, few words, one tap to
 play. (The front page, https://multiply.by/, is the base game itself with a strip of these games
-under it; its "More games" tile opens this page.)
+under it; its "Game Board" tile opens this page.)
 
 <title>Games – Multiply.by</title>
 In the <head>, directly after the title, include exactly: <meta name="description" content="Free times-table games for children: feed a monster, drive a train, build a robot, fly through history, build the Great Wall, dig and build with blocks, evolve from a cell to a human. No sign-up, no ads.">

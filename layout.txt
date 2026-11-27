@@ -169,7 +169,7 @@ on tablets and computers everything is in one row and there is no menu button.
   1. MUTE (game pages only): the speaker icon button, described by the game.
   2. THE MENU PANEL items: HOME, GAME BOARD (the four squares and the words, phones only), ABOUT, then
      the game's RULES and RESET (game pages only).
-  3. GAMES: the games icon (the four squares of the front page's "More games" tile), ALWAYS
+  3. GAMES: the games icon (the four squares of the front page's "Game Board" tile), ALWAYS
      VISIBLE on every page and every screen: from anywhere, one tap reaches the games page.
   4. BUILD IT, then SOURCE: two OUTLINED BUTTONS, ALWAYS VISIBLE on every page and every screen.
      BUILD IT is the point of the site (every game, its prompt and the model that built it), and
@@ -193,7 +193,7 @@ on tablets and computers everything is in one row and there is no menu button.
   - HOME opens the front page: the game, with a strip of all the other games under it.
   - GAMES opens the games page, where a child picks a game from big pictures. Its icon: an inline
     SVG, 22px x 22px, viewBox "0 0 24 24", aria-hidden="true", four rounded squares in a 2 x 2 grid,
-    fill #3b82f6 (the "More games" tile's blue): <rect x="3" y="3" width="8" height="8" rx="2"/>,
+    fill #3b82f6 (the "Game Board" tile's blue): <rect x="3" y="3" width="8" height="8" rx="2"/>,
     <rect x="13" y="3" width="8" height="8" rx="2"/>, <rect x="3" y="13" width="8" height="8"
     rx="2"/>, <rect x="13" y="13" width="8" height="8" rx="2"/>. Its name is in `aria-label` and
     `title`. The words GAME BOARD after it (<span class="games-word">) show ONLY on wider
@@ -276,8 +276,9 @@ included)
   tap on the right answer only closes the panel (the question, the score and the timer stay as
   they were).
 
-WIDER SCREENS (tablets and computers: `@media (min-width: 768px) and (min-height: 600px)`, where
-the column is up to 720px wide)
+WIDER SCREENS (tablets and computers: `@media (min-width: 768px) and (min-height: 780px)`, where
+the column is 585px to 720px wide; the row needs about 575px. A shorter screen, e.g. a laptop
+whose browser shows 1366x654, has a narrower column (490px) and keeps the menu button)
 - Everything in one row, no menu button. Exactly this CSS inside the media query:
     #menu-toggle { display: none; }
     #menu-panel, #menu-panel.open { display: flex; position: static; flex-direction: row;
@@ -300,8 +301,8 @@ the column is up to 720px wide)
   icon (a GAME BOARD button on pages without MUTE), BUILD IT and SOURCE at the right end.
 - Sizes: bar height 3.25rem; menu items `padding: 0 8px`, text 15px; the GAMES icon and the speaker
   icon 24px x 24px; the outlined buttons height 2.25rem, `padding: 0 12px`, text 14px; the share
-  icon 28px x 28px (the logo as given under THE LOGO). The column can be as narrow as 400px on these
-  screens (600px at 1280x800): this row fits in it with room to spare.
+  icon 28px x 28px (the logo as given under THE LOGO). The column is at least 585px on these
+  screens (600px at 1280x800): this row fits in it, never past the column's right edge.
 
 FOOTER (the very last line of the page)
 - The element <div id="footer"> (exactly this id), at the bottom of the page column: one line where

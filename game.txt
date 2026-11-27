@@ -359,7 +359,10 @@ IMPORTANT: Do not add any notes at the top or bottom of the HTML file.
 
 - Game Area (the screen of one question): `touch-action: none` (a finger drag there never scrolls or
   zooms anything), `flex: 1`, `min-height: 0`, a flex column,
-  `padding: 1rem`, `gap: 1rem`, `overflow: hidden`. From top to bottom:
+  `padding: 1rem`, `gap: 1rem`, `overflow: hidden`, and `container: game / size;` (a size
+  container): the parts inside it size themselves by the room the game area really has, not by
+  the screen, so they still fit when a page puts something more under it (the front page's games
+  strip). From top to bottom:
 
   - Top row: a <div id="top-row">, `flex: 0 0 36%`, `min-height: 0`, a flex row with
     `gap: 0.75rem`, holding, from left to right, the question card, the PROGRESS BAR and the
@@ -408,12 +411,22 @@ IMPORTANT: Do not add any notes at the top or bottom of the HTML file.
       practice set during a practice, rounded to a whole number, e.g.
       "6%"), M (the number of wrong answers) and T (the playing time so far,
       `formatTime(currentPlayMs())`, e.g. "0:12"). Look: NOT bold (`font-weight: normal`), font size
-      `clamp(1.05rem, 5.2vmin, 1.7rem)`, color #111827, `line-height: 1.1`,
+      `clamp(1.05rem, min(5.2vmin, 6cqh), 1.7rem)` (cqh: of the game area), color #111827,
+      `line-height: 1.1`,
       `font-variant-numeric: tabular-nums` (so numbers do not shift as the clock ticks),
       `white-space: nowrap`. All five values, Mistakes included, are #111827 (never red).
     - The column is RIGHT-aligned: labels and numbers are `text-align: right` and end at the
       column's right edge. No borders or backgrounds; they never wrap or overflow.
-    - Short screens (`@media (max-height: 500px)`, e.g. a phone in landscape): the five blocks form
+    - Short, wide game area (`@container game (max-height: 600px) and (min-width: 360px)`, e.g. a
+      laptop whose browser shows 1366x654, more so with the front page's strip): the stacked
+      column would be taller than the top row, so the five blocks form a grid of two columns
+      (`display: grid; grid-template-columns: auto auto; column-gap: 1rem;
+      align-content: space-between;`, the column `flex: 0 0 auto`): Score and Streak, Learned and
+      Mistakes, then Time. A container query measures the game area's CONTENT box (without its
+      1rem padding): 418px in a 450px column. Phones up to 390px wide (328px to 358px inside)
+      keep the stacked column.
+    - Short screens (`@media (max-height: 500px)`, e.g. a phone in landscape; this rule comes
+      AFTER the container rule above in the CSS, so it wins where both apply): the five blocks form
       a grid of three columns instead
       (`display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 0.75rem;`): Score, Streak
       and Learned on top, Mistakes and Time below, with the column `flex: 0 0 15rem`, so everything
@@ -425,7 +438,10 @@ IMPORTANT: Do not add any notes at the top or bottom of the HTML file.
     (`display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 1rem;`)
     holding four <button class="answer"> elements, each showing one answer and carrying its place in
     `data-index` (0 to 3, in the order of `state.choices`): places 0 and 1 are the top row, 2 and 3
-    the bottom row. Font size `clamp(1.5rem, 8vmin, 4rem)`.
+    the bottom row. #answers is itself a size container (`container-type: size`), and the
+    buttons' font size is `min(clamp(1.5rem, 8vmin, 4rem), 28cqh)` (cqh: of #answers), so a
+    number is never taller than its button: on a short game area the buttons get shorter and
+    their numbers smaller, but every number stays whole inside its button.
 
 - Question card and answer buttons share one look: white background, `border: 1px solid #e5e7eb`,
   `border-radius: 0.5rem`, `box-shadow: 0 1px 3px rgba(0,0,0,0.1)`, text color #111827, text
@@ -447,8 +463,10 @@ IMPORTANT: Do not add any notes at the top or bottom of the HTML file.
     no faded look: keep full opacity and colors), so nothing can be tapped twice.
 
 - Mobile: the whole UI fits on one screen with no horizontal or vertical scrolling, on a 360x640
-  phone, in landscape, on a tablet held upright (768x1024, 800x1280: the game is 720px wide, not a
-  narrow strip, and the menu bar scaled up to match) and on desktop.
+  phone, in landscape, on a laptop whose browser shows 1366x654 (every indicator whole and above
+  the answers, every answer's number whole inside its button), on a tablet held upright
+  (768x1024, 800x1280: the game is 720px wide, not a narrow strip, and the menu bar scaled up to
+  match) and on desktop.
 
 - Footer: see FOOTER in SITE LAYOUT. It is the last part of the app container and is always
   fully visible at the bottom of the screen.
