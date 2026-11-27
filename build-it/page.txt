@@ -37,7 +37,8 @@ THE GRID
   - Laptops and wider (`@media (min-width: 1024px)`): three columns.
 - CARD: white, a 1px #e5e7eb border, 12px rounded corners, a soft shadow (0 1px 3px
   rgba(0,0,0,0.1)), padding 16px, a flex column with 12px gaps. Cards in one row are equally tall
-  (the grid stretches them); the prompt box (below) grows to fill the extra height.
+  (the grid stretches them); the prompt box (below) is only as tall as its text: the extra
+  height is empty space under the box, and PLAY stays at the bottom of the card.
 - Inside each card, from top to bottom:
   1. NAME: the game's name as an <h2> (bold, 1.25rem, #111827, no margin), a link to the game
      (no underline, color inherited; dark blue #1e40af on hover).
@@ -100,17 +101,20 @@ THE GRID
      - The box: `white-space: normal; overflow-wrap: anywhere;` (it wraps inside the card,
        never widens it), monospace at 0.8125rem, line-height 1.45, #111827 on #f9fafb, a 1px
        #e5e7eb border, 8px rounded corners, padding 10px 40px 10px 12px (room on the right for
-       the copy button), `margin: 0; flex: 1;`.
+       the copy button), `margin: 0; flex: none;` (as tall as its text, never stretched).
      - LIMITED HEIGHT: the box is at most `max-height: 24rem` tall, with `overflow-y: auto`: a
        long prompt (Chinese, Dots) scrolls inside the box with its own scroll bar; most prompts
        fit and show whole, with no scroll bar. So the copy button stays put while the text scrolls, the box and its button sit in a
        wrapper <div class="prompt-wrap"> (`position: relative; flex: 1; display: flex;
-       flex-direction: column; min-height: 0;`) that takes the box's place in the card; the box
-       fills it.
+       flex-direction: column; min-height: 0;`) that takes the box's place in the card and fills
+       the card's extra height; the box sits at its top, as tall as its text (a short prompt, like
+       the base game's, is a short box, not a tall empty one).
      - COPY BUTTON: a small icon button in the top right corner of the wrapper, NOT inside the
        scrolling box (`position: absolute; top: 4px; right: 4px;`). When the box scrolls (after
        the text is put in, `scrollHeight > clientHeight`), the button moves to `right: 18px` so it
-       does not cover the scroll bar: a <button type="button" aria-label="Copy prompt" title="Copy prompt">
+       does not cover the scroll bar, and the box gets the class `scrolling` with
+       `padding-right: 56px`, so the text stays clear of the moved button (on a Mac the scroll
+       bar takes no room, so without it the button would sit on the text): a <button type="button" aria-label="Copy prompt" title="Copy prompt">
        holding an inline SVG copy icon (two overlapping rounded squares, 16px, stroke
        currentColor, no fill), #6b7280, transparent background, no border, 32 x 32px, 6px rounded
        corners; #e5e7eb background and #111827 icon on hover and focus. It copies the prompt
@@ -131,8 +135,11 @@ THE GRID
      bottom of the card.
 
 ANDROID BUILD (below the grid, above the footer)
-- A block of its own under the last row of cards, the grid's width (the same 12px of space at the
-  sides), 24px below the grid: a CARD with the cards' look (white, 1px #e5e7eb border, 12px
+- A HORIZONTAL SEPARATOR first, between the grid and the block, so the block reads as a section of
+  its own: `<hr class="android-sep">`, 32px below the grid, the grid's width (the same 12px of
+  space at the sides): `margin: 32px 12px 0; border: 0; border-top: 1px solid #d1d5db; height: 0;`.
+- A block of its own under the separator, the grid's width (the same 12px of space at the
+  sides), 24px below the separator: a CARD with the cards' look (white, 1px #e5e7eb border, 12px
   rounded corners, soft shadow, padding 16px, a flex column with 12px gaps), the full width of the
   grid (never one column of it). The card has id="android-build": the About page links to
   https://multiply.by/build-it/#android-build. The grid is filled by script, which moves the block
@@ -146,7 +153,7 @@ ANDROID BUILD (below the grid, above the footer)
      robot or any Google artwork):
        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v7"/><path d="M9 11.5l3 3 3-3"/><path d="M10.5 18.5h3"/></svg>
   2. This text, exactly (body text, #374151): "Feed this prompt to an AI agent that runs on your
-     computer (Claude Code, Gemini Antigravity or OpenAI Codex CLI) to build the Multiply.by
+     computer (Claude Code, Gemini Antigravity or OpenAI Codex) to build the Multiply.by
      Android app."
   3. A prompt box with a copy button, EXACTLY the cards' prompt box and COPY BUTTON (same look,
      same behavior, same check mark), holding this prompt, written into the page (not fetched):
@@ -250,7 +257,7 @@ CHECKS
   by single spaces (the base game: "Base game with no modifications. Your deliverable is a
   complete, playable, standalone index.html file that I can download and open in my browser.
   Details at https://multiply.by/base/prompt", the address a link); the name, the screenshot and "Play …" all open the game.
-- Under the cards, the ANDROID BUILD block: the blue phone icon and "Android™ Build" on one
+- Under the cards, a thin gray line across the grid's width, then the ANDROID BUILD block: the blue phone icon and "Android™ Build" on one
   line (no Android robot), its text, the line "Requires 2 GB of disk and
   8 GB of RAM; Linux, Mac or Windows. No administrator (root) access needed.", and a box with
   "Build an installable APK using https://multiply.by/android" (the address a bold link); its copy button
