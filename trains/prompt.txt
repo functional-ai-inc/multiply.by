@@ -1,0 +1,8 @@
+Multiply express: steam, diesel, high speed rail, maglev.
+Make the train images photo-realistic.
+Show the era and region where each train type was most popular.
+
+Your deliverable is a complete, playable, standalone 
+index.html file that I can download and open in my browser.
+
+Details at https://multiply.by/gamify

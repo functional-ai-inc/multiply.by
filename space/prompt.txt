@@ -1,0 +1,9 @@
+Create a space-travel multiplication game with four destinations, visited in this order:
+Moon Mars Jupiter Saturn
+
+Use photorealistic images of all four destinations. 
+The player should visibly progress through the journey by answering multiplication questions.
+Follow https://multiply.by/gamify
+
+Your deliverable is a complete, playable, standalone index.html file 
+that I can download and open in my browser.

@@ -1,0 +1,5 @@
+Model: gemini-4-neon (effort high)
+Built: 2026-11-25 18:28 +03
+Tokens: 135,163 in, 67,249 out (of which 17,332 thinking) in 2 round(s); cost $1.41
+Time: 10.2 minutes
+index.html: 118,750 bytes

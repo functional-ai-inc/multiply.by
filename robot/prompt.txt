@@ -1,0 +1,10 @@
+Robot workshop: every right answer adds a part to a robot being
+assembled on the workbench: feet, legs, body, arms, head, antenna, then it
+powers up with glowing eyes and does a little dance.
+Each stage builds a new, bigger robot: helper bot, explorer rover,
+space robot, giant mech.
+Flat, colorful style drawn in SVG, simple mechanical animations
+(bolts tightening, sparks, lights blinking).
+Your deliverable is a playable, standalone index.html file
+that I can download and open in my browser.
+Follow https://multiply.by/gamify

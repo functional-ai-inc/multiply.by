@@ -1,0 +1,22 @@
+Dots: each question is shown as an array of dots: 7 x 8 is 7 rows of 8 dots,
+with a small gap after every 5th row and column so the dots are easy to count.
+The dot array is in a box beside the question. All dots are black and the same
+size for every question (sized so the largest array of the mode fits), so a
+bigger product looks bigger.
+To teach splitting, half a second after an array appears its blocks slide apart:
+for 7 x 8, the block of 5 rows slides away from the block of 2 rows, and each
+block gets a small label with its own fact (5 x 8, 2 x 8, without the answers).
+The rows split into 5s and the rest; when the first number is 5 or less, the
+columns split instead; 3 x 4 has nothing to split. The child can answer at any
+time, before or during the split.
+After a right answer, the dots melt and drain like liquid into the bottom right
+corner of the array's box, in about a second, and collect in a jar beside it.
+The next question appears at once and can be answered while the dots are still
+draining; its array appears when the draining ends (if it is answered first,
+its array is skipped). On a wrong answer the array stays and shakes.
+The jar fills as facts are learned. Stages: four jars, each bigger than the last.
+Flat style drawn in SVG; bright colors only for the jars and celebrations.
+
+Your deliverable is a playable, standalone index.html file
+that I can download and open in my browser.
+Use https://multiply.by/gamify

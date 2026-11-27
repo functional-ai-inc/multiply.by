@@ -1,0 +1,5 @@
+Model: openai/gpt-6.1-terra (built in a ChatGPT chat, thinking effort high, from prompt.txt)
+Built: 2026-11-25 18:33 +03
+Tokens and cost: not recorded (ChatGPT subscription)
+index.html: 212,664 bytes
+Time: 4.1 minutes

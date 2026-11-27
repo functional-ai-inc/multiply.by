@@ -1,0 +1,5 @@
+Model: claude-fable-5-2 (effort high)
+Built: 2026-11-25 17:00 +03
+Tokens: 58,091 in, 114,251 out; cost $5.03
+Time: 17.0 minutes
+index.html: 91,767 bytes

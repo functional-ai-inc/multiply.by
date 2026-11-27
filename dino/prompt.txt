@@ -1,0 +1,7 @@
+Dinosaurs version: Pterodactyl, Velociraptor, Stegosaurus, T Rex, Brontosaurus.
+Show lifelike images and simple animation for how they walked or flew.
+
+Your deliverable is a complete, playable, standalone index.html file 
+that I can download and open in my browser.
+
+Use https://multiply.by/gamify

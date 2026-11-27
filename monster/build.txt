@@ -1,0 +1,5 @@
+Model: claude-opus-5-5 (effort high)
+Built: 2026-11-25 16:58 +03
+Tokens: 57,725 in, 114,700 out; cost $2.52
+Time: 15.1 minutes
+index.html: 97,054 bytes
