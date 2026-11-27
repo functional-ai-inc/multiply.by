@@ -20,7 +20,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "by.multiply.app"   // never change after publishing
+        applicationId = "multiply.by.app"   // never change after publishing (the code's package, namespace, may differ)
         minSdk = 24
         targetSdk = 36
         versionCode = 3        // +1 for every upload to Play

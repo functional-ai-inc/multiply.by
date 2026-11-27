@@ -1,4 +1,4 @@
-Play Console answers for by.multiply.app: what to fill in, page by page, when creating the app.
+Play Console answers for multiply.by.app: what to fill in, page by page, when creating the app.
 Every answer here is checked against the app's code (MainActivity.kt) and PRIVACY.md. The store
 texts are in listing.txt; the pictures and video next to this file.
 

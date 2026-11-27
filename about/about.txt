@@ -4,7 +4,7 @@ loaded from any server. All CSS in one <style> in the <head>, all code in one pl
 end of the <body>.
 
 <title>About Multiply.by – Learn the Multiplication Table (Times Tables)</title>
-In the <head>, directly after the title, include exactly: <meta name="description" content="Why Multiply.by is a quick, focused way to learn the times tables: free and open source, no sign-up, no ads in the games, and one readable file.">
+In the <head>, directly after the title, include exactly: <meta name="description" content="Why Multiply.by is a quick, focused way to learn the times tables: free and open source, no sign-up, no intrusive ads, and one readable file.">
 In the <head>, include exactly: <meta name="viewport" content="width=device-width, initial-scale=1">
 In the <head>, include exactly: <link rel="icon" type="image/svg+xml" href="/icon.svg"> (the app's icon in the browser tab).
 
@@ -36,7 +36,8 @@ Style:
 - Header: bold, about 1.75rem.
 - Section headings (subheaders): small, uppercase, letter-spaced, gray (#6b7280).
 - List items have no plain bullets; each starts with a small check mark (✓) in blue (#2563eb).
-- Body text near-black (#111827), 1rem, line-height 1.5.
+- Body text near-black (#111827), line-height 1.5: 0.95rem on phones, 1rem on tablets and computers
+  (`@media (min-width: 768px) and (min-height: 600px)`, the layout's wider-screen rule).
 
 Adaptive layout (the page fits phones, tablets and laptops):
 - Phones and tablets (narrower than 1024px): as above, one column: the three sections stacked, with
@@ -58,7 +59,7 @@ Adaptive layout (the page fits phones, tablets and laptops):
 
 <subheader>No Friction</subheader>
   o No sign-up, no cost.
-  o No ads in the games.
+  o No intrusive ads. Get the app for no ads at all.
   o No extra steps, pep talks or celebrations that slow the game.
 
 <subheader>Transparency</subheader>
@@ -70,7 +71,7 @@ GET THE APP (below the three sections, above MORE ABOUT THE SITE, inside the sam
 - A 1px #e5e7eb divider above it (as between the other parts of the card), then, centered on every
   screen size, one line of text, the Google Play badge under it, and a trademark line:
   <p class="get-app">Get the games as an Android app: free, no ads, no in-app purchases.</p>
-  <a class="play-badge" href="https://play.google.com/store/apps/details?id=by.multiply.app" target="_blank" rel="noreferrer"><img src="/google-play.png" alt="Get it on Google Play" width="188" height="56"></a>
+  <a class="play-badge" href="https://play.google.com/store/apps/details?id=multiply.by.app" target="_blank" rel="noreferrer"><img src="/google-play.png" alt="Get it on Google Play" width="188" height="56"></a>
   <p class="play-tm">Google Play and the Google Play logo are trademarks of Google LLC.</p>
 - The text: body text, color #374151, margin 0 0 10px. The badge is Google's official badge,
   shown unchanged (never redrawn, recolored, cropped or stretched), exactly 188px wide and 56px
@@ -86,8 +87,8 @@ MORE ABOUT THE SITE (below GET THE APP, inside the same card)
   e.g. id="how-the-site-was-built"). Paragraphs: body text, 0.75rem apart.
 
 <h2>Make your own game</h2>
-<p>Each themed game on this site was built by an AI model from a prompt of a few lines. Write a
-few lines about what your child loves, end with a link to https://multiply.by/gamify, and give it
+<p>Each themed game on this site was built by an AI model from a brief prompt. Write a few lines
+about what your child loves, end with a link to multiply.by/gamify, and give it
 to ChatGPT, Claude or Gemini. No programming needed.</p>
 <p>See every game and its prompt on the <a href="https://multiply.by/build-it/">Build It</a> page.</p>
 
@@ -107,9 +108,9 @@ nothing to serve, so the number of players can grow without slowing the site dow
 app works offline.
 
 <h2>Monetization model</h2>
-Given the site's scalability, minimally intrusive ads, shown only outside the games, can generate a
-profit. The site also serves as a portfolio asset and a proof of concept for building software from
-plain-text prompts.
+Given the site's scalability, unintrusive ads can generate a profit. The site also serves as a
+portfolio asset and a proof of concept for building software from plain-text
+prompts.
 
 <h2>Learned everywhere</h2>
 What children are expected to memorize depends mostly on where they grow up. In different 

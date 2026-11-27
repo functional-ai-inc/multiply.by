@@ -1,6 +1,6 @@
 # Privacy policy
 
-For the Multiply.by app for Android (`by.multiply.app`).
+For the Multiply.by app for Android (`multiply.by.app`).
 The website https://multiply.by has its own policy: https://multiply.by/privacy/website/.
 Effective 21 November 2026.
 

@@ -1,4 +1,4 @@
-Google Play store listing for by.multiply.app (paste each part into the Play Console:
+Google Play store listing for multiply.by.app (paste each part into the Play Console:
 Grow > Store presence > Main store listing). Written by hand; limits in brackets.
 
 == App name [30 characters] ==
@@ -15,18 +15,18 @@ only when it is answered right: a missed one comes back near the end, until ever
 learned. After the game, a short practice round can bring back the facts that were hardest.
 
 Game Board:
-- Monster: feed a hungry monster and help it grow.
 - Robot: build a robot, part by part.
-- Trains: travel from steam engines to maglev trains.
 - Dinosaurs: meet a new dinosaur as you learn.
+- Monster: feed a hungry monster and help it grow.
+- Trains: travel from steam engines to maglev trains.
 - Planes: the history of flight.
-- Space: a journey through the solar system.
-- Chinese: build the Great Wall of China.
-- Block Craft: mine and build with blocks.
-- Evolution: life on Earth, from the first cells on.
 - Buildings: from the Pyramids to the Shanghai Tower.
+- Space: a journey through the solar system.
+- Evolution: life on Earth, from the first cells on.
+- Block Craft: mine and build with blocks.
+- Chinese: build the Great Wall of China.
+- Dot Array: see each fact as rows of dots, split into easy parts, and fill the jars.
 - The base game: the plain multiplication table, no extras.
-There is a division game too.
 
 Tables 2 to 9, both ways (3 x 4 and 4 x 3), up to 12 or up to 20: choose under RULES.
 
@@ -39,9 +39,9 @@ For parents and teachers:
 
 Built by AI, open to everyone:
 Every game was built by an AI model from a prompt of a few lines. The prompt is one tap away,
-under SOURCE in every game. On the website, multiply.by, you can see every game's prompt and
-build your own game about whatever your child loves, with ChatGPT, Claude or Gemini. No
-programming needed.
+under SOURCE in every game. On the Build It page, right in the app, you can see every game's
+prompt and build your own game about whatever your child loves, with ChatGPT, Claude or Gemini.
+No programming needed.
 
 Multiply.by is open source (MIT License) by Functional AI Inc.
 

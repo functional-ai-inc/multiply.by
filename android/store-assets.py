@@ -36,25 +36,39 @@ args = ap.parse_args()
 SITE = args.site.rstrip("/")
 ONLY = set(args.only.split(","))
 
-# Phone screenshots, in store order: (file name, page, right answers before the picture).
-# Build It and About are on the website only: in the app they open in the browser, after the
-# parental gate. Play wants screenshots of the app itself, so keep them last (or drop them).
+# Phone screenshots, in store order: (file name, page, right answers before the picture[, CSS
+# selector scrolled to the top of the picture, 12px below the screen's edge[, extra CSS for the
+# picture only[, CSS selector whose bottom, plus 12px, ends the picture[, CSS width instead of the
+# phone's: a wider page drawn into the same picture, so more fits]]]]). Parents choose the
+# app, and the About page's lists persuade them most, so About comes first: its card from
+# "About Multiply.by" (the three lists), then the rest of the card from "Make your own game"
+# (skipping GET THE APP: a Google Play badge has no place in the Play listing itself).
 PHONE = [
-    ("01-monster", "/monster/", 6),
-    ("02-robot", "/robot/", 10),
-    ("03-trains", "/trains/", 5),
-    ("04-dino", "/dino/", 5),
-    ("05-blocks", "/blocks/", 6),
+    # The three lists alone (the card ends after Transparency), the link in them in plain text.
+    # (Selectors by the page's structure and section ids: class names change when it is rebuilt.)
+    ("01-about", "/about/", 0, "main",
+     "main > .sections ~ * { display: none !important; }"
+     " .sections a { color: inherit !important; font-weight: inherit !important; }", "main"),
+    # Then "Make your own game" and "How the site was built" (the card ends after them).
+    ("02-about-more", "/about/", 0, ".more",
+     "#portability, #portability ~ * { display: none !important; }", "main"),
+    # From "Build it yourself", drawn smaller so the first game's whole prompt fits.
+    ("03-build-it", "/build-it/", 0, "main h2", None, None, 540),
+    # The rest of the About card, Portability and Scalability (the site info and footer below
+    # the card are left out: the Google Play badge again, and contact details).
+    ("04-about-portability", "/about/", 0, "#portability",
+     "#monetization-model, #monetization-model ~ * { display: none !important; }", "main"),
+    # Learned everywhere alone: Monetization model (ads on the website, "portfolio asset") is not
+    # for parents in the listing of an app that has no ads.
+    ("05-about-learned", "/about/", 0, "#learned-everywhere", None, "main"),
     ("06-games", "/games/", 0),
-    ("07-build-it", "/build-it/", 0),
-    ("08-about", "/about/", 0),
 ]
 # Tablet screenshots (optional on Play, needed to be featured on tablets): the app is held
 # upright, so these are portrait too. (folder, CSS width x height, pixel ratio): 7-inch 1200 x
 # 1920, 10-inch 1600 x 2560.
 TABLETS = [("tablet-7", 600, 960, 2), ("tablet-10", 800, 1280, 2)]
-TABLET_PAGES = [("01-monster", "/monster/", 6), ("02-trains", "/trains/", 5),
-                ("03-robot", "/robot/", 10), ("04-games", "/games/", 0)]
+# The same pictures as the phone's (About's sections, Build It, /games/), at tablet size.
+TABLET_PAGES = PHONE
 VIDEO_PAGE = "/robot/"
 VIDEO_SLOW = [False, False, True, False, False, True, False, False, True, False]  # True: wrong
 VIDEO_FIRST = 1.4   # the speed of those first moves (with the game's sounds)
@@ -154,8 +168,11 @@ def shots(browser, folder, pages, w, h, ratio):
     folder = os.path.join(OUT, folder)
     shutil.rmtree(folder, ignore_errors=True)
     os.makedirs(folder)
-    for name, page, moves in pages:
-        ctx = browser.new_context(viewport={"width": w, "height": h}, device_scale_factor=ratio,
+    for name, page, moves, *extra in pages:
+        top, css, end, cw = (extra + [None] * 4)[:4]
+        cw = cw if cw and cw > w else None   # never narrower than the device (tablets)
+        sw, sh, sr = (cw, round(cw * h / w), ratio * w / cw) if cw else (w, h, ratio)
+        ctx = browser.new_context(viewport={"width": sw, "height": sh}, device_scale_factor=sr,
                                   has_touch=True, is_mobile=True)
         pg = ctx.new_page()
         pg.goto(SITE + page, wait_until="networkidle")
@@ -166,15 +183,35 @@ def shots(browser, folder, pages, w, h, ratio):
                 break
             pg.wait_for_timeout(700)
         pg.wait_for_timeout(1500 if moves else 300)   # let the reward animation settle
+        if css:
+            pg.add_style_tag(content=css)
+        y0 = 0
+        if top:
+            # Scroll it to 12px below the screen's top; on a page too short to scroll that far
+            # (About on a tablet), the picture starts there instead (y0).
+            y0 = pg.evaluate("""sel => {
+                const el = document.querySelector(sel);
+                window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 12);
+                const y = el.getBoundingClientRect().top - 12;
+                return y >= 1 ? Math.round(y) : 0;   // ignore a fraction of a pixel
+            }""", top)
+            pg.wait_for_timeout(300)
         path = os.path.join(folder, name + ".png")
-        pg.screenshot(path=path)
+        bottom = sh
+        if end:
+            bottom = min(sh, pg.evaluate(
+                "s => document.querySelector(s).getBoundingClientRect().bottom", end) + 12)
+        clip = {"x": 0, "y": y0, "width": sw, "height": bottom - y0} if (y0 or end) else None
+        pg.screenshot(path=path, clip=clip)
         ctx.close()
         flat(path)
         print(f"{os.path.basename(folder)}/{name}.png", Image.open(path).size)
 
 
 def phone(browser):
-    shots(browser, "phone", PHONE, 360, 640, 3)
+    # 405 x 720 CSS pixels at 8/3: exactly 1080 x 1920, and wide enough for all three About
+    # lists in one picture.
+    shots(browser, "phone", PHONE, 405, 720, 8 / 3)
 
 
 def tablet(browser):

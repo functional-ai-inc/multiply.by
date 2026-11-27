@@ -19,7 +19,7 @@ SITE INFO (a three-column block at the bottom of the page, directly above the co
 LEFT: the Android app, nothing else. Title "Get the app". Text, one line, exactly:
 "The games on Android: free, no ads, no in-app purchases, and it works offline."
 Then the Google Play badge, 10px under the text, left-aligned, and a trademark line under it:
-<a class="play-badge" href="https://play.google.com/store/apps/details?id=by.multiply.app" target="_blank" rel="noreferrer"><img src="/google-play.png" alt="Get it on Google Play" width="161" height="48"></a>
+<a class="play-badge" href="https://play.google.com/store/apps/details?id=multiply.by.app" target="_blank" rel="noreferrer"><img src="/google-play.png" alt="Get it on Google Play" width="161" height="48"></a>
 <p class="play-tm">Google Play and the Google Play logo are trademarks of Google LLC.</p>
 - The text: margin 0.
 - The badge is Google's official "Get it on Google Play" badge (`/google-play.png`, 564 x 168),

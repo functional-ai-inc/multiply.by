@@ -67,7 +67,7 @@ Then:
 
 A debug build is signed with your own computer's key, so it can't be installed over the Play
 Store version: uninstall that first. To publish **your own version**, give it its own package
-name (`applicationId` in `app/build.gradle.kts`; `by.multiply.app` is taken) and app name
+name (`applicationId` in `app/build.gradle.kts`; `multiply.by.app` is taken) and app name
 (`app/src/main/res/values/strings.xml`), sign it with your own key, and keep the MIT license's
 copyright notice.
 
@@ -303,8 +303,8 @@ https://multiply.by/android/assets/ so it can be looked at or downloaded from an
 | `play-console.txt` | The answers to the Play Console's forms, page by page: app details, store settings, privacy policy, app access, ads, content rating, target audience (6-8 and 9-12: the Families policy), data safety ("no data collected"), release notes | |
 | `icon-512.png` | The store icon, the site's `icon-512.png` (the "2x2" of `icon.svg`) | 512 x 512 PNG, square: Play rounds the corners |
 | `feature-graphic.png` | Logo, name, one line and six game pictures (the front page's thumbnails) | 1024 x 500, no transparency |
-| `phone/NN-PAGE.png` | Phone screenshots in store order: Monster, Robot, Train, Dinosaurs, Block Craft (each a few questions in), the /games/ chooser, Build It, About | 2 to 8, 9:16, 1080 x 1920 |
-| `tablet-7/`, `tablet-10/` | Tablet screenshots, upright like the app: Monster, Train, Robot, /games/ | optional; 1200 x 1920 and 1600 x 2560 |
+| `phone/NN-PAGE.png` | Phone screenshots in store order, About first (parents choose the app, and its lists persuade them most): 1. the card from "About Multiply.by" with its three lists (the card ends there, 1080 x 1813; its link drawn as plain text); 2. "Make your own game" and "How the site was built" (the card ends there, 1080 x 1480); 3. Build It (from "Build it yourself", no title band or menu, drawn at a 540 px wide page so the first game's whole prompt fits); 4. Portability and Scalability; 5. Learned everywhere alone (Monetization model, about the website's ads, is left out of an app listing with no ads, as are the site info and footer); 6. the /games/ chooser | 2 to 8, 9:16, 1080 x 1920 |
+| `tablet-7/`, `tablet-10/` | Tablet screenshots, upright like the app: the same six as the phone's (`TABLET_PAGES = PHONE`), at tablet size; About's pages are too short to scroll on a tablet, so its pictures start at the card and are shorter than 9:16 | optional; 1200 x 1920 and 1600 x 2560 |
 | `robot.mp4` | The Robot game played from the start to "You Won!" on a phone: the first 10 moves (7 right, 3 wrong) at 1.4x speed with the game's sounds and a mouse pointer, the rest at 12x, silent, then 3 s on "You Won!". About 28 s, 1080 x 1920, about 2 MB | Play takes a YouTube link only |
 
 **How to make them.** `listing.txt` and `play-console.txt` are written by hand and kept in git;
@@ -318,8 +318,8 @@ the rest is generated
    of the site.
 
 The script plays the games the way `play-test.py` does: it reads the question, taps the right
-answer (or, in the video, sometimes a wrong one) and waits for the next question. Screenshots
-are taken at 360 x 640 with 3x pixels (a phone), in a fresh browser (no saved progress), and
+answer (or, in the video, sometimes a wrong one) and waits for the next question. Phone screenshots
+are taken at 405 x 720 with 8/3x pixels (a phone), in a fresh browser (no saved progress), and
 saved without transparency. To change what is shown, edit the `PHONE` list (file name, page,
 questions answered first), `TABLETS` and `TABLET_PAGES`, `VIDEO_PAGE`, `VIDEO_SLOW` (the first moves, True for a wrong
 one), `VIDEO_FIRST` (their speed), `VIDEO_FAST`, `VIDEO_END` or `FEATURE_GAMES` at the top of the script.
@@ -338,7 +338,7 @@ and goes under the first part.
 
 ## Links to the app on the website (written 2026-11-20, live since 2026-11-21)
 
-The specs already link to the Play listing, https://play.google.com/store/apps/details?id=by.multiply.app,
+The specs already link to the Play listing, https://play.google.com/store/apps/details?id=multiply.by.app,
 which is a 404 until the app is published:
 
 - `about/about.txt`, GET THE APP: a line, Google's official "Get it on Google Play" badge
