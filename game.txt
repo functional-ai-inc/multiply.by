@@ -79,8 +79,8 @@ IMPORTANT: Do not add any notes at the top or bottom of the HTML file.
   (milliseconds of playing time banked so far; see TIMER), timerStart (Date.now() when the running
   stretch of the timer began, or null when the timer is not running), timerActive (boolean: the
   player has answered or touched the game since the page loaded), newBest (boolean: this game just
-  set a new best score; see BEST SCORE), questionStartMs (the playing time, `currentPlayMs()`, when
-  the question on screen was dealt), answerLog (the time each answer took; see ANSWER TIMES),
+  set a new best score; see BEST SCORE), answerLog (whether each answer was right; see ANSWER
+  LOG),
   practice (boolean: a PRACTICE HARD ONES round is being played), practiceIds (the ids of that
   round's facts, or an empty list). Event
   handlers read and change
@@ -199,8 +199,8 @@ IMPORTANT: Do not add any notes at the top or bottom of the HTML file.
   `saveProgress()` and `update()`, then `playSound('win')`. Otherwise set
   `state.question = state.deck[0]` (it stays in the deck until it is answered right), set
   `state.choices` to a Fisher-Yates shuffle of the question's answer plus
-  `wrongAnswers(state.question)`, so the right answer lands in a random one of the four places, set
-  `state.questionStartMs = currentPlayMs()`, then call `renderQuestion()` and `update()`.
+  `wrongAnswers(state.question)`, so the right answer lands in a random one of the four places,
+  then call `renderQuestion()` and `update()`.
 
 - WRONG ANSWERS (CRITICAL): `wrongAnswers(fact)` returns exactly three answer strings, all different
   from each other and from `fact.answer`, that are believable mistakes ("near misses"), never random
@@ -273,31 +273,29 @@ IMPORTANT: Do not add any notes at the top or bottom of the HTML file.
   - Format (`formatTime(ms)`): whole seconds, rounded down. Under one hour M:SS (e.g. 0:47, 4:32,
     12:05); from one hour H:MM:SS (e.g. 1:02:09).
 
-- ANSWER TIMES: the game records how long each answer took, so PRACTICE HARD ONES can bring back
-  the questions the player got wrong or was unsure of (slow, even when right). Nothing on screen
-  shows the times.
+- ANSWER LOG: the game records whether each answer was right, so PRACTICE HARD ONES can bring
+  back the questions the player got wrong. Nothing on screen shows the log. It records no times.
   - `state.answerLog` is an object keyed by fact id; each value is a list of that fact's answers in
-    order, each `{ ms, right }`: ms is the whole milliseconds of PLAYING time from the question
-    being dealt to the tap, `Math.round(currentPlayMs() - state.questionStartMs)`, and right is true
-    or false. Example:
-    `{ "17": [{ "ms": 2350, "right": true }], "4": [{ "ms": 5120, "right": false }, { "ms": 1890, "right": true }] }`.
-  - Record it in `handleAnswer`, before the score changes, for every answer, right or wrong. Skip
-    the record (not the answer) when `state.timerStart` is null at that moment: the clock has not
-    started yet, so there is no time to measure (the tap that starts the clock). Also skip it while
+    order, each `{ right }` with right true or false. Example:
+    `{ "17": [{ "right": true }], "4": [{ "right": false }, { "right": true }] }`. (Progress saved
+    by an older version may also have an `ms` field in each entry: ignore it.)
+  - Record it in `handleAnswer`, before the score changes, for every answer, right or wrong, the
+    first answer of the game included (the tap that starts the clock). Skip the record while
     `state.practice` is true: the log keeps the game's answers only.
-  - Because it uses playing time, time while the page is hidden is not counted.
   - It is part of the saved progress, so it survives a reload; Play Again and RESET clear it with
     the rest of the progress.
 
 - PRACTICE HARD ONES (a short practice of the player's weakest facts, from the "You Won!" screen):
-  - `weakFacts()` returns the practice set, from `state.answerLog`, as fact OBJECTS from FACTS:
-    1. Every fact with at least one wrong answer, most wrong answers first (ties: the slowest
-       answer first). All of them are included, even if there are more than 10.
-    2. Then, until there are 10 facts, the other facts in the log, slowest first, ranked by their
-       longest `ms`.
-    Facts with no entry in the log are never chosen. If the log is empty, the list is empty.
-  - The button "Practice hard ones" is shown on the "You Won!" screen only when `weakFacts()` is
-    not empty (also for a finished game restored at start-up).
+  - `weakFacts()` returns the practice set as fact OBJECTS from FACTS:
+    1. The player's actual mistakes: every fact in `state.answerLog` with at least one wrong
+       answer (`right` false), most wrong answers first (ties: the fact's order in FACTS). All of
+       them, however many, and nothing else: no right-only facts, no slow ones.
+    2. If there are none (a game with no mistakes, or an empty log), the four hardest facts, in
+       this order: 7 x 9, 7 x 8, 8 x 9, 6 x 9 (ids 37, 35, 40 and 34, the facts with those ids in
+       FACTS; they are in every set).
+    So the list is never empty.
+  - The button "Practice hard ones" is always shown on the "You Won!" screen (also for a finished
+    game restored at start-up).
   - Tapping it starts a practice round in place, without loading a page: cancel the pending
     feedback timeout, set `state.practice = true`, `state.practiceIds` to the ids of `weakFacts()`,
     `state.deck` to a Fisher-Yates shuffle of those facts, and score, streak, mistakes, playMs to 0,
@@ -313,7 +311,8 @@ IMPORTANT: Do not add any notes at the top or bottom of the HTML file.
     set `state.question = null` and `state.isWon = true`, call `update()`, then `playSound('win')`.
     The "You Won!" overlay then shows the practice: the heading "Practice done!" instead of "You
     Won!", the lines "Your time: T" and "Mistakes: M" of the practice, and only the buttons Play
-    Again and "Practice hard ones" (no score, no best score, no Share, no next-level line).
+    Again and "Practice hard ones", then the games grid (no score, no best score, no
+    next-level line).
     Play Again works as always (a new full game); "Practice hard ones" practises the same set
     again, in a new order.
 
@@ -498,7 +497,7 @@ IMPORTANT: Do not add any notes at the top or bottom of the HTML file.
 -------------
 - `handleAnswer(index)`: ignore the call if the How to Play panel is open (`state.showInfo`), the
   game is won, there is no question, or feedback is being shown (`state.feedback !== null`).
-  Otherwise set `state.picked = index` and record the answer's time (see ANSWER TIMES).
+  Otherwise set `state.picked = index` and record the answer (see ANSWER LOG).
 
 - ANSWER VALIDATION: the answer is right if `state.choices[index] === state.question.answer` (the
   answers are compared as strings; the four choices are always different, so exactly one is right).
@@ -708,14 +707,13 @@ they are described in SITE LAYOUT, directly after this section 8. On this page:
   footer its last.
 
 - MENU on this page: the site's menu (MENU BAR in SITE LAYOUT) with this game's own items: MUTE
-  (the speaker icon) at the left end of the bar, always visible; RULES (INFO) and RESET in the
-  MENU PANEL after HOME, GAMES and ABOUT; then the GAMES icon and the outlined BUILD IT and
-  SOURCE buttons. On a phone the bar shows MUTE, GAMES, BUILD IT, SOURCE and the menu button; on
-  wider screens one row: MUTE, HOME, ABOUT, RULES, RESET, GAMES, BUILD IT, SOURCE. No item is the
-  current page. MUTE, RULES and RESET have the `menu-item` class. There is no DEMO item. The score is NOT in this bar; it is in
-  the INDICATORS next to the question.
-- The menu bar is outside #game-area: opening, closing or using the menu never starts the timer.
-  RULES and RESET, chosen in the panel, close the panel and then do their job.
+  (the speaker icon) and RULES (INFO, the question-mark icon) at the left end of the bar; then
+  GAMES (the four squares and the word GAMES) and the outlined BUILD IT and SOURCE buttons at the
+  right end. No ABOUT on a game page. One row on every screen, no menu button. RESET is in the
+  How to Play panel (RESET below), not in the bar.
+  No item is the current page. MUTE and RULES have the `menu-item` class. There is no DEMO item.
+  The score is NOT in this bar; it is in the INDICATORS next to the question.
+- The menu bar is outside #game-area: using the menu never starts the timer.
 
 - SOURCE on this page: <a href="https://multiply.by/base/prompt/">
 
@@ -726,15 +724,12 @@ they are described in SITE LAYOUT, directly after this section 8. On this page:
   - Shown in every mode, during play and behind the "You Won!" overlay. It is outside #game-area,
     so tapping it never starts the timer.
   - It shares `SITE_LINK` (https://multiply.by/build-it/) with the site's three-line message,
-    exactly as on every page (SHARE THE SITE): never the current set or this page's address. The
-    current set's link is shared only by "Share my results" (SHARE MY RESULTS).
+    exactly as on every page (SHARE THE SITE): never the current set or this page's address.
   - Answers count on `pointerdown` and the answer buttons are briefly `disabled` after each answer,
     so the share menu's CLOSING ON A PRESS OUTSIDE matters here: a press on an answer while the
     menu is open ONLY closes the menu: it does not answer and does not start the timer.
   - Escape: the same `keydown` listener on window as the How to Play panel; Escape closes the share
     menu first if it is open. While the menu is open the answer keys 1 to 4 still work.
-  - "Share my results" on the "You Won!" screen is separate and unchanged: it still sends only the
-    link.
 
 The game's own menu items:
 
@@ -767,8 +762,13 @@ stroke-width="2", stroke-linecap="round", stroke-linejoin="round", fill="none":
       phones.
       The icon always shows `isMutedNow()`.
 
-INFO: A <button class="menu-item"> with the exact text "RULES", in the MENU PANEL. Tapping it sets `state.showInfo = true` and calls
-`update()`.
+INFO: A <button type="button" class="menu-item" id="rules-btn" aria-label="Rules" title="Rules">
+in the bar, right after MUTE, showing an ICON, not text: a question mark in a circle, an inline SVG
+20px x 20px, viewBox "0 0 24 24", aria-hidden="true", fill="none", stroke="currentColor",
+stroke-width="2", stroke-linecap="round", stroke-linejoin="round": <circle cx="12" cy="12"
+r="10"/>, <path d="M9.1 9 A3 3 0 0 1 14.9 10 C14.9 12 12 12.5 12 14.5"/>, <path d="M12 17.5
+V17.6"/>. Color #4b5563, like MUTE; on wider screens 26px x 26px, like MUTE. Tapping it sets
+`state.showInfo = true` and calls `update()`.
     - How to Play panel:
     - A heading "How to Play", then a bulleted list (<ul>/<li>). Keep it SHORT: the whole panel must
       fit on a phone screen without scrolling. Start with exactly these four points, in this order,
@@ -785,7 +785,7 @@ INFO: A <button class="menu-item"> with the exact text "RULES", in the MENU PANE
       Do not add icons, examples or any other explanation to these points.
 
     - After these four points, one more point, which is the MODE CHOICE, exactly:
-      <li class="mode-row"><strong>Tables:</strong> <span class="mode-choice" role="radiogroup" aria-label="Tables"><button type="button" role="radio" data-mode="9">2–9</button><button type="button" role="radio" data-mode="both">Both ways</button><button type="button" role="radio" data-mode="12">Up to 12</button><button type="button" role="radio" data-mode="20">Up to 20</button></span><span class="mode-note">Both ways: also 4 x 3, not just 3 x 4.</span></li>
+      <li class="mode-row"><strong>Tables:</strong> <span class="mode-choice" role="radiogroup" aria-label="Tables"><button type="button" role="radio" data-mode="9">2–9</button><button type="button" role="radio" data-mode="both">Both ways</button><button type="button" role="radio" data-mode="12">Up to 12</button><button type="button" role="radio" data-mode="20">Up to 20</button></span><span class="mode-note">2–9 puts the smaller number first (3 x 4). Both ways adds 4 x 3.</span></li>
       `update()` sets `aria-checked="true"` on the button whose data-mode equals String(MODE) and
       "false" on the other three. One `click` listener on .mode-choice (event delegation with
       `e.target.closest('[data-mode]')`) calls
@@ -800,13 +800,15 @@ INFO: A <button class="menu-item"> with the exact text "RULES", in the MENU PANE
       2nd, 3rd and 4th. The checked button (`[aria-checked="true"]`): background #2563eb, white
       text. The control never wraps inside itself (all four buttons on one line); it may move to
       its own line under "Tables:". It fits on a 360px-wide phone.
-      The .mode-note explains Both ways: `flex-basis: 100%; font-size: 0.85rem; color: #6b7280;`,
-      on its own line under the control (one line on a 360px phone), shown in every set. The whole panel, with the note,
-      still fits a 360 x 640 phone without scrolling.
+      The .mode-note explains 2–9 and Both ways: `flex-basis: 100%; font-size: 0.85rem; color:
+      #6b7280;`, on its own line under the control (it may wrap to two lines on a 360px phone),
+      shown in every set. The whole panel, with the note,
+      Close and "Start this set again", still fits a 360 x 640 phone without scrolling.
 
     - Last point in the list, worded exactly: "Tap SOURCE to see how this game was
       built."
-    - Below the list, a "Close" button (full width, background #2563eb, white bold text, rounded).
+    - Below the list, a "Close" button (full width, background #2563eb, white bold text, rounded),
+      and under it, 0.75rem lower, the RESET button (RESET below).
 
     - Look: a dark see-through backdrop (`position: fixed; inset: 0;` background rgba(0,0,0,0.5),
       z-index 50, centering the panel, padding 1rem) and a white panel (rounded 0.5rem, padding
@@ -823,17 +825,21 @@ INFO: A <button class="menu-item"> with the exact text "RULES", in the MENU PANE
 - MUTE in the bar: the plain speaker icon, color #4b5563; on wider screens (see the
   menu bar's WIDER SCREENS) 26px x 26px (set its width and height in CSS).
 
-RESET: A <button class="menu-item"> with the exact text "RESET", in the MENU PANEL, to start the current set again from scratch. ONE
-tap resets at once, with no confirmation (no "Sure?", no second tap, no `confirm()`), with exactly
+RESET: A <button type="button" id="reset-btn"> with the exact text "Start this set again", in the
+How to Play panel under "Close", to start the current set again from scratch. Look: full width, a
+1.5px #dc2626 border, white background, text #b91c1c, bold, 0.85rem, rounded 0.375rem, padding
+0.4rem: plainly a different button from Close, so a child closing the panel does not hit it. Its
+`click` does the reset (the panel's own closing click on the backdrop changes nothing, the page
+reloads). ONE tap resets at once, with no confirmation (no "Sure?", no second tap, no `confirm()`), with exactly
 the same steps as Play Again (`resetting = true`, `safeStorage.removeItem(STORAGE_KEY)`,
 `window.location.reload()`). It clears only the current set's progress (score, learned facts,
 mistakes, time) and keeps the best score (BEST_KEY) and the sound setting (MUTE_KEY).
 
 "YOU WON!" OVERLAY:
-- Covers the app container (`position: absolute; inset: 0;`, z-index 40, background
-  rgba(255,255,255,0.95)) EXCEPT the title band and the menu bar: those two stay on top of it,
+- Covers the app container (`position: absolute; inset: 0;`, z-index 40, an opaque white
+  background: nothing of the game shows through it) EXCEPT the title band and the menu bar: those two stay on top of it,
   sharp and working (`position: relative; z-index: 41`), so a player who has won can still go to
-  GAMES, BUILD IT, SOURCE or the menu, mute, or tap the logo or title band for the other games. The overlay's
+  GAMES, BUILD IT, SOURCE or RULES, mute, or tap the logo or title band for the other games. The overlay's
   content is never hidden under them: it has a top padding as tall as the title band and menu bar
   together (set from their heights when the overlay is shown and on resize), and it scrolls inside
   itself if it does not fit. Content centered in a column: "You Won!" (2.25rem, bold, #16a34a), "Final
@@ -842,90 +848,33 @@ mistakes, time) and keeps the best score (BEST_KEY) and the sound setting (MUTE_
   B" (1rem, #6b7280, B is the saved best score) otherwise, then "Mistakes: M" (1rem, #6b7280), then
   the buttons.
 - BUTTONS: one <div class="win-buttons"> holds the "Play Again" button (padding 1rem 2rem,
-  background #2563eb, white bold 1.25rem text, rounded, shadow) and, below it, a <button> "Share my
-  results"
-  (padding 0.75rem 1.5rem, white background, a 2px solid #2563eb border, #2563eb bold 1rem text,
-  rounded; see SHARE MY RESULTS), shown ONLY on phones and tablets that can share pictures (see
-  SHARE MY RESULTS; on a desktop computer the button is hidden). Between them, a <button> "Practice
-  hard ones" with the same look as "Share my results" (see PRACTICE HARD ONES; hidden
-  when there is nothing to practise). The container is `display: flex; flex-direction: column;
+  background #2563eb, white bold 1.25rem text, rounded, shadow) and, below it, a <button> "Practice
+  hard ones" (padding 0.75rem 1.5rem, white background, a 2px solid #2563eb border, #2563eb bold
+  1rem text, rounded; see PRACTICE HARD ONES). There is
+  no share button on the "You Won!" screen. The container is `display: flex; flex-direction: column;
   align-items: center; gap: 0.75rem;` and the buttons themselves have NO margins: the gap alone
   spaces them. pwa.js may insert an "Install for offline play" button into this same container,
   right after Play Again; the gap then separates all the buttons evenly. Below that, with a 1.5rem
   gap, one NEXT-LEVEL line (1rem, #374151), depending on MODE:
-    - 9: <div>Ready for more? Try <a href="?both">both ways</a>: also 4 x 3, not just 3 x 4.</div>
-      (the explanation is part of the line, always shown, the same words as the Both ways note in
-      How to Play; only "both ways" is the link)
+    - 9: <div>So far the smaller number always came first (3 x 4). Ready for more? Try
+      <a href="?both">both ways</a>: 4 x 3 too.</div>
+      (exactly these words; the explanation is part of the line, always shown, and the line may
+      wrap; only "both ways" is the link)
     - both, 12 and 20: no line. Up to 12 and up to 20 are NOT offered here: few players need them,
       and they are in the Tables choice of How to Play and on the About page.
   Clicking the link calls `preventDefault()` and then `switchMode('both')`, with no page load.
   The link has NO target attribute and is styled like the footer links (no underline, bold, dark
   blue #1e40af).
-
-SHARE MY RESULTS (the "Share my results" button on the "You Won!" screen):
-- RESULTS CARD (a picture): `drawResultsCard()` draws the results on a 1080 x 1080 <canvas> (made
-  with `document.createElement('canvas')`, never added to the page) and turns it into a PNG file:
-  `canvas.toBlob(blob => { resultsFile = new File([blob], 'multiply-by-results.png', { type: 'image/png' }); }, 'image/png')`.
-  Call it once each time the "You Won!" screen appears (when a game is won, and when a finished game
-  is restored at start-up), so the picture is READY before the tap: phones (iPhone above all) allow
-  sharing only straight after a tap, and drawing it during the tap would be too late. Keep the file
-  in a module-level variable `resultsFile` (null until ready); `switchMode` and Play Again set it
-  back to null.
-- Draw EVERY piece of text on the card with exactly this helper, which sets the font, color and
-  alignment each time (so no text inherits another text's size):
-  `function drawText(ctx, text, x, y, size, color, bold, maxWidth) { const w = maxWidth || 1000; let s = size; do { ctx.font = (bold ? 'bold ' : '') + s + 'px system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif'; s -= 2; } while (ctx.measureText(text).width > w && s > 10); ctx.fillStyle = color; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.fillText(text, x, y); }`
-  It shrinks the font until the text fits maxWidth (1000px when not given), so long values such as
-  a time of 1:02:05 never run into their neighbours. Never call `ctx.fillText` or set `ctx.font`
-  anywhere else.
-- The card's look (all text centered horizontally on its x; draw with fillRect and drawText only, no
-  images):
-    - Background #f9fafb. A blue band (#2563eb) across the top, 220px high, with "multiply.by" in
-      white bold 96px, and under it in the band "Learn multiplication table" in white 44px.
-    - Below the band: the set, "2 to 9", "Both ways", "Up to 12" or "Up to 20", in #374151 bold 56px.
-    - Three results in one row (centers at x = 200, 540 and 880): "TIME" T, "SCORE" X, "MISTAKES" M.
-      Each label is `drawText(ctx, label, x, 470, 40, '#6b7280', true)` and each number
-      `drawText(ctx, value, x, 590, 110, color, true, 320)` with color #111827 (Mistakes #dc2626
-      when M is more than 0). All three labels are the same small size; only the numbers are large.
-      T is `formatTime(state.playMs)`, X the final score, M the number of mistakes.
-    - Under the row, "New best score!" in #16a34a bold 52px when `state.newBest` is true, otherwise
-      "Best score: B" in #6b7280 44px.
-    - The date the game was won, written with
-      `new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })`,
-      in #6b7280 40px.
-    - At the bottom, "Play at multiply.by" in #1e40af bold 48px.
-    - Nothing may overlap or run off the card; leave at least 60px of space at the bottom.
-- Every share also passes the title 'multiply.by results' (some apps use it, for example as an email
-  subject; others ignore it).
-- The text sent with the picture is ONLY the link, returned by `shareText()`: THIS PAGE'S OWN
-  ADDRESS for the current set, so a friend who opens it plays the same game and set:
-  `location.origin + location.pathname`, followed by nothing (2 to 9), '?both' (both ways), '?12'
-  (up to 12) or '?20' (up to 20). Here that is https://multiply.by/base/,
-  https://multiply.by/base/?both, https://multiply.by/base/?12 or https://multiply.by/base/?20.
-  When the page is not served over the web (`location.protocol` is neither 'http:' nor 'https:',
-  for example a downloaded file opened from the disk), use 'https://multiply.by/' in place of
-  `location.origin + location.pathname`. NEVER write a game's address into the page (a game does
-  not know where it will be published). No sentence, no results: the picture shows them.
-- WHERE IT SHOWS: only on touch devices that can share files. At start-up set
-  `const CAN_SHARE = matchMedia('(pointer: coarse)').matches && !!navigator.canShare;`
-  and hide the button (`display: none`) when CAN_SHARE is false, for example on a desktop computer.
-- On tap, in the click handler itself, try these in order and stop at the first that works:
-  1. SHARE THE PICTURE: if `resultsFile` is ready and `navigator.canShare({ files: [resultsFile] })`
-     is true, call
-     `await navigator.share({ files: [resultsFile], title: 'multiply.by results', text: shareText() });`
-     inside try/catch. This share call MUST be the first `await` in the click handler (nothing is
-     awaited before it, or phones refuse to share), and it MUST itself be awaited, so the catch sees
-     its rejection (the text is the link; do NOT also pass `url`, which some apps would show twice).
-     If it rejects with an AbortError (the player closed the share menu), stop and do nothing. Any
-     other error, or no picture: go on to step 2.
-  2. SHARE THE LINK: call
-     `await navigator.share({ title: 'multiply.by results', text: shareText() })` inside try/catch;
-     AbortError: stop; any other error: go on to step 3.
-  3. COPY THE LINK: try `navigator.clipboard.writeText(shareText())`; if that fails, the button
-     reads "Could not share" for 2 seconds; when it worked, "Link copied" for 2 seconds. Then it
-     reads "Share my results" again.
-- Wrap every step (and `drawResultsCard`) in try/catch: sharing MUST never throw an error or break
-  the game. If the canvas cannot be drawn, `resultsFile` stays null and steps 2 and 3 still work.
-- Sharing changes nothing in `state`, saves nothing and plays no sound.
+- THE GAMES GRID: at the END of the overlay (after the next-level line; on "Practice done!" after
+  its buttons), with a 1.5rem gap, the games grid exactly as "grid: the games grid of Multiply.by"
+  describes it "On the 'You Won!' screen of a game": "Play another game", all twelve of the site's
+  games with thumbnails, this game's tile marked "Play again" (a tap starts a new game exactly like
+  Play Again), in the order of ORDERS, no "More games" link. Its two files:
+Use https://multiply.by/grid/prompt/
+Use https://multiply.by/orders.txt
+  The overlay then scrolls inside itself (`overflow-y: auto`, `overscroll-behavior: contain`) and
+  opens scrolled to its top; the page behind it never scrolls. The thumbnails are the only files
+  the game loads, and only when the overlay opens (`loading="lazy"`).
 
 #include layout.txt
 
@@ -1062,9 +1011,7 @@ browser: deliver the file as soon as it is written. The site tests every page it
   say, 126, 146 and 156).
 
 - Title band and share icon: as in CHECKS FOR THE SITE LAYOUT: the share icon shares
-  https://multiply.by/build-it/ in every set. "Share my results" shares this page's own address
-  for the current set (here https://multiply.by/base/, ?both, ?12 or ?20). Neither the share
-  icon nor the title link starts the timer.
+  https://multiply.by/build-it/ in every set. Neither the share icon nor the title link starts the timer.
 
 - Animations after a right answer: the tapped answer pops (grows a little and settles) while it is
   green, a green "+points" floats up from the Score for about 1.5 seconds, and the next question
@@ -1087,7 +1034,7 @@ browser: deliver the file as soon as it is written. The site tests every page it
   does not change, and the question is asked again near the end of the game.
 
 - Winning: when every fact has been answered right, "You Won!" shows the final score, "Your time:
-  M:SS", "New best score!" or "Best score: B", the mistakes and a "Share my results" button, and
+  M:SS", "New best score!" or "Best score: B", the mistakes, and
   plays the win sound. The timer starts at the first touch of the game (not at page load), does not
   run while the page is hidden, and continues across reloads. After Play Again the game MUST start
   fresh (score 0, Learned 0%, a new question, not the "You Won!" screen).
@@ -1097,39 +1044,38 @@ browser: deliver the file as soon as it is written. The site tests every page it
   which Play Again and RESET keep.
 
 - Win buttons: on a 360x640 phone the "You Won!" buttons (Play Again, the Install button when pwa.js
-  adds it, Practice hard ones, Share my results on phones) are evenly spaced with a 0.75rem gap,
-  never touch, and the whole "You Won!" screen fits without scrolling.
+  adds it, Practice hard ones) are evenly spaced with a 0.75rem gap,
+  never touch, and everything down to them fits without scrolling; below them the games grid
+  (twelve tiles in four rows of three; one row that scrolls sideways in landscape) is reached by
+  scrolling inside the overlay, never the page.
 
-- Share my results: on a phone it opens the phone's share menu with the results card picture
-  (1080 x 1080 PNG: set, time, score, mistakes, best score, date) and only the link to the site
-  (no other text); if the picture cannot be shared it shares or copies the link. On a desktop
-  computer (no touch screen) the button is not shown. It never causes an error.
+- Reset: one tap on "Start this set again" (in How to Play) starts the current set from scratch
+  at once, with no confirmation (score 0, Learned 0%, Mistakes 0, Time 0:00), keeping the best
+  score.
 
-- Reset: one tap on RESET starts the current set from scratch at once, with no confirmation (score
-  0, Learned 0%, Mistakes 0, Time 0:00), keeping the best score.
-
-- Header buttons and links work on phones: the logo, the speaker button, BUILD IT, SOURCE, the
-  GAMES icon, the menu button and, in its panel, HOME, GAMES, ABOUT, RULES and RESET, the How to
-  Play panel, "Play Again", the Tables choice and the next-level link on the "You Won!" screen
+- Header buttons and links work on phones: the logo, the speaker button, the RULES icon,
+  GAMES, BUILD IT, SOURCE, the How to Play panel with its Close and "Start this set
+  again" buttons, "Play Again", the Tables choice and the next-level link on the "You Won!" screen
   respond to a normal tap.
 - On the "You Won!" screen the title band and the menu bar stay visible and sharp above the overlay,
-  and the logo, GAMES, BUILD IT, SOURCE, the menu button (its panel opens above the overlay) and the
-  title band's link work there; nothing of the overlay's content is hidden under them, at 360x640
+  and the logo, MUTE, RULES (its panel opens above the overlay), GAMES, BUILD IT, SOURCE and
+  the title band's link work there; nothing of the overlay's content is hidden under them, at 360x640
   and in landscape.
 
 - Blocked storage: with site data blocked (or `window.localStorage` throwing on access), the game
   loads and plays normally with no console errors; progress is just not kept after reload.
 
 - Normal storage: with storage available, score, streak, learned facts, the mistake count, the
-  playing time, the answer times, and mute state survive a page reload.
+  playing time, the answer log, and mute state survive a page reload.
 
-- Practice hard ones: after a game with mistakes, the "You Won!" screen has the button; it
-  starts a practice of every fact answered wrongly plus the slowest others, 10 facts at least when
-  the log has that many. Finishing it shows "Practice done!" with its time and mistakes. The
-  practice never changes the saved game, the best score or the answer times.
+- Practice hard ones: the "You Won!" screen always has the button. After a game with mistakes it
+  starts a practice of exactly the facts answered wrongly (a wrong first answer of the game
+  included), no others; after a game with no mistakes, of 7 x 9, 7 x 8, 8 x 9 and 6 x 9. Finishing
+  it shows "Practice done!" with its time and mistakes. The
+  practice never changes the saved game, the best score or the answer log.
 
-- Answer times: after each answer, the saved progress has one more `{ ms, right }` entry under that
-  fact's id in answerLog, with ms the playing time the answer took.
+- Answer log: after each answer, the saved progress has one more `{ right }` entry under that
+  fact's id in answerLog (the first answer of the game included), and no answer times.
 
 - Four modes: the page address without an argument plays 36 facts (no factor above 9), with
   `?both` 64 (those 36 plus the 28 with two different factors the other way round: both 3 x 4 and
@@ -1140,8 +1086,8 @@ browser: deliver the file as soon as it is written. The site tests every page it
   with no page load, also in a chatbot's sandboxed preview. Each mode keeps its own saved progress
   and best score across reloads, and Play Again stays in its mode; the sound setting is shared. On
   page load the address alone decides the mode. The next-level line on the "You Won!" screen
-  offers only both ways, after 2 to 9, explained on the line itself ("Ready for more? Try both
-  ways: also 4 x 3, not just 3 x 4."); after both ways, up to 12 and up to 20 there is no line, and
+  offers only both ways, after 2 to 9, explained on the line itself ("So far the smaller number
+  always came first (3 x 4). Ready for more? Try both ways: 4 x 3 too."); after both ways, up to 12 and up to 20 there is no line, and
   up to 12 and up to 20 are never offered on "You Won!". How to Play shows the four Tables
   buttons on one line and the Both ways note, and fits a 360 x 640 phone without scrolling.
 - Sound effects: sound is ON by default: on a first visit the speaker shows the sound waves, and

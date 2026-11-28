@@ -101,4 +101,4 @@ or a prompt, not to an `index.html`.
 
 ---
 
-© Functional AI Inc.
+Copyright (c) 2026 by [Functional AI Inc.](https://functional.by) Published under the [MIT License](LICENSE).

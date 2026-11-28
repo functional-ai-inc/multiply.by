@@ -1,9 +1,8 @@
-Evolution in seven stages: 
+Evolution in six stages: 
 protocells in hydrothermal vents,bilaterian worm,land tetrapod,
-early mammal,tree primate,Australopithecus,Homo heidelbergensis
+early mammal,tree primate,Homo heidelbergensis
 Use photorealistic images, show epoch and location for each.
 Instead of the question format in the spec below, use this format: 2 x ? = 4.
-use https://multiply.by/gamify
-Use https://multiply.by/grid/prompt/
 Your deliverable is a playable, standalone index.html file 
 that I can download and open in my browser.
+use https://multiply.by/gamify

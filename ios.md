@@ -71,7 +71,7 @@ Everything is plain text, so nobody has to open Xcode:
   (`WKScriptMessageHandler`), which asks the parental gate and opens the iOS share sheet.
 - **No division:** the same hiding script as `HIDE_DIVISION_SCRIPT`, and /divide addresses go to
   /games/.
-- Service worker: not bundled; `pwa.js` already ignores a failed registration. Portrait, edge to
+- Service worker: none (the site no longer registers one; /sw.js is not bundled). Portrait, edge to
   edge with the page padded clear of the notch and home bar, back by swipe (web view history).
 
 ## The workflow (`.github/workflows/ios.yml`)

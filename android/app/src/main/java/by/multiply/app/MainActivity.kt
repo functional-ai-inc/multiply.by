@@ -125,8 +125,8 @@ class MainActivity : ComponentActivity() {
             view: WebView, request: WebResourceRequest
         ): WebResourceResponse? {
             val url = request.url
-            // Pages, prompts, pictures, pwa.js: all from the app. /sw.js is not bundled and
-            // gets a 404, so no service worker is installed (none is needed offline-first).
+            // Pages, prompts, pictures: all from the app. /sw.js is not bundled and gets a
+            // 404 (the site no longer registers one; none is needed offline-first).
             if (isSite(url)) return site.response(url.path)
             // Nothing else is ever fetched: the pages are self-contained.
             return site.notFound()

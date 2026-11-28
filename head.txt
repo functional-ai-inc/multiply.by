@@ -1,0 +1,340 @@
+HEAD TAGS FOR MULTIPLY.BY
+=========================
+This file adds the tab icon and the link preview tags to the front page and the base game, and
+the installable web app (PWA): the Build It page (https://multiply.by/build-it/) has the line
+"Or skip the Play Store and install the web app for offline use.", and tapping its words
+"install the web app" installs the site as an app that works offline. That line is the ONLY
+install point: there is no INSTALL button, no install button on "You Won!" and no install point
+in the How to Play popup. The Android app on Google Play is the other way to install it.
+prompt.txt and build-it/page.txt describe only the pages; everything here is added after the
+model's build.
+
+IMPORTANT: installing and offline play work only when the site is served over HTTPS (or from
+http://localhost while testing). A page opened from disk (file://) plays but cannot install.
+
+ENVIRONMENT
+-----------
+- Site folder: /var/www/multiply.by (served as the root of https://multiply.by).
+- Tools: GNU make, python3, ImageMagick (`convert`).
+- `make` in the site folder runs the whole build. Never edit generated files by hand; change
+  game.txt, layout.txt or this file and run `make` again.
+
+BUILD STEPS
+-----------
+1. The base game page is built from base/prompt.txt into build/index.html, and the front page
+   from prompt.txt into build/home/index.html (plain pages).
+2. Every file between a BEGIN FILE and END FILE marker line below is copied out exactly, without
+   the marker lines (extract-files.py does this). head.html and pwa-head.html go into build/; all
+   other files go into the site folder.
+3. base/index.html (https://multiply.by/base/) is build/index.html, and index.html
+   (https://multiply.by/) is build/home/index.html, each with the contents of build/head.html
+   inserted on the line just before </head>. Each plain page must contain exactly one </head>.
+4. `make` in build-it/ does the same for the Build It page: build-it/page.html (the model's
+   build) with build/pwa-head.html inserted before </head> becomes build-it/index.html.
+5. icon-192.png and icon-512.png (the site's "2x2", for any large icon use) are converted from
+   icon.svg with ImageMagick at exactly 192x192 and 512x512 pixels.
+6. THE APP ICON (the installed web app and the apple-touch-icon): the Android app's icon (an
+   orange-to-crimson x with a soft shadow on a peach gradient, android/icon.svg, copied here) with
+   a crimson "PWA" badge, so the web app and the Android app look different side by side. Two
+   versions, both rendered by render-svg.py (Chromium: ImageMagick drops the gradients, shadow and
+   text): pwa-icon.svg, the badge in the bottom-right corner (desktop, iPhone; inside the corner
+   iPhone rounds off), as pwa-icon-192.png and pwa-icon-512.png; and pwa-icon-maskable.svg, the
+   badge smaller at the bottom center, inside the central circle of 80% of the width that Android
+   never crops (a corner badge would be cut off by a round launcher icon), as
+   pwa-icon-maskable-512.png, the manifest's "maskable" icon. If android/icon.svg changes, copy
+   its new design into both SVGs below.
+7. og-image.png (the link preview picture, 1200x630) is converted from og-image.svg.
+
+The result in the site folder: index.html, base/index.html, build-it/index.html,
+manifest.webmanifest, sw.js, pwa.js, icon.svg, icon-192.png, icon-512.png, pwa-icon.svg,
+pwa-icon-maskable.svg, pwa-icon-192.png, pwa-icon-512.png, pwa-icon-maskable-512.png, og-image.svg,
+og-image.png.
+
+HOW IT WORKS
+------------
+- head.html sets the theme colour and the icons (the small SVG icon for the browser tab, the X
+  app icon with its PWA badge for an iPhone home screen).
+- pwa-head.html (Build It only) links the manifest, the theme colour and the app icon, and loads
+  pwa.js from the <head>, so it runs before the page has loaded: Chrome's install offer
+  (`beforeinstallprompt`) fires only once and often early. pwa.js calls preventDefault on it,
+  which stops Chrome's own install bar, and keeps it for the link.
+- THE LINK: the page has, exactly, <a class="pwa-install" href="#android-build">install the web
+  app</a> inside <p class="pwa-line">. pwa.js handles its click (the page's own script does
+  nothing with it) and shows its answers in a short note it adds just under that line:
+  - Chrome or Edge offering the install: opens the browser's install dialog. If the player
+    accepts: "Installing… the Multiply.by icon appears on your home screen (or in your app list)
+    in a few seconds." and the offline files start (below). If they cancel, nothing.
+  - iPhone or iPad: "On iPhone and iPad: tap Share, then Add to Home Screen." (Safari reports no
+    install, so the offline files start when the app first runs from the home screen, online.)
+  - Any other case (already installed, or a browser that offers no install): "Your browser
+    didn't offer to install it here. Use its menu: Install app, Add to Home screen or Add to
+    Dock. If it's already installed, open it from your home screen or app list."
+  - Inside the Android app (user agent contains MultiplyByApp) and when the page itself runs as
+    the installed web app, pwa.js removes the whole line: there is nothing to install.
+- OFFLINE: sw.js is network-first: every request goes to the network as usual (so updates show
+  at once) and a copy of each good response is kept; only when the network fails is the copy
+  served (and, for a page never cached, the cached front page at /). pwa.js registers sw.js only
+  when it is needed: when the player accepts the install (or Chrome reports `appinstalled`), when
+  the Build It page runs as the installed app, or when the device already has the worker (to keep
+  the copies fresh). It then sends sw.js a list to fetch and keep: the front page, the base game,
+  the games page, About, Build It, the app icons, the manifest and every game page Build It links
+  to (same-site links ending in "/"), so every game works offline from the start. Players who
+  never install download only Build It's pwa.js, the manifest and the icon.
+- The manifest's start_url and scope are "/": the installed app opens on the front page, and the
+  service worker (scope /) keeps every page of the site the player opens.
+- LINK PREVIEWS: head.html also carries Open Graph tags (og:title, og:description, og:image and
+  the rest) and a twitter:card tag. WhatsApp, Facebook, LinkedIn, X, Slack, iMessage and others
+  read them to show a card with the title, a short description and a picture when someone shares
+  a multiply.by link. The picture, og-image.png, shows the game: the title band, a "7 x 8"
+  question, four answers with 56 in green, and "Free · open source · no sign-up · no ads". Its
+  SVG names the DejaVu Sans font (installed on the server), and its title is two separate texts
+  (bold "Multiply.by:" ending where "learn the multiplication table" starts) because
+  ImageMagick's own SVG renderer ignores <tspan>. There is no og:url, so a shared ?12 or ?20 link
+  keeps its own address. Apps keep their own copy of a preview for days, so a changed picture
+  shows up slowly; to change it, also change the file name (for example og-image-2.png) in the
+  og:image tag and in the Makefile.
+- The site's tab icon is "2x2" drawn with strokes only (no text or fonts), so it renders the same
+  with any SVG converter. The app icon (installed web app, iPhone home screen) is the X with the
+  PWA badge (step 6).
+
+FILES
+-----
+
+----- BEGIN FILE: head.html -----
+<meta name="theme-color" content="#2563eb">
+<link rel="icon" type="image/svg+xml" href="/icon.svg">
+<link rel="apple-touch-icon" href="/pwa-icon-192.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="multiply.by">
+<meta property="og:title" content="Multiply.by: learn the multiplication table">
+<meta property="og:description" content="Speed through the multiplication table. Free and open source. No ads, no sign-up.">
+<meta property="og:image" content="https://multiply.by/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The multiply.by game: 7 x 8 with four answers, the right one, 56, in green">
+<meta name="twitter:card" content="summary_large_image">
+----- END FILE: head.html -----
+
+----- BEGIN FILE: pwa-head.html -----
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#2563eb">
+<link rel="apple-touch-icon" href="/pwa-icon-192.png">
+<script src="/pwa.js"></script>
+----- END FILE: pwa-head.html -----
+
+----- BEGIN FILE: manifest.webmanifest -----
+{
+  "name": "Multiply.by",
+  "short_name": "Multiply.by",
+  "description": "Learn the times tables, up to 12 or 20, against the clock.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffedd5",
+  "theme_color": "#2563eb",
+  "icons": [
+    { "src": "/pwa-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/pwa-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/pwa-icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
+----- END FILE: manifest.webmanifest -----
+
+----- BEGIN FILE: sw.js -----
+// Service worker for the installed Multiply.by web app: makes it work offline.
+// Network-first: always ask the network (so updates show at once) and keep a
+// copy of every good response; serve the copy only when the network fails.
+var CACHE = 'multiply-by-v3';
+
+self.addEventListener('install', function (event) {
+  self.skipWaiting();
+  event.waitUntil(caches.open(CACHE).then(function (c) { return c.add('/'); }).catch(function () {}));
+});
+
+self.addEventListener('activate', function (event) {
+  event.waitUntil(caches.keys().then(function (keys) {
+    return Promise.all(keys.filter(function (k) { return k !== CACHE; }).map(function (k) { return caches.delete(k); }));
+  }).then(function () { return self.clients.claim(); }));
+});
+
+function keep(request, response) {
+  if (response && (response.ok || response.type === 'opaque')) {
+    var copy = response.clone();
+    caches.open(CACHE).then(function (c) { return c.put(request, copy); }).catch(function () {});
+  }
+  return response;
+}
+
+// pwa.js sends the pages and files to keep (they loaded before this worker ran).
+self.addEventListener('message', function (event) {
+  var urls = (event.data && event.data.cacheUrls) || [];
+  event.waitUntil(Promise.all(urls.map(function (url) {
+    var request = new Request(url, { mode: new URL(url).origin === self.location.origin ? 'same-origin' : 'no-cors' });
+    return fetch(request).then(function (r) { keep(request, r); }).catch(function () {});
+  })));
+});
+
+self.addEventListener('fetch', function (event) {
+  var request = event.request;
+  if (request.method !== 'GET' || !/^https?:/.test(request.url)) return;
+  event.respondWith(fetch(request).then(function (r) { return keep(request, r); }).catch(function () {
+    return caches.match(request, { ignoreVary: true, ignoreSearch: request.mode === 'navigate' }).then(function (hit) {
+      if (hit) return hit;
+      if (request.mode === 'navigate') return caches.match('/');
+      return Response.error();
+    }).then(function (r) { return r || Response.error(); });
+  }));
+});
+----- END FILE: sw.js -----
+
+----- BEGIN FILE: pwa.js -----
+// Install support for Multiply.by, on the Build It page only. Loaded from <head>.
+// The ONE install point is the words "install the web app" (a.pwa-install).
+(function () {
+  var installPrompt = null;
+  var inApp = /MultiplyByApp/.test(navigator.userAgent);
+  var isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+  function isInstalled() {
+    return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  }
+
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();  // no Chrome install bar: the link uses the offer
+    installPrompt = e;
+  });
+  window.addEventListener('appinstalled', function () {
+    installPrompt = null;
+    startOffline();
+  });
+
+  // A short note just under the line.
+  function note(text) {
+    var line = document.querySelector('.pwa-line');
+    if (!line) return;
+    var n = line.nextElementSibling;
+    if (!n || !n.classList.contains('pwa-note')) {
+      n = document.createElement('p');
+      n.className = 'pwa-note';
+      n.setAttribute('role', 'status');
+      n.style.cssText = 'margin: 4px 0 0; font-size: 0.8125rem; color: #374151;';
+      line.parentNode.insertBefore(n, line.nextSibling);
+    }
+    n.textContent = text;
+  }
+
+  document.addEventListener('click', function (e) {
+    var link = e.target.closest && e.target.closest('a.pwa-install');
+    if (!link) return;
+    e.preventDefault();
+    var prompt = installPrompt;
+    installPrompt = null;  // the offer can be used only once
+    if (prompt) {
+      try {
+        prompt.prompt();
+        prompt.userChoice.then(function (choice) {
+          if (choice && choice.outcome === 'accepted') {
+            note('Installing\u2026 the Multiply.by icon appears on your home screen (or in your app list) in a few seconds.');
+            startOffline();
+          }
+        }, function () {});
+        return;
+      } catch (err) {}
+    }
+    if (isIOS) {
+      note('On iPhone and iPad: tap Share, then Add to Home Screen.');
+    } else {
+      note('Your browser didn\u2019t offer to install it here. Use its menu: Install app, Add to Home ' +
+        'screen or Add to Dock. If it\u2019s already installed, open it from your home screen or app list.');
+    }
+  });
+
+  // The pages and files to keep for offline play.
+  function offlineUrls() {
+    var o = location.origin, urls = [];
+    function add(u) { if (urls.indexOf(u) < 0) urls.push(u); }
+    ['/', '/base/', '/games/', '/about/', '/build-it/', '/manifest.webmanifest',
+      '/pwa-icon-192.png', '/pwa-icon-512.png', '/pwa-icon-maskable-512.png', '/icon.svg'].forEach(function (p) { add(o + p); });
+    var links = document.querySelectorAll('a[href]');
+    for (var i = 0; i < links.length; i++) {
+      var u = new URL(links[i].href, location.href);
+      if (u.origin === o && /\/$/.test(u.pathname) && u.pathname.indexOf('/prompt/') < 0) add(o + u.pathname);
+    }
+    return urls;
+  }
+
+  var offlineStarted = false;
+  function startOffline() {
+    if (offlineStarted || inApp || !('serviceWorker' in navigator)) return;
+    offlineStarted = true;
+    navigator.serviceWorker.register('/sw.js').then(function () {
+      return navigator.serviceWorker.ready;
+    }).then(function (reg) {
+      if (reg.active) reg.active.postMessage({ cacheUrls: offlineUrls() });
+    }).catch(function () {});
+  }
+
+  function ready() {
+    // Nothing to install inside the Android app or in the installed web app itself.
+    if (inApp || isInstalled()) {
+      var line = document.querySelector('.pwa-line');
+      if (line && line.parentNode) line.parentNode.removeChild(line);
+    }
+    if (inApp || !('serviceWorker' in navigator)) return;
+    if (isInstalled()) return startOffline();
+    navigator.serviceWorker.getRegistration('/').then(function (reg) {
+      if (reg) startOffline();
+    }).catch(function () {});
+  }
+  if (document.readyState === 'complete') ready();
+  else window.addEventListener('load', ready);
+})();
+----- END FILE: pwa.js -----
+
+----- BEGIN FILE: icon.svg -----
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#fafaf9"/>
+  <g fill="none" stroke="#991b1b" stroke-width="30" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 102 222 C 102 182 182 182 182 222 C 182 252 102 282 102 322 L 186 322"/>
+    <path d="M 226 252 L 286 322 M 286 252 L 226 322"/>
+    <path d="M 330 222 C 330 182 410 182 410 222 C 410 252 330 282 330 322 L 414 322"/>
+  </g>
+</svg>
+----- END FILE: icon.svg -----
+
+----- BEGIN FILE: pwa-icon.svg -----
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffedd5"/><stop offset="1" stop-color="#fed7aa"/></linearGradient><linearGradient id="x" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f97316"/><stop offset="1" stop-color="#be123c"/></linearGradient><filter id="s" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-opacity="0.3"/></filter></defs><rect width="512" height="512" fill="url(#b)"/><path d="M170 170 L342 342 M342 170 L170 342" fill="none" stroke="url(#x)" stroke-width="56" stroke-linecap="round" filter="url(#s)"/><g filter="url(#s)"><rect x="300" y="392" width="172" height="76" rx="38" fill="#be123c"/></g><text x="386" y="446" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-weight="bold" font-size="48" fill="#ffffff">PWA</text></svg>
+----- END FILE: pwa-icon.svg -----
+
+----- BEGIN FILE: pwa-icon-maskable.svg -----
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffedd5"/><stop offset="1" stop-color="#fed7aa"/></linearGradient><linearGradient id="x" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f97316"/><stop offset="1" stop-color="#be123c"/></linearGradient><filter id="s" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-opacity="0.3"/></filter></defs><rect width="512" height="512" fill="url(#b)"/><path d="M170 170 L342 342 M342 170 L170 342" fill="none" stroke="url(#x)" stroke-width="56" stroke-linecap="round" filter="url(#s)"/><g filter="url(#s)"><rect x="181" y="382" width="150" height="58" rx="29" fill="#be123c"/></g><text x="256" y="424" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-weight="bold" font-size="40" fill="#ffffff">PWA</text></svg>
+----- END FILE: pwa-icon-maskable.svg -----
+
+----- BEGIN FILE: og-image.svg -----
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#f9fafb"/>
+  <rect width="1200" height="120" fill="#ffffff"/>
+  <rect y="119" width="1200" height="2" fill="#e5e7eb"/>
+  <text x="406" y="80" text-anchor="end" font-family="DejaVu Sans" font-weight="bold" font-size="48" fill="#2563eb">Multiply.by:</text>
+  <text x="420" y="80" text-anchor="start" font-family="DejaVu Sans" font-size="48" fill="#2563eb">learn the multiplication table</text>
+  <rect x="200" y="160" width="520" height="150" rx="12" fill="#ffffff" stroke="#e5e7eb" stroke-width="2"/>
+  <text x="460" y="262" text-anchor="middle" font-family="DejaVu Sans" font-weight="bold" font-size="84" fill="#111827">7 x 8</text>
+  <text x="1000" y="200" text-anchor="end" font-family="DejaVu Sans" font-size="22" fill="#6b7280">SCORE</text>
+  <text x="1000" y="250" text-anchor="end" font-family="DejaVu Sans" font-size="44" fill="#111827">26</text>
+  <text x="1000" y="285" text-anchor="end" font-family="DejaVu Sans" font-size="22" fill="#6b7280">STREAK 5</text>
+  <rect x="200" y="330" width="390" height="100" rx="12" fill="#ffffff" stroke="#e5e7eb" stroke-width="2"/>
+  <rect x="610" y="330" width="390" height="100" rx="12" fill="#bbf7d0" stroke="#22c55e" stroke-width="3"/>
+  <rect x="200" y="445" width="390" height="100" rx="12" fill="#ffffff" stroke="#e5e7eb" stroke-width="2"/>
+  <rect x="610" y="445" width="390" height="100" rx="12" fill="#ffffff" stroke="#e5e7eb" stroke-width="2"/>
+  <g font-family="DejaVu Sans" font-weight="bold" font-size="56" text-anchor="middle">
+    <text x="395" y="400" fill="#111827">42</text>
+    <text x="805" y="400" fill="#166534">56</text>
+    <text x="395" y="515" fill="#111827">48</text>
+    <text x="805" y="515" fill="#111827">64</text>
+  </g>
+  <text x="600" y="600" text-anchor="middle" font-family="DejaVu Sans" font-size="30" fill="#374151">Free · open source · no sign-up · no ads</text>
+</svg>
+----- END FILE: og-image.svg -----

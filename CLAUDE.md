@@ -2,11 +2,11 @@
 
 A times-tables game site, served live by nginx straight from this folder (https://multiply.by).
 Every page is ONE self-contained HTML file built by an AI model from a plain-text spec. Never edit a
-generated file (index.html, prompt.txt, pwa.js, sw.js, ...) by hand: change the spec and
+generated file (index.html, prompt.txt, sw.js, ...) by hand: change the spec and
 rebuild. GitHub: functional-ai-inc/multiply.by (public).
 
 ## How a page is built
-- Site map: `/` is the front page: a game (now Dots) with a strip of the other games under the
+- Site map: `/` is the front page: a game (now the base game) with a strip of the other games under the
   answers (prompt `prompt.txt`); `/games/` is the picture chooser (spec `games/page.txt`, the strip's
   "Game Board" tile); `/base/` is the base game alone (spec
   `game.txt`); each gamified game is in its own folder (`/trains/`, ...);
@@ -31,12 +31,11 @@ rebuild. GitHub: functional-ai-inc/multiply.by (public).
   button opens it as the prompt page, and it must stay one self-contained file a person can
   upload to any chatbot).
   - `prompt.txt` (tracked, at the root like every page's prompt.txt): the front page's whole
-    prompt (/), three "Use" lines: the played game's prompt page (now
-    https://multiply.by/dots/prompt/), https://multiply.by/gamify and
-    https://multiply.by/selector/prompt/. To put another game on the front page, change the first
-    line (for the base game, use https://multiply.by/base/prompt/ and
-    https://multiply.by/grid/prompt/ instead of the first two) and the dependencies of
-    build/home/index.html in the Makefile. `selector.md` (tracked; rendered by md-html.py to
+    prompt (/), four "Use" lines: now, for the base game, https://multiply.by/base/prompt/,
+    https://multiply.by/grid/prompt/, https://multiply.by/selector/prompt/ and
+    https://multiply.by/orders.txt. To put a gamified game there instead, replace the first two
+    with its prompt page (e.g. https://multiply.by/dots/prompt/) and https://multiply.by/gamify,
+    and change the dependencies of build/home/index.html in the Makefile. `selector.md` (tracked; rendered by md-html.py to
     /selector/prompt/) describes the games strip (the grid's list minus the played game, pictures
     `thumbnails/GAME-thumbnail.png`, 200 x 160, last game played first, then the rest in the
     order of orders.txt, then Game Board) and the page's changes to the game (address
@@ -63,15 +62,24 @@ rebuild. GitHub: functional-ai-inc/multiply.by (public).
     `thumbs.py` crops each game's main picture (the robot: a finished one drawn by the game's own
     buildMiniRobotSvg); made only when missing, so a hand-made replacement is kept. Tracked in git.
 - `make` in this folder builds the base game and the front page. Base game: game.txt ->
-  `base/prompt.txt` -> the model named in `model` (e.g. kimi; `run-model`, which reuses mk-gamify's
-  model calls; build/build.txt notes tokens, cost, time) -> `build/index.html` -> PWA tags from
-  `PWA-build.txt` inserted -> `check-scripts.py` (node --check) -> `base/index.html`. Front page:
+  `base/prompt.txt` -> the model named in `model` (e.g. kimi; `run-model --fetch`, which also
+  sends grid.md and orders.txt, the "Use" lines of the "You Won!" games grid; it reuses mk-gamify's
+  model calls; build/build.txt notes tokens, cost, time) -> `build/index.html` -> head tags from
+  `head.txt` (icons, link previews) inserted -> `check-scripts.py` (node --check) -> `base/index.html`. Front page:
   `prompt.txt` -> the model in `home-model` (`run-model --fetch`: the prompt
   plus the full text of each page on a "Use https://multiply.by/..." line, as a chat's fetch gives
-  it: dots/prompt.txt, the /gamify text, selector.md) ->
+  it: base/prompt.txt, grid.md, selector.md, orders.txt) ->
   `build/home/index.html` (its own folder, so its build.txt does not overwrite the base game's
-  `build/build.txt`, which Build It reads) -> PWA tags -> `index.html`. Also extracts the PWA files and renders icons and og-image.png. The installed app
-  opens the front page; sw.js keeps every page opened online, so played games work offline.
+  `build/build.txt`, which Build It reads) -> head tags -> `index.html`. Also extracts head.txt's files and renders icons and og-image.png.
+  The installable web app (PWA) has ONE install point: the words "install the web app" on
+  Build It (under the Google Play line; no Install button, nothing in the games). head.txt holds
+  its files: manifest.webmanifest, the offline network-first sw.js, pwa.js (handles the click;
+  removes the line in the Android app) and pwa-head.html, which build-it/Makefile inserts into
+  Build It's model build (`build-it/page.html` -> `index.html`, so a head.txt change needs no
+  model call). The app icon (`pwa-icon-*.png`, rendered by `render-svg.py`; also the iPhone
+  apple-touch-icon in head.html) is the Android app's X with a crimson "PWA" badge, so the two
+  installed apps differ: in the corner, or at the bottom center in the maskable one (a round
+  Android launcher icon would crop a corner badge). The tab icon stays "2x2".
 - About: `make` in `about/` (Claude via `about/run-claude.py`, key read from
   `$HOME/.anthropic_key`).
 - Custom games: `../mk-custom` from the game's folder; it combines game.txt + layout.txt + the

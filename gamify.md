@@ -26,9 +26,8 @@ The base game itself is fully described by its Base Build Instructions, which fo
      `https://multiply.by/trains/prompt/`, keep that address.)
    - SHARING: never write the game's own address into the page; you don't know where it will be
      published. The share icon in the title band shares https://multiply.by/build-it/ with the
-     site's message, the same on every page (SHARE THE SITE): keep it exactly. "Share my results"
-     shares the page's own address, `location.origin + location.pathname` plus the set
-     (SHARE MY RESULTS): keep that too, only renaming the results card's words.
+     site's message, the same on every page (SHARE THE SITE): keep it exactly. There is no
+     "Share my results" button: don't add one.
 3. BUILD INSTRUCTIONS INSTEAD (only when the person asks for the build instructions, or the
    spec, rather than the game): one complete new `prompt.txt`, as a file named so.
    Copy the base file EXACTLY, word for word, with only these changes:
@@ -59,8 +58,7 @@ Then:
   REPLACES it, naming the rule as the base file names it. For example, "WRONG ANSWERS (CRITICAL:
   replaces the whole WRONG ANSWERS rule ...)" or "SETS (replaces the three modes)".
 - Always cover the NAMES: `<title>`, meta description, the title band's tagline (its text only:
-  the tagline always links to the main game, https://multiply.by/), the results card's words,
-  and the menu items. Not the share links or the share icon's message: they stay as the base
+  the tagline always links to the main game, https://multiply.by/), and the menu items. Not the share links or the share icon's message: they stay as the base
   file has them (SHARING, above).
 - End with a `CHECKS` section of extra acceptance checks. These are added to section 11
   (ACCEPTANCE CHECKS) of the base file.
@@ -80,7 +78,7 @@ writing, and write all of it down: the model that builds the game sees only the 
   a picture that teaches (rows of dots for 3 x 6).
 - What replaces things that don't fit? For example, stars from the number of mistakes instead of
   a clock for children who shouldn't be timed.
-- What is dropped? Say it: "No Share my results button", "No next-level line". The menu is never
+- What is dropped? Say it: "No next-level line", "No mistakes line". The menu is never
   changed (see "Menu" in G4: the same items as the base game).
 - The look: a palette (hex colors), a font stack, the background, the mascot. Draw every picture
   as inline SVG, CSS or emoji, giving its shapes and colors and the face for each state, unless
@@ -278,14 +276,15 @@ Use the base file's own names, so the building model ties your changes to its co
 - Timer: `state.timerStart`, `pauseTimer()`, `resume()`, `currentPlayMs()`.
 - End of a game:
   - The "You Won!" overlay: the score, best score, "Your time", the `win-buttons` (Play Again,
-    "Practice hard ones"), the NEXT-LEVEL line, and SHARE MY RESULTS (a results
-    card, shown only on touch devices that can share files).
-  - PRACTICE HARD ONES runs a short practice of the weakest facts (`weakFacts()`, ANSWER TIMES)
-    and ends with "Practice done!".
+    "Practice hard ones") and the NEXT-LEVEL line.
+  - PRACTICE HARD ONES runs a short practice of the player's mistakes, or of the four hardest
+    facts after a game with none (`weakFacts()`, ANSWER LOG), and ends with "Practice done!".
 - Menu:
-  - The base game has the site's menu: the logo in the title band; in the bar MUTE, the GAMES icon,
-    BUILD IT and SOURCE (always visible) and, on phones, the menu button whose panel holds HOME,
-    GAME BOARD (icon and words), ABOUT, RULES (a popup) and RESET. CRITICAL: a gamified game keeps EXACTLY
+  - The base game has the site's menu: the logo in the title band; in the bar, ONE row on every
+    screen, MUTE and RULES (a question-mark icon that opens How to Play, which holds the reset
+    button) at the left, then GAMES (the four squares and the word GAMES), BUILD IT and SOURCE
+    at the right. No ABOUT (only pages without a game have it), no menu button, no panel, no
+    HOME. CRITICAL: a gamified game keeps EXACTLY
     this menu, the same items in the same order, with the same ids and classes: it adds no item and
     drops none. A new panel (a sticker book, a garage, a map) opens from a button inside the game
     area, not from the menu bar.
@@ -293,14 +292,12 @@ Use the base file's own names, so the building model ties your changes to its co
     of the base file (near its end): read that part in full before writing the menu, never rebuild
     the menu from this summary.
     Two things models get wrong (CRITICAL):
-    - GAME BOARD is the panel's second item (`class="menu-item panel-only"`: the four blue squares
-      and the words GAME BOARD) on phones. On tablets and computers the panel's items sit in the
-      bar's row and this one is HIDDEN (`#menu-panel .panel-only { display: none; }`): a game's
-      row reads MUTE, HOME, ABOUT, RULES, RESET, then the GAMES icon ALONE (no word on a game
-      page), BUILD IT and SOURCE. The words GAME BOARD never show in a game's row.
-    - The logo (the red "x") and the GAMES icon (four rounded squares filled #3b82f6) are the exact
-      SVGs given there, not redrawn; the menu button (three lines) is the LAST item of the bar, at
-      its right end.
+    - The row is full on a 360px phone (about 350px of 360px): keep the bar's sizes exactly (item
+      padding, 13px and 12px text, icon sizes, gaps), add no menu button and no item (ABOUT
+      included), or SOURCE goes off the screen. The word GAMES always shows beside the squares,
+      never GAME BOARD.
+    - The logo (the red "x"), the RULES icon and the GAMES icon (four rounded squares filled
+      #3b82f6) are the exact SVGs given there, not redrawn.
 - Site frame (the SITE LAYOUT part of the file):
   - The TITLE BAND is `<h1><a id="tagline" href="https://multiply.by/"><strong>Multiply.by:</strong>
     ...</a></h1>`, sized to fit by `fitTagline()`, with the share icon and share menu. A gamified
@@ -331,8 +328,8 @@ Use the base file's own names, so the building model ties your changes to its co
   start only inside a `touchend` or `click`, not a `pointerdown`; the answers react on
   `pointerdown`, so without that listener an iPhone plays no sound at all (a build dropped it).
   New sounds go through `playSound` and `getAudioCtx`, never a second AudioContext.
-- MENUS CLOSE ON `pointerdown`, NEVER ON `click` (CRITICAL): the share menu and the menu panel
-  close on a press outside them through ONE `pointerdown` listener on `window` with
+- THE SHARE MENU CLOSES ON `pointerdown`, NEVER ON `click` (CRITICAL): it closes on a press
+  outside it through ONE `pointerdown` listener on `window` with
   `{ capture: true }` that calls `e.stopPropagation()` (SITE LAYOUT in the base build
   instructions). Never a `click` listener on `document`: the answers act on `pointerdown` and
   are `disabled` while the feedback shows, and a disabled button fires no `click`, so the menu
@@ -371,8 +368,10 @@ can stall there.
   facts are learned, the first stage of the path is full and confetti falls".
 - The page keeps the base game's `touchend` / `mousedown` / `keydown` audio listener, unchanged,
   so sound works on an iPhone.
-- With the menu panel open, a press on an answer closes the panel and does nothing else: it
-  does not answer and does not start the timer.
+- The menu bar is one row at 360px (MUTE, RULES, the squares with the word GAMES, BUILD IT,
+  SOURCE), SOURCE fully on the screen; no ABOUT, no menu button.
+- With the share menu open (on a computer), a press on an answer closes the menu and does
+  nothing else: it does not answer and does not start the timer.
 - The four answer buttons are white (#ffffff) during play, at every size; only a right (green)
   or wrong (red) answer colors them, and only while that shows.
 - The only sounds are the rising chimes, the wrong-answer "uh-oh" and the win tune: no background

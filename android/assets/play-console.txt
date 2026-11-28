@@ -4,6 +4,8 @@ texts are in listing.txt; the pictures and video next to this file.
 
 == Create app ==
 App name: Multiply.by – Times Tables
+Package name: multiply.by.app (exactly the applicationId in app/build.gradle.kts; it can never be
+  changed afterwards, and every uploaded bundle must carry it)
 Default language: English (United States) – en-US
 App or game: App
 Free or paid: Free (can never be changed to paid later)

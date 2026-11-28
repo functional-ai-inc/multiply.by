@@ -26,8 +26,20 @@ base.png: ../base/index.html shots.py
 	python3 shots.py $* $@.tmp.png
 	mv $@.tmp.png $@
 
-index.html: prompt.txt ../check-scripts.py
-	ANTHROPIC_API_KEY="$$(cat $$HOME/.anthropic_key)" python3.10 ../about/run-claude.py prompt.txt index.html.tmp
+# page.html is the model's build; index.html is it with the web app's head tags (../head.txt:
+# manifest, app icon, pwa.js, which makes the words "install the web app" install the site)
+# inserted before </head>, so a change to them needs no new model build.
+page.html: prompt.txt ../check-scripts.py
+	ANTHROPIC_API_KEY="$$(cat $$HOME/.anthropic_key)" python3.10 ../about/run-claude.py prompt.txt page.html.tmp
+	python3 ../check-scripts.py page.html.tmp
+	mv page.html.tmp page.html
+
+../build/pwa-head.html: ../head.txt
+	$(MAKE) -C .. build/pwa-head.html
+
+index.html: page.html ../build/pwa-head.html ../check-scripts.py
+	test "$$(grep -c "</head>" page.html)" = 1
+	sed "/<\/head>/e cat ../build/pwa-head.html" page.html > index.html.tmp
 	python3 ../check-scripts.py index.html.tmp
 	mv index.html.tmp index.html
 

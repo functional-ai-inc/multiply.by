@@ -15,12 +15,12 @@ and THE GAME's prompt disagree, this file wins.
   https://multiply.by/ on this page: the share link, `?both`, `?12` and `?20`, and the rest.
 - **SOURCE** on this page: `<a href="https://multiply.by/prompt/">` (the front page's own prompt,
   not THE GAME's).
-- **Menu**: as in THE GAME's prompt, with HOME as the current page (`aria-current="page"`). The
-  games strip and its Game Board tile are also a way to the other games.
+- **Menu**: as in THE GAME's prompt; no item is the current page (the logo and the title band
+  are the way here). The games strip and its Game Board tile are also a way to the other games.
 - **The games grid on "You Won!"** (if THE GAME has one): THE GAME's tile is the one marked "Play
   again", although this page's address is https://multiply.by/.
-- **The front page always opens ready to play**: it is HOME, so the logo, the title band and HOME
-  (which all open https://multiply.by/) must lead to a game, never back to "You Won!". At
+- **The front page always opens ready to play**: it is the home page, so the logo and the title band
+  (which both open https://multiply.by/) must lead to a game, never back to "You Won!". At
   start-up, if the saved progress is a game already WON (every fact learned, on this page or on
   THE GAME's own page, which share it), do NOT show "You Won!": start a new game exactly as Play
   Again does (the best score kept). An unfinished game is restored as usual.
@@ -128,11 +128,12 @@ file: its tiles and layout are the ones described here, its order the one above.
   ORDERS; reloading the page never changes it.
 - After tapping Train in the strip and coming back, Train is the first tile.
 - A tap on a strip tile opens that game; it never counts as an answer or starts the timer.
-- The menu bar shows MUTE, the GAMES icon, BUILD IT, SOURCE and the menu button on one line at
-  360px, nothing cut off; BUILD IT opens https://multiply.by/build-it/; SOURCE opens
-  https://multiply.by/prompt/; the menu panel holds HOME (current), GAMES, ABOUT, RULES and RESET.
+- The menu bar shows MUTE, RULES, GAMES (the squares and the word), BUILD IT and SOURCE on one
+  line at 360px,
+  nothing cut off, no menu button; BUILD IT opens https://multiply.by/build-it/; SOURCE opens
+  https://multiply.by/prompt/.
 - The page's addresses (share link, `?both`, `?12`, `?20`) are https://multiply.by/, never THE
   GAME's own address.
 - Progress is shared with THE GAME's own page: facts learned here count there too.
-- After winning (here or on THE GAME's own page), tapping the logo, the title band or HOME opens
+- After winning (here or on THE GAME's own page), tapping the logo or the title band opens
   a new game with its first question, not "You Won!"; the best score is kept.

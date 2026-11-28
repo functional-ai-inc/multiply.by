@@ -16,8 +16,8 @@ In the <head>, include exactly: <link rel="icon" type="image/svg+xml" href="/ico
 The page has the site's frame, described in SITE LAYOUT below: the title band, the menu bar, this
 page's content (the games), the site info (SITE INFO below) and the footer.
 - MENU: the site's menu (MENU BAR in SITE LAYOUT), with GAMES as the current page (dark blue,
-  `aria-current="page"`). No MUTE, RULES or RESET. HOME (in the menu panel) and the logo are the
-  way back to the front page: the page also opens inside the installed app, where iPhone shows no
+  `aria-current="page"`). No MUTE or RULES. The logo and the title band are the way
+  back to the front page: the page also opens inside the installed app, where iPhone shows no
   back button.
 - SOURCE on this page: <a href="https://multiply.by/games/prompt/">
 - The share icon shares https://multiply.by/build-it/ with the site's message, as on every page
@@ -44,9 +44,9 @@ server except those screenshots.
 
 CHECKS
 - The grid's checks for the games page (https://multiply.by/grid/prompt/).
-- The menu bar shows the GAMES icon (current), BUILD IT, SOURCE and the menu button on one line at
-  360px, nothing cut off; the menu panel holds HOME, GAMES (current) and ABOUT; HOME opens https://multiply.by/;
-  SOURCE opens https://multiply.by/games/prompt/.
+- The menu bar shows ABOUT, GAMES (the squares and the word; current), BUILD IT and SOURCE on one
+  line at 360px, nothing cut off, no menu button; the logo opens https://multiply.by/; SOURCE
+  opens https://multiply.by/games/prompt/.
 
 #include footer.txt
 

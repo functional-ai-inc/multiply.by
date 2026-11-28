@@ -51,12 +51,12 @@ PHONE = [
     # Then "Make your own game" and "Learned everywhere", the next two on the page (the card ends
     # after them).
     ("02-about-more", "/about/", 0, ".more",
-     "#how-it-was-built, #how-it-was-built ~ * { display: none !important; }", "main"),
+     "#how-the-site-and-the-app-were-built, #how-the-site-and-the-app-were-built ~ * { display: none !important; }", "main"),
     # From "Build it yourself", drawn smaller so the first game's whole prompt fits.
     ("03-build-it", "/build-it/", 0, "main h2", None, None, 540),
-    # The rest of the About card: How it was built, Portability and Scalability (the site
+    # The rest of the About card: How the site and the app were built, Portability and Scalability (the site
     # info and footer below the card are left out: the Google Play badge, and contact details).
-    ("04-about-rest", "/about/", 0, "#how-it-was-built", None, "main"),
+    ("04-about-rest", "/about/", 0, "#how-the-site-and-the-app-were-built", None, "main"),
     ("05-games", "/games/", 0),
 ]
 # Tablet screenshots (optional on Play, needed to be featured on tablets): the app is held

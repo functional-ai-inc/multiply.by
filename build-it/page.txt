@@ -11,7 +11,7 @@ In the <head>, include exactly: <link rel="icon" type="image/svg+xml" href="/ico
 The page has the site's frame, described in SITE LAYOUT below: the title band, the menu bar, this
 page's content (the games and how each was built), the site info (SITE INFO below) and the footer.
 - MENU: the site's menu (MENU BAR in SITE LAYOUT), with BUILD IT as the current page
-  (`aria-current="page"`). No MUTE, RULES or RESET. HOME (in the menu panel), the logo and the
+  (`aria-current="page"`). No MUTE or RULES. The logo, the title band and the
   GAMES icon are the way back to the games: the page also opens inside the installed app, where
   iPhone shows no back button.
 - SOURCE on this page: <a href="https://multiply.by/build-it/prompt/">
@@ -133,6 +133,12 @@ THE GRID
      from the start (nothing loads), copying exactly that text.
   5. PLAY: a link "Play NAME →" to the game (bold, dark blue #1e40af, no underline), at the
      bottom of the card.
+- THE PROMPTS NOTE, at the bottom of the grid, under the last row of cards: a <p
+  class="prompts-note"> spanning every column of the grid (`grid-column: 1 / -1`: the whole
+  width at one, two or three columns), added after the cards (the script that fills the grid
+  keeps it last), plain text (no card look: no border, background or shadow), 0.875rem, #374151,
+  margin 0, exactly: "Note: Most of the prompts shown here were written by a person. The
+  prompts for Dot Array and Base Game were drafted by AI." with "Note:" in bold.
 
 ANDROID BUILD (below the grid, above the footer)
 - A HORIZONTAL SEPARATOR first, between the grid and the block, so the block reads as a section of
@@ -164,12 +170,24 @@ ANDROID BUILD (below the grid, above the footer)
      "Requires 2 GB of disk and 8 GB of RAM; Linux, Mac or Windows. No administrator (root)
      access needed."
   5. Under that, THE READY-MADE APP, the simple alternative to building it: a line (body text,
-     #374151, margin 0), exactly: "Or skip the build: get the ready-made app on Google Play."
+     #374151, margin 0), exactly: "Skip the build: get the ready-made app on Google Play."
      The words "Google Play" are a link to the Play listing, opening in a new tab (no picture, no
      badge):
      <a class="android-play" href="https://play.google.com/store/apps/details?id=multiply.by.app" target="_blank" rel="noreferrer">Google Play</a>
      Dark blue #1e40af, bold, not underlined (underlined on hover and keyboard focus).
-  6. Under that, the trademark notice, 0.75rem, #6b7280, exactly:
+  6. Directly under that, THE WEB APP: a line (body text, #374151, margin: 6px 0 0), exactly:
+     "Or skip the Play Store and install the web app for offline use."
+     The words "install the web app" are this link, written exactly like this, the line being
+     a <p class="pwa-line">:
+     <a class="pwa-install" href="#android-build">install the web app</a>
+     The same look as the Google Play link (dark blue #1e40af, bold, not underlined; underlined
+     on hover and keyboard focus). The page's own script does NOTHING with this link and adds no
+     handler to it: a script added after the build (pwa.js) makes it install the site, and may
+     add a short note just under the line or remove the line.
+     Lines 5 and 6 sit together in one <div class="android-alt"> (a plain block: no gap or padding,
+     no other margins), which is the block's item in place of the two lines, so the web app
+     line comes just under the Google Play line: only its own 6px top margin between them.
+  7. Under that, the trademark notice, 0.75rem, #6b7280, exactly:
      "Android and Google Play are trademarks of Google LLC."
 
 GAMES (the data for the cards, in NO particular order: the cards follow ORDERS below; the name
@@ -256,13 +274,18 @@ CHECKS
   by single spaces (the base game: "Base game with no modifications. Your deliverable is a
   complete, playable, standalone index.html file that I can download and open in my browser.
   Details at https://multiply.by/base/prompt", the address a link); the name, the screenshot and "Play …" all open the game.
+- Under the last row of cards, across the grid's full width (all three columns at 1280px), "Note:
+  Most of the prompts shown here were written by a person. The prompts for Dot Array
+  and Base Game were drafted by AI." ("Note:" bold), the grid's last item.
 - Under the cards, a thin gray line across the grid's width, then the ANDROID BUILD block: the blue phone icon and "Android™ Build" on one
   line (no Android robot), its text, the line "Requires 2 GB of disk and
   8 GB of RAM; Linux, Mac or Windows. No administrator (root) access needed.", and a box with
   "Build an installable APK using https://multiply.by/android" (the address a bold link); its copy button
-  puts exactly that line on the clipboard and shows the check mark. Under them, "Or skip the
+  puts exactly that line on the clipboard and shows the check mark. Under them, "Skip the
   build: get the ready-made app on Google Play.", "Google Play" a link opening the Play listing
-  in a new tab (no badge), then "Android and Google Play are trademarks of Google LLC." At 360px it fits the screen,
+  in a new tab (no badge), then "Or skip the Play Store and install the web app for offline
+  use.", "install the web app" the link <a class="pwa-install" href="#android-build"> in a
+  <p class="pwa-line">, with no handler from the page's script, then "Android and Google Play are trademarks of Google LLC." At 360px it fits the screen,
   no sideways scroll.
 - Card names, exactly as GAMES gives them (Robot Workshop, not Robot). No name changes after the page opens.
 - Each web address in a prompt box (e.g. https://multiply.by/gamify) is a link to itself, shown

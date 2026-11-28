@@ -90,9 +90,9 @@ nothing, so the app needs no income:
   downloads it on first use. `preBuild` stops with a clear message if the games haven't been
   gathered. Release signing reads `upload-key.properties` from the `android` folder or from
   `~/.multiply-play/` (see "Release build" below); without it a release build stops with a clear
-  message, so it never makes an unsigned bundle. Launcher icon (since 2026-11-27; the site
-  keeps its "2x2"): an orange-to-crimson x with a soft shadow on a peach gradient, all made by
-  `make-icons.py` from the design at its top, which also writes `android/icon.svg` (the whole
+  message, so it never makes an unsigned bundle. Launcher icon (since 2026-11-27; the site's tab
+  icon keeps its "2x2", the website's installable app uses it with a "PWA" badge): an
+  orange-to-crimson x with a soft shadow on a peach gradient, all made by `make-icons.py` from the design at its top, which also writes `android/icon.svg` (the whole
   icon, the store icon's source). An adaptive icon for Android 8+
   (`res/mipmap-anydpi-v26/ic_launcher.xml`: `res/drawable/ic_launcher_background.xml`, the
   gradient; `res/mipmap-*/ic_launcher_foreground.png`, the x with its shadow, sized so it fills
@@ -136,19 +136,15 @@ nothing, so the app needs no income:
     phone's browser (`Intent.ACTION_VIEW`);
   - a file that isn't bundled, or any request to another host: the in-app 404 response (the pages
     are self-contained, so nothing is fetched from the network).
-- **Service worker:** `/sw.js` is not bundled, so it gets the 404. `pwa.js` catches a failed
-  registration (`startOffline()` ends with `.catch(function () {})`), and it registers only when the
-  page looks installed (`isInstalled()`) or a service worker already exists, which a fresh WebView
-  probably never does. The install prompt in `pwa.js` does nothing in a WebView.
+- **Service worker:** none. The website's installable web app (Build It's "install the web
+  app") has `/sw.js`, which is not bundled and would get the 404; Build It's `pwa.js` sees
+  `MultiplyByApp` in the user agent, removes that line and never registers it.
 - **Share:** WebView has no `navigator.share`, so the app adds one before each page's scripts run
   (`addDocumentStartJavaScript`, only on https://multiply.by) that posts the text to the app
   (`addWebMessageListener`, object `MultiplyApp`). The app asks the parental gate, then opens
   Android's share sheet with the text. The games then take their phone path (layout.txt: SHARE THE
   SITE), and their desktop share menu and copy-link never appear. On an old WebView without these
   features, the games fall back to copying the link.
-  - Found on 2026-11-20 (a site bug, not the app's): four games share links that 404 on the
-    website and in the app: Monster `https://multiply.by/munchy/`, Planes `/flight/`, Great Wall
-    `/greatwall/`, Block Craft `/blockcraft/` (each game's `shareText()`).
 - **No ads anywhere in the app**, on every page, the bundled About and Build It included. The
   website may show ads on its non-game pages (`PRIVACY-WEBSITE.md`); the app shows the same
   pages without them, in two layers:
@@ -299,7 +295,7 @@ https://multiply.by/android/assets/ so it can be looked at or downloaded from an
 | `play-console.txt` | The answers to the Play Console's forms, page by page: app details, store settings, privacy policy, app access, ads, content rating, target audience (6-8 and 9-12: the Families policy), data safety ("no data collected"), release notes | |
 | `icon-512.png` | The store icon: the app's `android/icon.svg` (`make-icons.py`), rendered at 512 x 512 | 512 x 512 PNG, square: Play rounds the corners |
 | `feature-graphic.png` | The app icon, name, one line and six game pictures (the front page's thumbnails) | 1024 x 500, no transparency |
-| `phone/NN-PAGE.png` | Phone screenshots in store order, About first (parents choose the app, and its lists persuade them most): 1. the card from "About Multiply.by" with its three lists (the card ends there; its link drawn as plain text); 2. "Make your own game" and "Learned everywhere" (the card ends there); 3. Build It (from "Build it yourself", no title band or menu, drawn at a 540 px wide page so the first game's whole prompt fits); 4. the rest of the card: "How it was built", Portability and Scalability (the site info and footer left out); 5. the /games/ chooser | 2 to 8, 9:16, 1080 x 1920 |
+| `phone/NN-PAGE.png` | Phone screenshots in store order, About first (parents choose the app, and its lists persuade them most): 1. the card from "About Multiply.by" with its three lists (the card ends there; its link drawn as plain text); 2. "Make your own game" and "Learned everywhere" (the card ends there); 3. Build It (from "Build it yourself", no title band or menu, drawn at a 540 px wide page so the first game's whole prompt fits); 4. the rest of the card: "How the site and the app were built", Portability and Scalability (the site info and footer left out); 5. the /games/ chooser | 2 to 8, 9:16, 1080 x 1920 |
 | `tablet-7/`, `tablet-10/` | Tablet screenshots, upright like the app: the same five as the phone's (`TABLET_PAGES = PHONE`), at tablet size; About's pages are too short to scroll on a tablet, so its pictures start at the card and are shorter than 9:16 | optional; 1200 x 1920 and 1600 x 2560 |
 | `multiply.mp4` | The Robot game played from the start to "You Won!" on a phone: the first 10 moves (7 right, 3 wrong) at 1.4x speed with the game's sounds and a mouse pointer, the rest at 12x, silent, then 3 s on "You Won!". About 28 s, 1080 x 1920, about 2 MB | Play takes a YouTube link only |
 

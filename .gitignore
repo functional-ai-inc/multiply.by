@@ -3,8 +3,10 @@
 !/.gitignore
 !/Makefile
 !/extract-files.py
+!/render-svg.py
 !/CLAUDE.md
 !/README.md
+!/LICENSE
 !/gamify.md
 !/selector.md
 !/grid.md
@@ -32,7 +34,7 @@
 !/layout.txt
 !/footer.txt
 !/assemble-spec
-!/PWA-build.txt
+!/head.txt
 !/about/
 /about/*
 !/about/about.txt

@@ -25,8 +25,7 @@ NAMES, TITLE AND LINKS
 - Title band heading, exactly:
   <h1><a id="tagline" href="https://multiply.by/"><strong>Multiply.by:</strong> feed the Multiply Monster</a></h1>
   (it links to the main game, https://multiply.by/, like on every page of the site).
-- `shareText()`: https://multiply.by/monster/ (2 to 9) or https://multiply.by/monster/?easy (the
-  easy set). `siteShareText()`, first line: "Multiply Monster: learn the times tables by feeding
+- `siteShareText()`, first line: "Multiply Monster: learn the times tables by feeding
   a monster."; the other two lines as before. Email SUBJECT: "Multiply Monster".
 - MENU ITEMS: exactly the base game's (MUTE, GALLERY, ABOUT, RULES, RESET, then SOURCE in the far
   right corner). The sticker book opens from the STICKERS button in the game area (STICKER BOOK).
@@ -183,8 +182,7 @@ STARS INSTEAD OF A CLOCK
 - A FIREWORKS burst behind the overlay's heading when the game is won: three bursts of 16 dots
   each, at different places in the top half, 300ms apart, each dot flying out 60 to 100px and
   fading over 900ms.
-- No "Share my results" button and no results card in this game (drop SHARE MY RESULTS entirely;
-  the share icon in the title band stays). No mistakes line on the "You Won!" screen.
+- No mistakes line on the "You Won!" screen.
 - NEXT-LEVEL line: in the easy set, <div>Ready for more? Try <a href="?">2 to 9</a></div>
   (switchMode(9)); in 2 to 9, none. There is NO division line in this game.
 - "Practice done!" (after a practice) shows Munch with the crown and the stars too, with the
