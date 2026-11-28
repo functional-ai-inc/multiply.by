@@ -4,8 +4,8 @@ Free times-tables games for children, at **https://multiply.by**, and on
 [Google Play](https://play.google.com/store/apps/details?id=multiply.by.app) as an app with no ads.
 
 Every page of the site is **one self-contained HTML file written by an AI model from a plain-text
-prompt**. This repository holds the prompts, not the code: the pages are generated and never
-edited by hand. To change a game, change its prompt and build it again.
+prompt**. This repository holds the prompts and the build tools, not the code that runs in the browser: the
+pages are generated and never edited by hand. To change a game, change its prompt and build it again.
 
 ## Build a game yourself
 
